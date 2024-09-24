@@ -1,7 +1,7 @@
 - Standard Project
 
 - Team Name
-    - G-JOG
+    - Temu from Wish
 
 - Team Members
     - Giyoung Kim: Products Guru, Social Guru
