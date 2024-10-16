@@ -19,7 +19,10 @@ def index():
             current_user.id, datetime.datetime(1980, 9, 14, 0, 0, 0))
     else:
         purchases = None
+    # find k most expensive products:
+    expensive_products = Product.get_k_expensive(3)
     # render the page by adding information to the index.html file
     return render_template('index.html',
                            avail_products=products,
+                           expensive_products=expensive_products,
                            purchase_history=purchases)

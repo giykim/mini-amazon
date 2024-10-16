@@ -40,4 +40,4 @@ class Product:
             """,
             k = k
         )
-        return [Product(*row) for row in rows]
+        return rows

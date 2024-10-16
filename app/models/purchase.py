@@ -27,8 +27,11 @@ class Purchase:
     @staticmethod
     def get_all_by_uid_since(uid, since):
         rows = app.db.execute('''
-            SELECT uid, pid, sid, time_purchased, quantity
-            FROM Purchases
+            SELECT pu.uid, pu.pid, pu.sid, pu.time_purchased, pu.quantity,
+                pr.name AS product_name, u.firstname AS seller_first, u.lastname AS seller_last
+            FROM Purchases pu
+            JOIN Products pr ON pu.pid = pr.id
+            JOIN Users u ON pu.sid = u.id
             WHERE uid = :uid
             AND time_purchased >= :since
             ORDER BY time_purchased DESC
@@ -36,4 +39,4 @@ class Purchase:
             uid=uid,
             since=since
         )
-        return [Purchase(*row) for row in rows]
+        return rows
