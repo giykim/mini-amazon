@@ -32,6 +32,12 @@ CREATE TABLE IsTagged (
     name VARCHAR(255) NOT NULL REFERENCES Tags(name)
 );
 
+CREATE TABLE SoldBy (
+    sid INT NOT NULL REFERENCES Sellers(id),
+    pid INT NOT NULL REFERENCES Products(id),
+    price INT NOT NULL
+)
+
 CREATE TABLE Purchases (
     uid INT NOT NULL REFERENCES Users(id),
     pid INT NOT NULL REFERENCES Products(id),
