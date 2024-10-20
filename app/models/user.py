@@ -43,7 +43,7 @@ class User(UserMixin):
         return len(rows) > 0
 
     @staticmethod
-    def register(email, password, firstname, lastname, address):
+    def register(email, password, firstname, lastname, address, seller):
         try:
             rows = app.db.execute("""
                 INSERT INTO Users(email, password, firstname, lastname, address, balance)
@@ -57,12 +57,24 @@ class User(UserMixin):
                 address=address,
                 balance=0
             )
+
             id = rows[0][0]
+
+            if seller:
+                rows = app.db.execute("""
+                    INSERT INTO Sellers(id)
+                    VALUES(:id)
+                    """,
+                    id=id
+                )
+
             return User.get(id)
+
         except Exception as e:
             # likely email already in use; better error checking and reporting needed;
             # the following simply prints the error to the console:
             print(str(e))
+
             return None
 
     @staticmethod

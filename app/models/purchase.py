@@ -40,3 +40,20 @@ class Purchase:
             since=since
         )
         return rows
+    
+    @staticmethod
+    def get_cart(uid):
+        rows = app.db.execute('''
+            SELECT pu.pid, pu.sid, pu.quantity, pr.name,
+                u.firstname AS seller_first, u.lastname AS seller_last, s.price
+            FROM Purchases pu
+            JOIN Products pr ON pr.id = pu.pid
+            JOIN Users u ON pu.sid = u.id
+            JOIN SoldBy s ON s.sid = pu.sid
+                AND s.pid = pr.id
+            WHERE time_purchased IS NULL
+                AND uid=:uid
+            ''',
+            uid=uid
+        )
+        return rows

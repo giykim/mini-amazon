@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br><br>
+
+{% if current_user.is_authenticated %}
+<h2>Cart</h2>
+<!-- <table class='table table-hover table-bordered container'>
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Product Name</th>
+      <th scope="col">Seller</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for product in cart %}
+      <tr>
+        <th scope="row">{{ product.name }}</th>
+        <td>{{ product.seller_first }} {{ product.seller_last }}</td>
+        <td>{{ product.quantity }}</td>
+        <td>{{ product.price }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table> -->
+<div class="container mt-4">
+    <div class="row">
+      {% for product in cart %}
+        <div class="col-md-4 mb-4"> <!-- Adjust the number of columns as needed -->
+          <div class="card">
+            <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+              <span style="color: #ccc;">Product Image Placeholder</span>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">{{ product.name }}</h5>
+              <p class="card-text">
+                <strong>Seller:</strong> {{ product.seller_first }} {{ product.seller_last }}<br>
+                <strong>Quantity:</strong> {{ product.quantity }}<br>
+                <strong>Price:</strong> ${{ product.price }} <!-- Adjust the price format as needed -->
+              </p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+</div>
+  
+{% else %}
+<p><a href="{{ url_for('users.login') }}">Log in</a> to see your cart!</p>
+{% endif %}
+
+{% endblock %}

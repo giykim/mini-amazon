@@ -40,16 +40,17 @@ CREATE TABLE SoldBy (
     sid INT NOT NULL REFERENCES Sellers(id),
     pid INT NOT NULL REFERENCES Products(id),
     quantity INT NOT NULL,
-    price DECIMAL(12,2) NOT NULL CHECK (price >= 0)
+    price DECIMAL(12,2) NOT NULL CHECK (price >= 0),
+    UNIQUE (sid, pid)
 );
 
 CREATE TABLE Purchases (
     uid INT NOT NULL REFERENCES Users(id),
     pid INT NOT NULL REFERENCES Products(id),
     sid INT NOT NULL REFERENCES Sellers(id),
-    time_purchased timestamp without time zone DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
+    time_purchased TIMESTAMP WITHOUT TIME ZONE,
     quantity INT NOT NULL CHECK (quantity >= 0),
-    PRIMARY KEY (uid, pid, sid, time_purchased)
+    UNIQUE (uid, pid, sid, time_purchased)
 );
 
 CREATE TABLE Reviews (

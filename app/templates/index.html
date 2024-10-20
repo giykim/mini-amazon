@@ -5,97 +5,88 @@
 <br><br>
 
 <h2>Products for sale:</h2>
-<table class='table table-hover table-bordered container'>
-  <thead class="thead-dark">
-    <tr>
-      <th scope="col">Product ID</th>
-      <th scope="col">Product Name</th>
-      <th scope="col">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for product in avail_products%}
-      <tr>
-        <th scope="row">{{product.id}}</th>
-        <td>{{product.name}}</td>
-        <td>{{product.description}}</td>
-      </tr>
+<div class="container">
+  <div class="row">
+    {% for product in avail_products %}
+      <div class="col-md-4 mb-4"> <!-- Adjust the number of columns as needed -->
+        <div class="card">
+          <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+            <span style="color: #ccc;">Product Image Placeholder</span>
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Product ID: {{ product.id }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ product.name }}</h6>
+            <p class="card-text">{{ product.description }}</p>
+          </div>
+        </div>
+      </div>
     {% endfor %}
-  </tbody>
-</table>
+  </div>
+</div>
 
 <br><br>
 
 <h2>Expensive products:</h2>
-<table class='table table-hover table-bordered container'>
-  <thead class="thead-dark">
-    <tr>
-      <th scope="col">Product ID</th>
-      <th scope="col">Product Name</th>
-      <th scope="col">Description</th>
-      <th scope="col">Price</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for product in expensive_products%}
-      <tr>
-        <th scope="row">{{product.id}}</th>
-        <td>{{product.name}}</td>
-        <td>{{product.description}}</td>
-        <td>${{product.max_price}}</td>
-      </tr>
+<div class="container">
+  <div class="row">
+    {% for product in expensive_products %}
+      <div class="col-md-4 mb-4"> <!-- Adjust the number of columns as needed -->
+        <div class="card">
+          <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+            <span style="color: #ccc;">Product Image Placeholder</span>
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Product ID: {{ product.id }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ product.name }}</h6>
+            <p class="card-text">{{ product.description }}</p>
+            <p class="card-text"><strong>Price:</strong> ${{ product.max_price }}</p>
+          </div>
+        </div>
+      </div>
     {% endfor %}
-  </tbody>
-</table>
+  </div>
+</div>
 
 <br><br>
+
 {% if current_user.is_authenticated %}
 <h2>Your recent purchases:</h2>
-<table class='table table-hover table-bordered container'>
-  <thead class="thead-dark">
-    <tr>
-      <th scope="col">Product Name</th>
-      <th scope="col">Seller</th>
-      <th scope="col">Time Purchased</th>
-      <th scope="col">Quantity</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for purchase in purchase_history%}
-      <tr>
-        <th scope="row">{{purchase.product_name}}</th>
-        <td>{{purchase.seller_first}} {{purchase.seller_last}}</td>
-        <td>{{purchase.time_purchased}}</td>
-        <td>{{purchase.quantity}}</td>
-      </tr>
+<div class="container">
+  <div class="row">
+    {% for purchase in purchase_history %}
+      <div class="col-md-4 mb-4"> <!-- Adjust the number of columns as needed -->
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">{{ purchase.product_name }}</h5>
+            <p class="card-text"><strong>Seller:</strong> {{ purchase.seller_first }} {{ purchase.seller_last }}</p>
+            <p class="card-text"><strong>Time Purchased:</strong> {{ purchase.time_purchased }}</p>
+            <p class="card-text"><strong>Quantity:</strong> {{ purchase.quantity }}</p>
+          </div>
+        </div>
+      </div>
     {% endfor %}
-  </tbody>
-</table>
+  </div>
+</div>
+
 <h2>Your recent reviews:</h2>
-<table class='table table-hover table-bordered container'>
-  <thead class="thead-dark">
-    <tr>
-      <th scope="col">Review Of</th>
-      <th scope="col">Review Type</th>
-      <th scope="col">Rating</th>
-      <th scope="col">Description</th>
-      <th scope="col">Time Created</th>
-      <th scope="col">Helpfulness</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for review in reviews%}
-      <tr>
-        <th scope="row">{{review.name}}</th>
-        <td>{{review.review_type}}</td>
-        <td>{{review.rating}}</td>
-        <td>{{review.description}}</td>
-        <td>{{review.time_created}}</td>
-        <td>{{review.helpfulness}}</td>
-      </tr>
+<div class="container">
+  <div class="row">
+    {% for review in reviews %}
+      <div class="col-md-4 mb-4"> <!-- Adjust the number of columns as needed -->
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Review Of: {{ review.name }}</h5>
+            <p class="card-text"><strong>Review Type:</strong> {{ review.review_type }}</p>
+            <p class="card-text"><strong>Rating:</strong> {{ review.rating }}</p>
+            <p class="card-text"><strong>Description:</strong> {{ review.description }}</p>
+            <p class="card-text"><strong>Time Created:</strong> {{ review.time_created }}</p>
+            <p class="card-text"><strong>Helpfulness:</strong> {{ review.helpfulness }}</p>
+          </div>
+        </div>
+      </div>
     {% endfor %}
-  </tbody>
-</table>
+  </div>
+</div>
 {% else %}
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your purchase history!</p>
 {% endif %}

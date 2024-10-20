@@ -55,6 +55,18 @@
       color: #fff; /* White text for placeholder */
       font-weight: bold; /* Bold text */
     }
+
+    .card {
+      border: 1px solid #ddd; /* Border to make it look like a box */
+      border-radius: 5px;     /* Slightly rounded corners */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+      transition: transform 0.2s; /* Animation effect */
+    }
+
+    .card:hover {
+      transform: scale(1.02); /* Slightly scale up on hover */
+    }
+
   </style>
 </head>
 
@@ -62,7 +74,9 @@
   <div class="sidenav">
     {% block msg %}
       <a href="{{ url_for('index.index') }}" style="text-decoration: none;">
-        <div class="img-placeholder">Logo</div>
+        <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+          <span style="color: #ccc;">Amazon Logo</span>
+        </div>
         <h1 style="color: aliceblue;">CompSci 316 Mini Amazon</h1>
       </a>
       <div class="search-container">
@@ -74,6 +88,11 @@
       <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
         {% if current_user.is_authenticated %}
           Hello {{current_user.firstname}}!
+          <a href="{{ url_for('cart.cart') }}">
+            <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+              <span style="color: #ccc;">Cart</span>
+            </div>
+          </a>
           <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
         {% else %}
           <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a>
