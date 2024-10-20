@@ -43,6 +43,18 @@
         background-color: #000 !important;
         color: #fff;
     }
+
+    .img-placeholder {
+      width: 120px; /* Width for the placeholder */
+      height: 50px; /* Height for the placeholder */
+      background-color: #555; /* Grey background for the placeholder */
+      margin-right: 15px; /* Space between the logo and the title */
+      display: flex; /* Flexbox for centering text */
+      align-items: center; /* Center text vertically */
+      justify-content: center; /* Center text horizontally */
+      color: #fff; /* White text for placeholder */
+      font-weight: bold; /* Bold text */
+    }
   </style>
 </head>
 
@@ -50,6 +62,7 @@
   <div class="sidenav">
     {% block msg %}
       <a href="{{ url_for('index.index') }}" style="text-decoration: none;">
+        <div class="img-placeholder">Logo</div>
         <h1 style="color: aliceblue;">CompSci 316 Mini Amazon</h1>
       </a>
       <div class="search-container">
