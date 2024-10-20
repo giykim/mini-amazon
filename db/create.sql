@@ -39,6 +39,7 @@ CREATE TABLE IsTagged (
 CREATE TABLE SoldBy (
     sid INT NOT NULL REFERENCES Sellers(id),
     pid INT NOT NULL REFERENCES Products(id),
+    quantity INT NOT NULL,
     price DECIMAL(12,2) NOT NULL CHECK (price >= 0)
 );
 
@@ -46,7 +47,7 @@ CREATE TABLE Purchases (
     uid INT NOT NULL REFERENCES Users(id),
     pid INT NOT NULL REFERENCES Products(id),
     sid INT NOT NULL REFERENCES Sellers(id),
-    time_purchased timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
+    time_purchased timestamp without time zone DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
     quantity INT NOT NULL CHECK (quantity >= 0),
     PRIMARY KEY (uid, pid, sid, time_purchased)
 );
@@ -82,4 +83,10 @@ CREATE TABLE Categories (
 CREATE TABLE CategoryOf (
     pid INT NOT NULL REFERENCES Products(id),
     cid INT NOT NULL REFERENCES Categories(id)
+);
+
+CREATE TABLE Inventory (
+    sid INT NOT NULL REFERENCES Sellers(id),
+    pid INT NOT NULL REFERENCES Products(id),
+    quantity INT NOT NULL
 );

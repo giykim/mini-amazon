@@ -36,3 +36,5 @@ SELECT pg_catalog.setval('public.products_id_seq',
                          false);
 
 \COPY CategoryOf FROM 'CategoryOf.csv' WITH DELIMITER ',' NULL '' CSV
+
+\COPY Inventory FROM 'Inventory.csv' WITH DELIMITER ',' NULL '' CSV
