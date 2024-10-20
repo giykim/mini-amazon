@@ -7,6 +7,7 @@
   <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
   <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/example.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     body {
         font-family: "Lato", sans-serif;
@@ -48,10 +49,19 @@
 <body>
   <div class="sidenav">
     {% block msg %}
-      <h1 style="color:aliceblue">Welcome to CompSci 316 Mini Amazon!</h1>
+      <a href="{{ url_for('index.index') }}" style="text-decoration: none;">
+        <h1 style="color: aliceblue;">CompSci 316 Mini Amazon</h1>
+      </a>
+      <div class="search-container">
+        <form action="{{ url_for('products.search') }}" method="GET">
+          <input type="text" placeholder="Search Amazon" name="query" required>
+          <button type="submit">Submit</button>
+        </form>
+      </div>
       <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
         {% if current_user.is_authenticated %}
-          Hello {{current_user.firstname}}! <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
+          Hello {{current_user.firstname}}!
+          <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
         {% else %}
           <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a>
         {% endif %}

@@ -41,3 +41,15 @@ class Product:
             k = k
         )
         return rows
+
+    @staticmethod
+    def search_products(query):
+        rows = app.db.execute("""
+            SELECT id, name, description
+            FROM Products
+            WHERE name LIKE '%' || :query || '%'
+                AND available IS TRUE
+            """,
+            query = query
+        )
+        return rows
