@@ -17,3 +17,14 @@ def search():
     products = Product.search_products(query)
 
     return render_template('search.html', query=query, products=products)
+
+
+@bp.route('/product-page/<int:product_id>', methods=['GET'])
+def product_page(product_id):
+    product_info = Product.get_product_info(product_id)
+    seller_info = Product.get_seller_info(product_id)
+    review_info = Product.get_review_info(product_id)
+
+    print(review_info)
+
+    return render_template('product_page.html', product_info=product_info, seller_info=seller_info, review_info=review_info)
