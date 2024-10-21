@@ -7,7 +7,7 @@
   <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
   <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/example.css') }}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <style>
     body {
         font-family: "Lato", sans-serif;
@@ -74,9 +74,7 @@
   <div class="sidenav">
     {% block msg %}
       <a href="{{ url_for('index.index') }}" style="text-decoration: none;">
-        <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-          <span style="color: #ccc;">Amazon Logo</span>
-        </div>
+        <i class="fa fa-amazon" style="font-size:48px"></i>
         <h1 style="color: aliceblue;">CompSci 316 Mini Amazon</h1>
       </a>
       <div class="search-container">
@@ -85,7 +83,7 @@
           <button type="submit">Submit</button>
         </form>
       </div>
-      <div class="search-container"></div>
+      <div class="search-container">
         <form action="{{ url_for('inventories.get_stock') }}" method="GET">
           <input type="text" placeholder="Search Seller By ID" name="sid" required>
           <button type="submit">Submit</button>
@@ -94,15 +92,13 @@
       <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
         {% if current_user.is_authenticated %}
           Hello {{current_user.firstname}}!
-          <a href="{{ url_for('cart.cart') }}">
-            <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-              <span style="color: #ccc;">Cart</span>
-            </div>
-          </a>
           <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
         {% else %}
           <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a>
         {% endif %}
+        <a href="{{ url_for('cart.cart') }}">
+          <i style="font-size:24px" class="fa">&#xf07a;</i>
+        </a>
       </div>
     {% endblock %}
   </div>

@@ -30,6 +30,7 @@ def index():
         purchases = None
         reviews = None
         
+    print(reviews)
     # render the page by adding information to the index.html file
     return render_template('index.html',
                            avail_products=products,

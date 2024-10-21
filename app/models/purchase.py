@@ -44,7 +44,7 @@ class Purchase:
     @staticmethod
     def get_cart(uid):
         rows = app.db.execute('''
-            SELECT pu.pid, pu.sid, pu.quantity, pr.name,
+            SELECT pu.pid, pu.sid, pu.quantity, pr.name, pr.id, pr.description,
                 u.firstname AS seller_first, u.lastname AS seller_last, s.price
             FROM Purchases pu
             JOIN Products pr ON pr.id = pu.pid

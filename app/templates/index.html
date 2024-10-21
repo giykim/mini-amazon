@@ -8,18 +8,22 @@
 <div class="container mt-4">
   <div class="row">
     {% for product in avail_products %}
-      <div class="col-md-4 mb-4"> <!-- Adjust the number of columns as needed -->
+    <div class="col-md-4 mb-4">
+      <a href="{{ url_for('products.product_page', product_id=product.id) }}">
         <div class="card">
           <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
             <span style="color: #ccc;">Product Image Placeholder</span>
           </div>
           <div class="card-body">
-            <h5 class="card-title">Product ID: {{ product.id }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">{{ product.name }}</h6>
-            <p class="card-text">{{ product.description }}</p>
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="card-text">
+              <strong>Product ID:</strong> {{ product.id }}<br>
+              <strong>Description:</strong> {{ product.description }}
+            </p>
           </div>
         </div>
-      </div>
+      </a>
+    </div>
     {% endfor %}
   </div>
 </div>
@@ -30,18 +34,21 @@
 <div class="container">
   <div class="row">
     {% for product in expensive_products %}
-      <div class="col-md-4 mb-4"> <!-- Adjust the number of columns as needed -->
-        <div class="card">
-          <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-            <span style="color: #ccc;">Product Image Placeholder</span>
+      <div class="col-md-4 mb-4">
+        <a href="{{ url_for('products.product_page', product_id=product.id) }}">
+          <div class="card">
+            <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+              <span style="color: #ccc;">Product Image Placeholder</span>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">{{ product.name }}</h5>
+              <p class="card-text">
+                <strong>Product ID:</strong> {{ product.id }}<br>
+                <strong>Description:</strong> {{ product.description }}
+              </p>
+            </div>
           </div>
-          <div class="card-body">
-            <h5 class="card-title">Product ID: {{ product.id }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">{{ product.name }}</h6>
-            <p class="card-text">{{ product.description }}</p>
-            <p class="card-text"><strong>Price:</strong> ${{ product.max_price }}</p>
-          </div>
-        </div>
+        </a>
       </div>
     {% endfor %}
   </div>
