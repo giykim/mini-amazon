@@ -28,11 +28,11 @@ class Inventory:
         return rows
     
     @staticmethod 
-    def get_product_detail(pid):
+    def get_product_detail(pid, sid):
         rows = app.db.execute('''
             WITH uinfo AS (
             SELECT id, firstname, lastname, email
-            FROM Users
+            FROM Users WHERE id = :sid
             ),
             pinfo AS (
             SELECT id, name, description
@@ -54,7 +54,7 @@ class Inventory:
             )
             SELECT DISTINCT * FROM full_description;
             ''',
-            pid=pid)
+            pid=pid,sid=sid)
         return rows
         
     
