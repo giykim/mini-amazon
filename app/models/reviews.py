@@ -33,10 +33,10 @@ class Review:
                 END AS Name,
                 r.rating, r.description, r.time_created, r.helpfulness
             FROM Reviews r
-            LEFT JOIN SellerReviews s ON r.id = s.id
-            LEFT JOIN ProductReviews p ON r.id = p.id
-            LEFT JOIN Products AS p1 ON p1.id = p.pid
-            LEFT JOIN Users AS u ON u.id = s.sid
+            JOIN SellerReviews s ON r.id = s.id
+            JOIN ProductReviews p ON r.id = p.id
+            JOIN Products AS p1 ON p1.id = p.pid
+            JOIN Users AS u ON u.id = s.sid
             WHERE s.uid = :reviewerid or p.uid = :reviewerid
             ORDER BY r.time_created DESC
             LIMIT 5

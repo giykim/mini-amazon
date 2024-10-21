@@ -53,3 +53,42 @@ class Product:
             query = query
         )
         return rows
+    
+    @staticmethod
+    def get_product_info(pid):
+        rows = app.db.execute("""
+            SELECT p.name, p.description
+            FROM Products AS p
+            WHERE p.id = :pid
+            """,
+            pid = pid
+        )
+        return rows
+    
+    @staticmethod
+    def get_seller_info(pid):
+        rows = app.db.execute("""
+            SELECT u.firstname AS sellerfirst, u.lastname AS sellerlast, b.quantity, b.price
+            FROM Products AS p
+            JOIN SoldBy AS b ON p.id = b.pid
+            JOIN Users AS u ON u.id = b.sid
+            WHERE p.id = :pid
+            """,
+            pid = pid
+        )
+        return rows
+    
+    @staticmethod
+    def get_review_info(pid):
+        rows = app.db.execute("""
+            SELECT u1.firstname AS reviewfirst, u1.lastname AS reviewlast, r1.rating, 
+                              r1.description AS ratingdescrip, r1.time_created, r1.helpfulness
+            FROM Products AS p
+            JOIN ProductReviews AS r ON p.id = r.pid
+            JOIN Reviews AS r1 ON r1.id = r.id
+            JOIN Users AS u1 ON u1.id = r.uid
+            WHERE p.id = :pid
+            """,
+            pid = pid
+        )
+        return rows

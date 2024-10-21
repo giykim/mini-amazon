@@ -83,7 +83,8 @@ CREATE TABLE Categories (
 
 CREATE TABLE CategoryOf (
     pid INT NOT NULL REFERENCES Products(id),
-    cid INT NOT NULL REFERENCES Categories(id)
+    cid INT NOT NULL REFERENCES Categories(id),
+    PRIMARY KEY(pid)
 );
 
 CREATE TABLE Inventory (
