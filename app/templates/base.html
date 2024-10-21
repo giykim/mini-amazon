@@ -85,6 +85,12 @@
           <button type="submit">Submit</button>
         </form>
       </div>
+      <div class="search-container"></div>
+        <form action="{{ url_for('inventories.get_stock') }}" method="GET">
+          <input type="text" placeholder="Search Seller By ID" name="sid" required>
+          <button type="submit">Submit</button>
+        </form>
+      </div>
       <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
         {% if current_user.is_authenticated %}
           Hello {{current_user.firstname}}!
