@@ -21,21 +21,23 @@ class Product:
     @staticmethod
     def get_all(available=True):
         rows = app.db.execute('''
-            SELECT id, name, description, available
-            FROM Products
+            SELECT p.id, p.name, p.description, p.available, MIN(s.price) as price
+            FROM Products p
+            JOIN SoldBy s on p.id = s.pid
             WHERE available = :available
+            GROUP BY p.id
             ''',
             available=available)
-        return [Product(*row) for row in rows]
+        return rows
     
     @staticmethod
     def get_k_expensive(k):
         rows = app.db.execute("""
-            SELECT p.id, p.name, p.description, p.available, MAX(s.price) AS max_price
+            SELECT p.id, p.name, p.description, p.available, MIN(s.price) AS price
             FROM Products p
             JOIN SoldBy s ON p.id = s.pid
             GROUP BY p.id
-            ORDER BY MAX(s.price) DESC
+            ORDER BY MIN(s.price) DESC
             LIMIT :k
             """,
             k = k
@@ -45,10 +47,12 @@ class Product:
     @staticmethod
     def search_products(query):
         rows = app.db.execute("""
-            SELECT id, name, description
-            FROM Products
+            SELECT p.id, p.name, p.description, MIN(s.price) as price
+            FROM Products p
+            JOIN SoldBy s ON p.id = s.pid
             WHERE name LIKE '%' || :query || '%'
                 AND available IS TRUE
+            GROUP BY p.id
             """,
             query = query
         )

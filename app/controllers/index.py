@@ -17,23 +17,9 @@ def index():
 
     # find k most expensive products:
     expensive_products = Product.get_k_expensive(3)
-
-    if current_user.is_authenticated:
-        # find the products current user has bought:
-        purchases = Purchase.get_all_by_uid_since(
-            current_user.id, datetime.datetime(1980, 9, 14, 0, 0, 0))
-
-        # get most recent reviews
-        reviews = Review.get_recent_reviews(current_user.id)
-
-    else:
-        purchases = None
-        reviews = None
         
-    print(reviews)
     # render the page by adding information to the index.html file
     return render_template('index.html',
                            avail_products=products,
-                           expensive_products=expensive_products,
-                           reviews=reviews,
-                           purchase_history=purchases)
+                           expensive_products=expensive_products
+                           )
