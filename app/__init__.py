@@ -27,4 +27,7 @@ def create_app():
     from .controllers import carts
     app.register_blueprint(carts.bp)
 
+    from .controllers import inventories
+    app.register_blueprint(inventories.bp)
+
     return app
