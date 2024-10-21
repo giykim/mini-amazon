@@ -47,10 +47,12 @@ class Product:
     @staticmethod
     def search_products(query):
         rows = app.db.execute("""
-            SELECT id, name, description
-            FROM Products
+            SELECT p.id, p.name, p.description, MIN(s.price) as price
+            FROM Products p
+            JOIN SoldBy s ON p.id = s.pid
             WHERE name LIKE '%' || :query || '%'
                 AND available IS TRUE
+            GROUP BY p.id
             """,
             query = query
         )
