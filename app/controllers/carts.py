@@ -17,7 +17,7 @@ def cart():
         cart = Purchase.get_cart(current_user.id)
 
     else:
-        cart = None
+        cart = []
     
     total = 0
     for item in cart:

@@ -43,47 +43,47 @@
   </style>
 </head>
 
-<br><br>
-
-<div class="cart-header">
-    <h1>Your Shopping Cart</h1>
-</div>
+<br>
 
 {% if current_user.is_authenticated %}
 
 <div class="container">
 
-    {% for product in cart %}
-      <div class="cart-item">
-          <img src="item1.jpg" alt="{{ product.name }}">
-          <div class="item-details">
-              <h3>{{ product.name }}</h3>
-              <p>{{ product.description }}</p>
-          </div>
-          <div class="item-price">${{ product.price }}</div>
-          <div class="item-quantity">Qty: <input type="number" value="1" min="1"></div>
-          <div class="item-total">${{ product.price }}</div>
+  <div class="cart-header">
+    <h1>Your Shopping Cart</h1>
+  </div>
+
+  {% for product in cart %}
+    <div class="cart-item">
+      <img src="item1.jpg" alt="{{ product.name }}">
+      <div class="item-details">
+        <h3>{{ product.name }}</h3>
+        <p>{{ product.description }}</p>
       </div>
-    {% endfor %}
-
-    <div class="cart-summary">
-        <table>
-            <tr>
-                <th>Subtotal:</th>
-                <td>${{ total }}</td>
-            </tr>
-            <tr>
-                <th>Estimated Tax:</th>
-                <td>$0.00</td>
-            </tr>
-            <tr>
-                <th>Total:</th>
-                <td><strong>${{ total }}</strong></td>
-            </tr>
-        </table>
-
-        <a href="#" class="checkout-btn">Proceed to Checkout</a>
+      <div class="item-price">${{ product.price }}</div>
+      <div class="item-quantity">Qty: <input type="number" value="1" min="1"></div>
+      <div class="item-total">${{ product.price }}</div>
     </div>
+  {% endfor %}
+
+  <div class="cart-summary">
+    <table>
+      <tr>
+        <th>Subtotal:</th>
+        <td>${{ total }}</td>
+      </tr>
+      <tr>
+        <th>Estimated Tax:</th>
+        <td>$0.00</td>
+      </tr>
+      <tr>
+        <th>Total:</th>
+        <td><strong>${{ total }}</strong></td>
+      </tr>
+    </table>
+
+    <a href="#" class="checkout-btn">Proceed to Checkout</a>
+  </div>
 
 </div>
 
@@ -93,7 +93,7 @@
 
 {% endif %}
 
-<br><br>
+<br>
 
 </body>
 
