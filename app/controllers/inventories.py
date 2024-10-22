@@ -19,7 +19,7 @@ def get_stock():
     pids = Inventory.get_inventory(sid)
     stocked = []
     for p in pids:
-        stocked.append(Inventory.get_product_detail(p[0]))
+        stocked.append(Inventory.get_product_detail(p[0],sid))
     return render_template('stock.html', sid=sid, stocked=stocked)
 
 
