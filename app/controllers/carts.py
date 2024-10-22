@@ -18,5 +18,9 @@ def cart():
 
     else:
         cart = None
+    
+    total = 0
+    for item in cart:
+        total += item.price
 
-    return render_template('cart.html', cart=cart)
+    return render_template('cart.html', cart=cart, total=total)

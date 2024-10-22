@@ -2,36 +2,101 @@
 
 {% block content %}
 
+<head>
+  <style>
+    .cart-summary {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-summary table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .cart-summary th, .cart-summary td {
+      padding: 10px;
+      text-align: right;
+    }
+
+    .checkout-btn {
+      background-color: #f0c14b;
+      color: black;
+      padding: 10px 20px;
+      text-align: center;
+      font-size: 18px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 20px;
+      border: 1px solid #a88734;
+      border-radius: 3px;
+    }
+
+    .checkout-btn:hover {
+      background-color: #ddb347;
+    }
+  </style>
+</head>
+
 <br><br>
 
-{% if current_user.is_authenticated %}
-<h2 class="mt-4">Cart</h2>
-<div class="container mt-4">
-    <div class="row">
-      {% for product in cart %}
-        <div class="col-md-4 mb-4">
-          <a href="{{ url_for('products.product_page', product_id=product.id) }}">
-            <div class="card">
-              <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                <span style="color: #ccc;">Product Image Placeholder</span>
-              </div>
-              <div class="card-body">
-                <h5 class="card-title">{{ product.name }}</h5>
-                <p class="card-text">
-                  <strong>Product ID:</strong> {{ product.id }}<br>
-                  <strong>Description:</strong> {{ product.description }}<br>
-                  <strong>Price:</strong> {{ product.price }}
-                </p>
-              </div>
-            </div>
-          </a>
-        </div>
-      {% endfor %}
-    </div>
+<div class="cart-header">
+    <h1>Your Shopping Cart</h1>
 </div>
-  
+
+{% if current_user.is_authenticated %}
+
+<div class="container">
+
+    {% for product in cart %}
+      <div class="cart-item">
+          <img src="item1.jpg" alt="{{ product.name }}">
+          <div class="item-details">
+              <h3>{{ product.name }}</h3>
+              <p>{{ product.description }}</p>
+          </div>
+          <div class="item-price">${{ product.price }}</div>
+          <div class="item-quantity">Qty: <input type="number" value="1" min="1"></div>
+          <div class="item-total">${{ product.price }}</div>
+      </div>
+    {% endfor %}
+
+    <div class="cart-summary">
+        <table>
+            <tr>
+                <th>Subtotal:</th>
+                <td>${{ total }}</td>
+            </tr>
+            <tr>
+                <th>Estimated Tax:</th>
+                <td>$0.00</td>
+            </tr>
+            <tr>
+                <th>Total:</th>
+                <td><strong>${{ total }}</strong></td>
+            </tr>
+        </table>
+
+        <a href="#" class="checkout-btn">Proceed to Checkout</a>
+    </div>
+
+</div>
+
 {% else %}
+
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your cart!</p>
+
 {% endif %}
+
+<br><br>
+
+</body>
+
+</html>
 
 {% endblock %}
