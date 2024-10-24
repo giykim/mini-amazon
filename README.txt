@@ -38,7 +38,11 @@ user.py: modified register function to have a way to indicate whether one is a s
 product.py: included functions to enable functionality for search bar and product pages
 categories.py: indicate the category of products (work in progress)
 templates folder: 
-Most html files: For improving aesthetics of website and implementation of product pages, search bar, etc. 
+Most html files: For improving aesthetics of website and implementation of product pages, search bar, product cards, etc. 
 db folder: 
 For creation of relations, we modified create.sql
 Used synthetic data to test relation constraints and code. Created csv files in the data folder, then modified load.sql accordingly
+
+Current Relations:
+Relations for Entities: Users, Sellers, Products, Tags, Categories, Purchases, Reviews (ProductReviews, SellerReviews)
+Relations for Relationships: CreatedProduct, IsTagged, SoldBy, CategoryOf, Inventory
