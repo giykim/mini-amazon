@@ -29,7 +29,7 @@ Carts Guru - purchase.py: get_cart
 Users Guru - purchase.py: get_all_by_uid_since
 Controllers inventories.py, carts.py, index.py, and products.py are most relevant here. Also look at base.html, cart.html, index.html, and stock.html for frontend implementations. 
 
-Link to Video: 
+Link to Video: https://drive.google.com/file/d/10qttq_tC0Od3xSVu-WuC7ITFsRGutIJN/view?usp=sharing
 
 
 Other files we modified: 
