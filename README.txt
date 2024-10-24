@@ -9,6 +9,10 @@
     - Jason Ren: Users Guru
     - Orhan Khan: Carts Guru
 
+- Other Help
+    - Skeleton Code Provided by COMPSCI 316 Professor and TAs
+    - Assistance for frontend aspects of website from ChatGPT
+
 MS3:
 Giyoung Kim: Created API endpoints for Products and Social
 Graham Hairston: Created API endpoint for Sellers
