@@ -25,6 +25,4 @@ def product_page(product_id):
     seller_info = Product.get_seller_info(product_id)
     review_info = Product.get_review_info(product_id)
 
-    print(review_info)
-
     return render_template('product_page.html', product_info=product_info, seller_info=seller_info, review_info=review_info)

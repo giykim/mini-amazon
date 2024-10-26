@@ -2,15 +2,11 @@
 
 {% block content %}
 <div class="container mt-5">
-    <!-- Product Name -->
     <h1 class="mb-4">{{ product_info[0].name }}</h1>
     
-    <!-- Product Description -->
     <p>{{ product_info[0].description }}</p>
     
-    <!-- Product Image and Price Section -->
     <div class="row mt-4">
-        <!-- Product Image -->
         <div class="col-md-6">
             <div class="card">
                 <div class="card-img-top" style="height: 300px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
@@ -19,31 +15,42 @@
             </div>
         </div>
         
-        <!-- Price and Seller Button -->
         <div class="col-md-6 d-flex flex-column align-items-start">
-            <!-- Conditional Calculation of Minimum Price -->
             {% if seller_info %}
                 {% set min_price = seller_info | map(attribute='price') | min %}
-                <!-- Official Price -->
                 <h2 class="text-success">Official Price: ${{ "{:.2f}".format(min_price) }}</h2>
             {% else %}
-                <!-- Display 'N/A' if no sellers are available -->
                 <h2 class="text-success">Official Price: N/A</h2>
             {% endif %}
             
-            <!-- View All Sellers Button -->
             <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#sellersModal">
                 View All Sellers
             </button>
             
-            <!-- Add to Cart Button (Optional) -->
-            <button type="button" class="btn btn-success mt-2">
-                Add to Cart
-            </button>
+            {% if current_user.is_authenticated %}
+            
+            <form action="{{ url_for('cart.cart') }}" method="post">
+                <input type="number" name="product_id" value="{{ product_info[0].id }}">
+                <input type="number" name="seller_id" value="{{ seller_info[0].id }}">
+                <input type="number" min="1" oninput="validity.valid||(value='');" value="1" name="quantity" required>
+                <button type="submit" class="btn btn-light mt-2" style="background: #f0c14b; border-color: #f0c14b;">
+                    Add to Cart
+                </button>
+            </form>
+            {% else %}
+            <form action="{{ url_for('users.login') }}">
+                <input type="number" min="1" oninput="validity.valid||(value='');" value="1" name="quantity" required>
+
+                <button type="submit" class="btn btn-light mt-2" style="background: #f0c14b; border-color: #f0c14b;">
+                    Add to Cart
+                </button>
+            </form>
+            {% endif %}
+
+            
         </div>
     </div>
     
-    <!-- Sellers Modal -->
     <div class="modal fade" id="sellersModal" tabindex="-1" aria-labelledby="sellersModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -82,23 +89,18 @@
       </div>
     </div>
     
-    <!-- Customer Reviews Section -->
     <div class="mt-5">
         <h3>Customer Reviews</h3>
         {% if review_info %}
             {% for review in review_info %}
                 <div class="card mb-4">
                     <div class="card-body">
-                        <!-- Review Header -->
                         <div class="d-flex justify-content-between">
                             <h5 class="card-title">{{ review.reviewfirst }} {{ review.reviewlast }}</h5>
                             <span class="badge bg-warning text-dark">{{ review.rating }}/5</span>
                         </div>
-                        <!-- Review Description -->
                         <p class="card-text mt-2">{{ review.ratingdescrip }}</p>
-                        <!-- Review Footer -->
                         <div class="d-flex justify-content-between">
-                            <!-- Safely Handle `time_created` -->
                             <small class="text-muted">Reviewed on {{ review.time_created.strftime('%B %d, %Y') }}</small>
                             <small class="text-muted">Helpfulness: {{ review.helpfulness }}</small>
                         </div>
@@ -110,11 +112,9 @@
         {% endif %}
     </div>
     
-    <!-- Optional: Add a section for similar or related products -->
     <div class="mt-5">
         <h3>Related Products</h3>
         <div class="row">
-            <!-- Example Placeholder for Related Products -->
             {% for related_product in related_products %}
                 <div class="col-md-3 mb-4">
                     <div class="card h-100">

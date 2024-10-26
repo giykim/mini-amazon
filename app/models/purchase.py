@@ -57,3 +57,16 @@ class Purchase:
             uid=uid
         )
         return rows
+    
+    @staticmethod
+    def add_to_cart(uid, pid, sid, quantity):
+        rows = app.db.execute('''
+            INSERT INTO Purchases (uid, pid, sid, time_purchased, quantity)
+            VALUES (:uid, :pid, :sid, NULL, :quantity)
+            ''',
+            uid=uid,
+            pid=pid,
+            sid=sid,
+            quantity=quantity
+        )
+        return rows

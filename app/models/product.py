@@ -61,7 +61,7 @@ class Product:
     @staticmethod
     def get_product_info(pid):
         rows = app.db.execute("""
-            SELECT p.name, p.description
+            SELECT p.name, p.description, p.id
             FROM Products AS p
             WHERE p.id = :pid
             """,
@@ -72,11 +72,12 @@ class Product:
     @staticmethod
     def get_seller_info(pid):
         rows = app.db.execute("""
-            SELECT u.firstname AS sellerfirst, u.lastname AS sellerlast, b.quantity, b.price
+            SELECT u.id as id, u.firstname AS sellerfirsta, u.lastname AS sellerlast, b.quantity, b.price
             FROM Products AS p
             JOIN SoldBy AS b ON p.id = b.pid
             JOIN Users AS u ON u.id = b.sid
             WHERE p.id = :pid
+            ORDER BY b.price ASC
             """,
             pid = pid
         )
