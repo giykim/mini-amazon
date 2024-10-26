@@ -214,6 +214,15 @@
           flex: 1
         }
 
+        .action-btn {
+          background-color: #232f3e;
+          border-color: #232f3e;
+        }
+        
+        .action-txt {
+          color: white;
+        }
+
     </style>
 </head>
 
@@ -247,19 +256,20 @@
       
         <div class="actions">
           {% if current_user.is_authenticated %}
-              <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">
-                Log Out
+              <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-dark action-btn">
+                <span class="action-txt">Log Out</span>
               </a>
           {% else %}
-              <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">
-                Log In
+              <a href="{{ url_for('users.login') }}" type="button" class="btn btn-dark action-btn">
+                <span class="action-txt">Log In</span>
               </a>
           {% endif %}
-          <a href="{{ url_for('users.profile') }}" type="button" class="btn btn-light">
-            My Orders
+          <a href="{{ url_for('users.profile') }}" type="button" class="btn btn-dark action-btn">
+            <span class="action-txt">My Orders</span>
           </a>
-          <a href="{{ url_for('cart.cart') }}" type="button" class="btn btn-light">
-            <i style="font-size:20px" class="fa">&#xf07a;</i>Cart
+          <a href="{{ url_for('cart.cart') }}" type="button" class="btn btn-dark action-btn">
+            <i style="font-size:20px; color: white" class="fa">&#xf07a;</i>
+            <span class="action-txt">Cart</span>
           </a>
         </div>
       </div>
