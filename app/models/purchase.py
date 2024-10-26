@@ -53,6 +53,7 @@ class Purchase:
                 AND s.pid = pr.id
             WHERE time_purchased IS NULL
                 AND uid=:uid
+            ORDER BY pr.name ASC
             ''',
             uid=uid
         )

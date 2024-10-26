@@ -61,7 +61,28 @@
         <p>{{ product.description }}</p>
       </div>
       <div class="item-price">${{ product.price }}</div>
-      <div class="item-quantity">Qty: <input type="number" value="{{ product.quantity }}" min="1"></div>
+      <form action="{{ url_for('cart.cart') }}" method="post" onsubmit="return validateQuantity(this)">
+        <input type="hidden" name="product_id" value="{{ product.id }}">
+        <input type="hidden" name="seller_id" value="{{ product.sid }}">
+        <input type="hidden" name="old_quantity" value="{{ product.quantity }}">
+        <input type="number" name="new_quantity" value="{{ product.quantity }}" min="1" oninput="validity.valid||(value='');" onchange="this.form.submit()">
+      </form>
+
+      <script>
+        function validateQuantity(form)
+        {
+          const quantityInput = form.new_quantity;
+      
+          if (quantityInput.value && quantityInput.checkValidity())
+          {
+            return true;
+          }
+      
+          alert("Please enter a valid quantity.");
+          return false;
+        }
+        </script>
+
     </div>
   {% endfor %}
 
@@ -73,11 +94,11 @@
       </tr>
       <tr>
         <th>Estimated Tax:</th>
-        <td>$0.00</td>
+        <td>${{ "{:.2f}".format(total * 0.075) }}</td>
       </tr>
       <tr>
         <th>Total:</th>
-        <td><strong>${{ total }}</strong></td>
+        <td><strong>${{ "{:.2f}".format(total * 1.075) }}</strong></td>
       </tr>
     </table>
 

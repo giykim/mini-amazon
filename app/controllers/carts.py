@@ -13,17 +13,27 @@ bp = Blueprint('cart', __name__)
 @bp.route('/cart', methods=['POST', 'GET'])
 def cart():
     if current_user.is_authenticated:
+        # Adding products to cart from product page
         product_id = request.form.get('product_id')
         seller_id = request.form.get('seller_id')
         quantity = request.form.get('quantity')
 
+        # Changing product quantity from cart page
+        old_quantity = request.form.get('old_quantity')
+        new_quantity = request.form.get('new_quantity')
+
         if quantity is not None:
             Purchase.add_to_cart(current_user.id, product_id, seller_id, quantity)
+        elif new_quantity is not None:
+            new_quantity = int(new_quantity)
+            new_quantity -= int(old_quantity)
+            Purchase.add_to_cart(current_user.id, product_id, seller_id, new_quantity)
 
         cart = Purchase.get_cart(current_user.id)
     else:
         cart = []
     
-    total = sum(item.price for item in cart)
+    total = sum(item.price * item.quantity for item in cart)
+    total = float(total)
 
     return render_template('cart.html', cart=cart, total=total)
