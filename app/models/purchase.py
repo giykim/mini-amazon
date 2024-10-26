@@ -60,13 +60,42 @@ class Purchase:
     
     @staticmethod
     def add_to_cart(uid, pid, sid, quantity):
-        rows = app.db.execute('''
-            INSERT INTO Purchases (uid, pid, sid, time_purchased, quantity)
-            VALUES (:uid, :pid, :sid, NULL, :quantity)
+        existing_purchase = app.db.execute('''
+            SELECT quantity
+            FROM Purchases 
+            WHERE uid = :uid
+                AND pid = :pid
+                AND sid = :sid
+                AND time_purchased IS NULL
             ''',
             uid=uid,
             pid=pid,
-            sid=sid,
-            quantity=quantity
+            sid=sid
         )
-        return rows
+
+        if existing_purchase:
+            quantity = int(quantity)
+            quantity += int(existing_purchase[0].quantity)
+            app.db.execute('''
+                UPDATE Purchases 
+                SET quantity = :quantity 
+                WHERE uid = :uid
+                    AND pid = :pid
+                    AND sid = :sid
+                    AND time_purchased IS NULL
+                ''',
+                uid=uid,
+                pid=pid,
+                sid=sid,
+                quantity=quantity
+            )
+        else:
+            app.db.execute('''
+                INSERT INTO Purchases (uid, pid, sid, time_purchased, quantity)
+                VALUES (:uid, :pid, :sid, NULL, :quantity)
+                ''',
+                uid=uid,
+                pid=pid,
+                sid=sid,
+                quantity=quantity
+            )
