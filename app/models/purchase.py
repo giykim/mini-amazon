@@ -107,7 +107,8 @@ class Purchase:
             DELETE FROM Purchases
             WHERE uid=:uid
                 AND pid=:pid
-                AND sid=:sid;
+                AND sid=:sid
+                AND time_purchased IS NULL;
             ''',
             uid=uid,
             pid=pid,
