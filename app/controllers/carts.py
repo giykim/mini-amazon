@@ -22,12 +22,17 @@ def cart():
         old_quantity = request.form.get('old_quantity')
         new_quantity = request.form.get('new_quantity')
 
+        # Remove product
+        remove_product_id = request.form.get('remove_product_id')
+
         if quantity is not None:
             Purchase.add_to_cart(current_user.id, product_id, seller_id, quantity)
         elif new_quantity is not None:
             new_quantity = int(new_quantity)
             new_quantity -= int(old_quantity)
             Purchase.add_to_cart(current_user.id, product_id, seller_id, new_quantity)
+        elif remove_product_id is not None:
+            Purchase.remove_product(current_user.id, remove_product_id, seller_id)
 
         cart = Purchase.get_cart(current_user.id)
     else:

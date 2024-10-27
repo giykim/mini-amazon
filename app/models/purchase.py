@@ -100,3 +100,16 @@ class Purchase:
                 sid=sid,
                 quantity=quantity
             )
+    
+    @staticmethod
+    def remove_product(uid, pid, sid):
+        rows = app.db.execute('''
+            DELETE FROM Purchases
+            WHERE uid=:uid
+                AND pid=:pid
+                AND sid=:sid;
+            ''',
+            uid=uid,
+            pid=pid,
+            sid=sid
+        )

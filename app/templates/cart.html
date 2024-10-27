@@ -40,6 +40,21 @@
     .checkout-btn:hover {
       background-color: #ddb347;
     }
+
+    .delete-button {
+      background-color: red;
+      color: white;
+      padding: 10px 15px;
+      text-align: center;
+      text-decoration: none;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .delete-button:hover {
+      background-color: darkred;
+    }
   </style>
 </head>
 
@@ -67,6 +82,15 @@
         <input type="hidden" name="old_quantity" value="{{ product.quantity }}">
         <input type="number" name="new_quantity" value="{{ product.quantity }}" min="1" oninput="validity.valid||(value='');" onchange="this.form.submit()">
       </form>
+      <div class="remove-item">
+        <form action="{{ url_for('cart.cart') }}" method="post">
+          <input type="hidden" name="remove_product_id" value="{{ product.id }}">
+          <input type="hidden" name="seller_id" value="{{ product.sid }}">
+          <button type="submit" class="btn btn-danger">
+            Delete
+          </button>
+        </form>
+      </div>
 
       <script>
         function validateQuantity(form)
