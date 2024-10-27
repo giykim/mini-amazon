@@ -5,42 +5,64 @@
 <br>
 
 {% if current_user.is_authenticated %}
+<h1>{{ user.firstname }} {{ user.lastname }}</h1>
+<div class="container">
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">Email</h5>
+      <p class="card-text"><strong>{{ user.email }}</strong></p>
+    </div>
+  </div>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">Address</h5>
+      <p class="card-text"><strong>{{ user.address }}</strong></p>
+    </div>
+  </div>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">Balance</h5>
+      <p class="card-text"><strong>${{ "{:.2f}".format(user.balance) }}</strong></p>
+    </div>
+  </div>
+  <div class="mb-3">
+    <form action="{{ url_for('users.edit_profile') }}">
+      <input type="hidden" name="user.id">
+      <button type="submit" class="btn btn-warning">
+        Edit Profile
+      </button>
+    </form>
+  </div>
+</div>
+
 <h2>Your recent purchases:</h2>
 <div class="container">
-  <div class="row">
-    {% for purchase in purchase_history %}
-      <div class="col-md-4 mb-4"> <!-- Adjust the number of columns as needed -->
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">{{ purchase.product_name }}</h5>
-            <p class="card-text"><strong>Seller:</strong> {{ purchase.seller_first }} {{ purchase.seller_last }}</p>
-            <p class="card-text"><strong>Time Purchased:</strong> {{ purchase.time_purchased }}</p>
-            <p class="card-text"><strong>Quantity:</strong> {{ purchase.quantity }}</p>
-          </div>
-        </div>
+  {% for purchase in purchase_history %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">{{ purchase.product_name }}</h5>
+        <p class="card-text"><strong>Seller:</strong> {{ purchase.seller_first }} {{ purchase.seller_last }}</p>
+        <p class="card-text"><strong>Time Purchased:</strong> {{ purchase.time_purchased }}</p>
+        <p class="card-text"><strong>Quantity:</strong> {{ purchase.quantity }}</p>
       </div>
-    {% endfor %}
-  </div>
+    </div>
+  {% endfor %}
 </div>
 
 <h2>Your recent reviews:</h2>
 <div class="container">
-  <div class="row">
-    {% for review in reviews %}
-      <div class="col-md-4 mb-4"> <!-- Adjust the number of columns as needed -->
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Review Of: {{ review.name }}</h5>
-            <p class="card-text"><strong>Review Type:</strong> {{ review.review_type }}</p>
-            <p class="card-text"><strong>Rating:</strong> {{ review.rating }}</p>
-            <p class="card-text"><strong>Description:</strong> {{ review.description }}</p>
-            <p class="card-text"><strong>Time Created:</strong> {{ review.time_created }}</p>
-            <p class="card-text"><strong>Helpfulness:</strong> {{ review.helpfulness }}</p>
-          </div>
-        </div>
+  {% for review in reviews %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Review Of: {{ review.name }}</h5>
+        <p class="card-text"><strong>Review Type:</strong> {{ review.review_type }}</p>
+        <p class="card-text"><strong>Rating:</strong> {{ review.rating }}</p>
+        <p class="card-text"><strong>Description:</strong> {{ review.description }}</p>
+        <p class="card-text"><strong>Time Created:</strong> {{ review.time_created }}</p>
+        <p class="card-text"><strong>Helpfulness:</strong> {{ review.helpfulness }}</p>
       </div>
-    {% endfor %}
-  </div>
+    </div>
+  {% endfor %}
 </div>
 {% else %}
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your purchase history!</p>

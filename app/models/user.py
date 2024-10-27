@@ -88,3 +88,15 @@ class User(UserMixin):
             id=id
         )
         return User(*(rows[0])) if rows else None
+    
+    @staticmethod
+    def update_info(id, address, balance):
+        rows = app.db.execute("""
+            UPDATE Users 
+            SET address = :address, balance = :balance
+            WHERE id = :id
+            """,
+            id=id,
+            address=address,
+            balance=balance
+        )

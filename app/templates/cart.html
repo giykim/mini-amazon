@@ -41,6 +41,24 @@
       background-color: #ddb347;
     }
 
+    .edit-profile-btn {
+      background-color: #f0c14b;
+      color: black;
+      padding: 10px 20px;
+      text-align: center;
+      font-size: 18px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 20px;
+      border: 1px solid #a88734;
+      border-radius: 3px;
+    }
+
+    .edit-profile-btn:hover {
+      background-color: #ddb347;
+    }
+
     .delete-button {
       background-color: red;
       color: white;
@@ -114,7 +132,7 @@
     <table>
       <tr>
         <th>Subtotal:</th>
-        <td>${{ total }}</td>
+        <td>${{ "{:.2f}".format(total) }}</td>
       </tr>
       <tr>
         <th>Estimated Tax:</th>

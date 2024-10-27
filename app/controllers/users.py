@@ -81,9 +81,19 @@ def logout():
     logout_user()
     return redirect(url_for('index.index'))
 
-@bp.route('/profile')
+
+@bp.route('/profile', methods=['POST', 'GET'])
 def profile():
     if current_user.is_authenticated:
+        address = request.form.get('address')
+        balance = request.form.get('balance')
+
+        if address:
+            User.update_info(current_user.id, address, balance)
+            
+        # get user info
+        user = User.get(current_user.id)
+
         # find the products current user has bought:
         purchases = Purchase.get_all_by_uid_since(
             current_user.id, datetime.datetime(1980, 9, 14, 0, 0, 0))
@@ -92,10 +102,25 @@ def profile():
         reviews = Review.get_recent_reviews(current_user.id)
 
     else:
+        user = None
         purchases = None
         reviews = None
 
     return render_template('profile.html',
+                    user=user,
                     reviews=reviews,
                     purchase_history=purchases,
+                    )
+
+
+@bp.route('/edit-profile')
+def edit_profile():
+    if current_user.is_authenticated:
+        # get user info
+        user = User.get(current_user.id)
+    else:
+        user = None
+
+    return render_template('edit_profile.html',
+                    user=user,
                     )
