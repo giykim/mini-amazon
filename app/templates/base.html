@@ -255,6 +255,13 @@
         </form>
       
         <div class="actions">
+          <a href="{{ url_for('cart.cart') }}" type="button" class="btn btn-dark action-btn">
+            <i style="font-size:20px; color: white" class="fa">&#xf07a;</i>
+            <span class="action-txt">Cart</span>
+          </a>
+          <a href="{{ url_for('users.profile') }}" type="button" class="btn btn-dark action-btn">
+            <span class="action-txt">My Profile</span>
+          </a>
           {% if current_user.is_authenticated %}
               <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-dark action-btn">
                 <span class="action-txt">Log Out</span>
@@ -264,13 +271,6 @@
                 <span class="action-txt">Log In</span>
               </a>
           {% endif %}
-          <a href="{{ url_for('users.profile') }}" type="button" class="btn btn-dark action-btn">
-            <span class="action-txt">My Profile</span>
-          </a>
-          <a href="{{ url_for('cart.cart') }}" type="button" class="btn btn-dark action-btn">
-            <i style="font-size:20px; color: white" class="fa">&#xf07a;</i>
-            <span class="action-txt">Cart</span>
-          </a>
         </div>
       </div>
       
