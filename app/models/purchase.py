@@ -103,7 +103,7 @@ class Purchase:
     
     @staticmethod
     def remove_product(uid, pid, sid):
-        rows = app.db.execute('''
+        app.db.execute('''
             DELETE FROM Purchases
             WHERE uid=:uid
                 AND pid=:pid
@@ -114,3 +114,20 @@ class Purchase:
             pid=pid,
             sid=sid
         )
+
+    @staticmethod
+    def order_product(uid, pid, sid):
+        app.db.execute('''
+            UPDATE Purchases 
+            SET time_purchased = CURRENT_TIMESTAMP 
+            WHERE uid = :uid
+                AND pid = :pid
+                AND sid = :sid
+                AND time_purchased IS NULL
+            ''',
+            uid=uid,
+            pid=pid,
+            sid=sid
+        )
+
+        # Need sellers to fulfill order

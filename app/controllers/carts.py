@@ -5,6 +5,7 @@ import datetime
 from app.models.product import Product
 from app.models.purchase import Purchase
 from app.models.reviews import Review
+from app.models.user import User
 
 from flask import Blueprint
 bp = Blueprint('cart', __name__)
@@ -42,3 +43,39 @@ def cart():
     total = float(total)
 
     return render_template('cart.html', cart=cart, total=total)
+
+
+@bp.route('/checkout', methods=['GET'])
+def checkout():
+    if current_user.is_authenticated:
+        user = User.get(current_user.id)
+        cart = Purchase.get_cart(current_user.id)
+    else:
+        user = None
+        cart = []
+    
+    total = sum(item.price * item.quantity for item in cart)
+    total = float(total)
+
+    return render_template('checkout.html', user=user, total=total)
+
+@bp.route('/place-order', methods=['POST'])
+def place_order():
+    total = 0
+
+    if current_user.is_authenticated:
+        cart = Purchase.get_cart(current_user.id)
+
+        total = sum(item.price * item.quantity for item in cart)
+        total = float(total)
+
+        for item in cart:
+            Purchase.order_product(current_user.id, item.id, item.sid)
+
+        user = User.get(current_user.id)
+        User.update_info(user.id, user.address, user.balance - round(total * 1.075, 2))
+    else:
+        user = None
+        cart = []
+
+    return render_template('order_placed.html')

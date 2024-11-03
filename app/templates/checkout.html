@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br>
+
+{% if current_user.is_authenticated %}
+
+<h1>{{ user.firstname }} {{ user.lastname }}'s Checkout</h1>
+<div class="container">
+    <div class="card mb-3">
+        <div class="card-header">
+            <h4>User Information</h4>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+            <h5>Email</h5>
+            <p class="card-text"><strong>{{ user.email }}</strong></p>
+            </div>
+            <div class="mb-3">
+            <h5>Shipping Address</h5>
+            <p class="card-text"><strong>{{ user.address }}</strong></p>
+            </div>
+            <div class="mb-3">
+            <h5>Billing Address</h5>
+            <p class="card-text"><strong>{{ user.address }}</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+          <h4>Payment Summary</h4>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <h5>Account Balance</h5>
+            <p class="card-text"><strong>${{ "{:.2f}".format(user.balance) }}</strong></p>
+          </div>
+          <div class="mb-3">
+            <h5>Order Total</h5>
+            <p class="card-text"><strong>${{ "{:.2f}".format(total * 1.075) }}</strong></p>
+          </div>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <form id="checkoutForm" method="POST" action="{{ url_for('cart.place_order') }}" onsubmit="return validateOrder({{ user.balance }}, {{ total }})">
+          <button type="submit" class="btn btn-warning">
+            Place Order
+          </button>
+        </form>
+    </div>
+
+    <script>
+        function validateOrder(bal, tot)
+        {
+            if (bal >= tot)
+            {
+                return true;
+            }
+            else
+            {
+                alert("Insufficient balance to place this order.");
+                return false;
+            }
+        }
+      </script>
+
+</div>
+
+{% else %}
+<p><a href="{{ url_for('users.login') }}">Log in</a> to proceed with your checkout!</p>
+{% endif %}
+
+{% endblock %}
