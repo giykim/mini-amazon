@@ -1,5 +1,15 @@
 {% extends "base.html" %}
 
+<head>
+    <style>
+        .vote-button.disabled {
+            color: #ccc !important;  /* Gray out the icon */
+            pointer-events: none;  /* Prevent clicking */
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
 {% block content %}
 <div class="container mt-5">
     <h1 class="mb-4">{{ product_info[0].name }}</h1>
@@ -89,27 +99,59 @@
       </div>
     </div>
     
-    <div class="mt-5">
-        <h3>Customer Reviews</h3>
-        {% if review_info %}
-            {% for review in review_info %}
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <h5 class="card-title">{{ review.reviewfirst }} {{ review.reviewlast }}</h5>
-                            <span class="badge bg-warning text-dark">{{ review.rating }}/5</span>
-                        </div>
-                        <p class="card-text mt-2">{{ review.ratingdescrip }}</p>
-                        <div class="d-flex justify-content-between">
-                            <small class="text-muted">Reviewed on {{ review.time_created.strftime('%B %d, %Y') }}</small>
-                            <small class="text-muted">Helpfulness: {{ review.helpfulness }}</small>
+    <div class="container mt-5">
+        <!-- Other product page content (product_info, seller_info, etc.) -->
+    
+        <!-- Customer Reviews Section -->
+        <div class="mt-5">
+            <h3>Customer Reviews</h3>
+            {% if review_info %}
+                {% for review in review_info %}
+                    <div class="card mb-4" id="review-{{ review.id }}">
+                        <div class="card-body">
+                            <!-- Review Header: Reviewer Name and Rating -->
+                            <div class="d-flex justify-content-between">
+                                <h5 class="card-title">{{ review.reviewfirst }} {{ review.reviewlast }}</h5>
+                                <span class="badge bg-warning text-dark">{{ review.rating }}/5</span>
+                            </div>
+    
+                            <!-- Review Description -->
+                            <p class="card-text mt-2">{{ review.ratingdescrip }}</p>
+    
+                            <!-- Review Footer: Date, Helpfulness, and Vote Buttons -->
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">Reviewed on {{ review.time_created.strftime('%B %d, %Y') }}</small>
+                                
+                                <div class="d-flex align-items-center">
+                                    <!-- Helpfulness Count -->
+                                    <small class="text-muted me-2 mr-2">
+                                        Helpfulness: <span class="helpfulness-count">{{ review.helpfulness }}</span>
+                                    </small>
+    
+                                    <button 
+                                        class="vote-button upvote-button me-1" 
+                                        data-review-id="{{ review.id }}" 
+                                        aria-label="Upvote"
+                                    >
+                                        <i class="fas fa-thumbs-up text-success"></i>
+                                    </button>
+
+                                    <button 
+                                        class="vote-button downvote-button" 
+                                        data-review-id="{{ review.id }}" 
+                                        aria-label="Downvote"
+                                    >
+                                        <i class="fas fa-thumbs-down text-danger"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>No reviews available for this product yet.</p>
-        {% endif %}
+                {% endfor %}
+            {% else %}
+                <p>No reviews available for this product yet.</p>
+            {% endif %}
+        </div>
     </div>
     
     <div class="mt-5">
@@ -132,4 +174,74 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const upvoteButtons = document.querySelectorAll('.upvote-button');
+        const downvoteButtons = document.querySelectorAll('.downvote-button');
+
+        upvoteButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const reviewId = button.getAttribute('data-review-id');
+                submitVote(reviewId, 1, button);  // 1 represents an upvote
+            });
+        });
+
+        downvoteButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const reviewId = button.getAttribute('data-review-id');
+                submitVote(reviewId, -1, button);  // -1 represents a downvote
+            });
+        });
+
+        function submitVote(reviewId, voteValue, buttonClicked) {
+            // Fetch helpfulness count and check for any previous vote state
+            const upvoteButton = document.querySelector(`#review-${reviewId} .upvote-button`);
+            const downvoteButton = document.querySelector(`#review-${reviewId} .downvote-button`);
+            const helpfulnessCount = document.querySelector(`#review-${reviewId} .helpfulness-count`);
+
+            // Check if the clicked button is already disabled
+            if (buttonClicked.classList.contains('disabled')) {
+                return;  // Do nothing if the button is already disabled
+            }
+
+            // Send vote data to the server
+            fetch('/vote', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ review_id: reviewId, vote: voteValue })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update helpfulness count
+                    helpfulnessCount.textContent = data.new_helpfulness;
+
+                    // Update vote buttons based on the user's current vote
+                    if (data.user_vote === 1) {
+                        // User has upvoted; disable the upvote button
+                        upvoteButton.classList.add('disabled');
+                        downvoteButton.classList.remove('disabled');
+                    } else if (data.user_vote === -1) {
+                        // User has downvoted; disable the downvote button
+                        downvoteButton.classList.add('disabled');
+                        upvoteButton.classList.remove('disabled');
+                    } else {
+                        // User has no active vote; enable both buttons
+                        upvoteButton.classList.remove('disabled');
+                        downvoteButton.classList.remove('disabled');
+                    }
+                } else {
+                    console.error("Error:", data.message);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    });
+</script>
+
 {% endblock %}
+
+

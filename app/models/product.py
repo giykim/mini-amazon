@@ -84,16 +84,73 @@ class Product:
         return rows
     
     @staticmethod
+    def get_review_by_id(review_id):
+        rows = app.db.execute('''
+            SELECT * FROM Reviews
+            WHERE id = :review_id
+        ''', 
+        review_id=review_id)
+        return rows
+    
+    @staticmethod
     def get_review_info(pid):
         rows = app.db.execute("""
-            SELECT u1.firstname AS reviewfirst, u1.lastname AS reviewlast, r1.rating, 
-                              r1.description AS ratingdescrip, r1.time_created, r1.helpfulness
+            SELECT r1.id AS id, u1.firstname AS reviewfirst, u1.lastname AS reviewlast, r1.rating, 
+                              r1.description AS ratingdescrip, r1.time_created, COALESCE(SUM(h.value), 0) AS helpfulness
             FROM Products AS p
             JOIN ProductReviews AS r ON p.id = r.pid
             JOIN Reviews AS r1 ON r1.id = r.id
             JOIN Users AS u1 ON u1.id = r.uid
+            LEFT JOIN Helpfulness AS h ON h.rid = r.id
             WHERE p.id = :pid
+            GROUP BY r1.id, u1.firstname, u1.lastname, r1.rating, r1.description, r1.time_created
             """,
             pid = pid
         )
         return rows
+    
+    @staticmethod
+    def get_helpfulness(review_id):
+        rows = app.db.execute("""
+            SELECT COALESCE(SUM(value), 0) AS votes
+            FROM Helpfulness
+            WHERE rid = :review_id
+            """, 
+            review_id=review_id
+        )
+        return rows[0][0]
+    
+    @staticmethod
+    def get_user_vote(review_id, user_id):
+        rows = app.db.execute("""
+            SELECT value 
+            FROM Helpfulness
+            WHERE rid = :review_id AND uid = :user_id
+            """, 
+            review_id=review_id, 
+            user_id=user_id
+        )
+        return rows[0][0] if rows else None
+
+    @staticmethod
+    def update_vote(review_id, user_id, value):
+        app.db.execute("""
+            UPDATE Helpfulness
+            SET value = :value
+            WHERE rid = :review_id AND uid = :user_id
+        """, 
+            value=value, 
+            review_id=review_id, 
+            user_id=user_id
+        )
+
+    @staticmethod
+    def add_vote(review_id, user_id, value):
+        app.db.execute("""
+            INSERT INTO Helpfulness (rid, uid, value)
+            VALUES (:review_id, :user_id, :value)
+        """, 
+            review_id=review_id, 
+            user_id=user_id, 
+            value=value
+        )
