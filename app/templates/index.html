@@ -31,29 +31,4 @@
 
 <br>
 
-<h2>Expensive products:</h2>
-<div class="container">
-  <div class="row">
-    {% for product in expensive_products %}
-      <div class="col-md-4 mb-4">
-        <a href="{{ url_for('products.product_page', product_id=product.id) }}">
-          <div class="card">
-            <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-              <span style="color: #ccc;">Product Image Placeholder</span>
-            </div>
-            <div class="card-body">
-              <h5 class="card-title">{{ product.name }}</h5>
-              <p class="card-text">
-                <strong>Product ID:</strong> {{ product.id }}<br>
-                <strong>Description:</strong> {{ product.description }}<br>
-                <strong>Price:</strong> {{ product.price }}
-              </p>
-            </div>
-          </div>
-        </a>
-      </div>
-    {% endfor %}
-  </div>
-</div>
-
 {% endblock %}
