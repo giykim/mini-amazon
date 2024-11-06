@@ -94,23 +94,29 @@ def profile():
         # get user info
         user = User.get(current_user.id)
 
-        # find the products current user has bought:
-        purchases = Purchase.get_all_by_uid_since(
-            current_user.id, datetime.datetime(1980, 9, 14, 0, 0, 0))
-
         # get most recent reviews
         reviews = Review.get_recent_reviews(current_user.id)
 
     else:
         user = None
-        purchases = None
         reviews = None
 
     return render_template('profile.html',
                     user=user,
                     reviews=reviews,
-                    purchase_history=purchases,
                     )
+
+
+@bp.route('/purchase-history')
+def purchase_history():
+    if current_user.is_authenticated:
+        # find the products current user has bought:
+        purchases = Purchase.get_all_by_uid_since(
+            current_user.id, datetime.datetime(1980, 9, 14, 0, 0, 0))
+    else:
+        purchases = None
+
+    return render_template('purchase_history.html', purchase_history=purchases)
 
 
 @bp.route('/edit-profile')

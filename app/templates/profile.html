@@ -5,7 +5,7 @@
 <br>
 
 {% if current_user.is_authenticated %}
-<h1>{{ user.firstname }} {{ user.lastname }}</h1>
+<h1>Hello {{ user.firstname }} {{ user.lastname }}</h1>
 <div class="container">
   <div class="card mb-3">
     <div class="card-body">
@@ -35,19 +35,47 @@
   </div>
 </div>
 
-<h2>Your recent purchases:</h2>
 <div class="container">
-  {% for purchase in purchase_history %}
-    <div class="card mb-3">
-      <div class="card-body">
-        <h5 class="card-title">{{ purchase.product_name }}</h5>
-        <p class="card-text"><strong>Seller:</strong> {{ purchase.seller_first }} {{ purchase.seller_last }}</p>
-        <p class="card-text"><strong>Time Purchased:</strong> {{ purchase.time_purchased }}</p>
-        <p class="card-text"><strong>Quantity:</strong> {{ purchase.quantity }}</p>
-      </div>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <a href="{{ url_for('users.purchase_history') }}" class="card-link">
+        <div class="card mb-3 text-center">
+          <div class="card-body">
+            <h2 style="color: black;">Your Recent Purchases</h2>
+          </div>
+        </div>
+      </a>
     </div>
-  {% endfor %}
+    <div class="col-md-6 mb-3">
+      <a href="{{ url_for('users.purchase_history') }}" class="card-link">
+        <div class="card mb-3 text-center">
+          <div class="card-body">
+            <h2 style="color: black;">Your Recent Purchases</h2>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-6 mb-3">
+      <a href="{{ url_for('users.purchase_history') }}" class="card-link">
+        <div class="card mb-3 text-center">
+          <div class="card-body">
+            <h2 style="color: black;">Your Recent Purchases</h2>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-6 mb-3">
+      <a href="{{ url_for('users.purchase_history') }}" class="card-link">
+        <div class="card mb-3 text-center">
+          <div class="card-body">
+            <h2 style="color: black;">Your Recent Purchases</h2>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
 </div>
+
 
 <h2>Your recent reviews:</h2>
 <div class="container">
