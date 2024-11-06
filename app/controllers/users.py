@@ -82,8 +82,20 @@ def logout():
     return redirect(url_for('index.index'))
 
 
-@bp.route('/profile', methods=['POST', 'GET'])
+@bp.route('/profile', methods=['GET'])
 def profile():
+    if current_user.is_authenticated:
+        # get most recent reviews
+        reviews = Review.get_recent_reviews(current_user.id)
+
+    else:
+        reviews = None
+
+    return render_template('profile.html', reviews=reviews)
+
+
+@bp.route('/user-info', methods=['POST', 'GET'])
+def user_info():
     if current_user.is_authenticated:
         address = request.form.get('address')
         balance = request.form.get('balance')
@@ -93,21 +105,13 @@ def profile():
             
         # get user info
         user = User.get(current_user.id)
-
-        # get most recent reviews
-        reviews = Review.get_recent_reviews(current_user.id)
-
     else:
         user = None
-        reviews = None
 
-    return render_template('profile.html',
-                    user=user,
-                    reviews=reviews,
-                    )
+    return render_template('user_info.html', user=user)
 
 
-@bp.route('/purchase-history')
+@bp.route('/purchase-history', methods=['GET'])
 def purchase_history():
     if current_user.is_authenticated:
         # find the products current user has bought:

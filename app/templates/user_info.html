@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br>
+
+{% if current_user.is_authenticated %}
+
+<h2>Hello {{ user.firstname }} {{ user.lastname }}!</h2>
+
+<div class="container">
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">Email</h5>
+      <p class="card-text"><strong>{{ user.email }}</strong></p>
+    </div>
+  </div>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">Address</h5>
+      <p class="card-text"><strong>{{ user.address }}</strong></p>
+    </div>
+  </div>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">Balance</h5>
+      <p class="card-text"><strong>${{ "{:.2f}".format(user.balance) }}</strong></p>
+    </div>
+  </div>
+  <div class="mb-3">
+    <form action="{{ url_for('users.edit_profile') }}">
+      <input type="hidden" name="user.id">
+      <button type="submit" class="btn btn-warning">
+        Edit Profile
+      </button>
+    </form>
+  </div>
+</div>
+
+{% else %}
+<p><a href="{{ url_for('users.login') }}">Log in</a> to see your user info!</p>
+{% endif %}
+
+{% endblock %}

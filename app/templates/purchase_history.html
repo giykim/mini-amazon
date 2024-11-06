@@ -5,7 +5,7 @@
 <br>
 
 {% if current_user.is_authenticated %}
-    <h2>My recent purchases:</h2>
+    <h2>Purchase History:</h2>
     <div class="container">
         {% for purchase in purchase_history %}
             <div class="card mb-3">

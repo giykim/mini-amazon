@@ -4,44 +4,17 @@
 
 <br>
 
+<h2>My Profile:</h2>
+
 {% if current_user.is_authenticated %}
-<h1>Hello {{ user.firstname }} {{ user.lastname }}</h1>
-<div class="container">
-  <div class="card mb-3">
-    <div class="card-body">
-      <h5 class="card-title">Email</h5>
-      <p class="card-text"><strong>{{ user.email }}</strong></p>
-    </div>
-  </div>
-  <div class="card mb-3">
-    <div class="card-body">
-      <h5 class="card-title">Address</h5>
-      <p class="card-text"><strong>{{ user.address }}</strong></p>
-    </div>
-  </div>
-  <div class="card mb-3">
-    <div class="card-body">
-      <h5 class="card-title">Balance</h5>
-      <p class="card-text"><strong>${{ "{:.2f}".format(user.balance) }}</strong></p>
-    </div>
-  </div>
-  <div class="mb-3">
-    <form action="{{ url_for('users.edit_profile') }}">
-      <input type="hidden" name="user.id">
-      <button type="submit" class="btn btn-warning">
-        Edit Profile
-      </button>
-    </form>
-  </div>
-</div>
 
 <div class="container">
   <div class="row">
     <div class="col-md-6 mb-3">
-      <a href="{{ url_for('users.purchase_history') }}" class="card-link">
+      <a href="{{ url_for('users.user_info') }}" class="card-link">
         <div class="card mb-3 text-center">
           <div class="card-body">
-            <h2 style="color: black;">Your Recent Purchases</h2>
+            <h2 style="color: black;">Info</h2>
           </div>
         </div>
       </a>
@@ -50,7 +23,7 @@
       <a href="{{ url_for('users.purchase_history') }}" class="card-link">
         <div class="card mb-3 text-center">
           <div class="card-body">
-            <h2 style="color: black;">Your Recent Purchases</h2>
+            <h2 style="color: black;">Recent Purchases</h2>
           </div>
         </div>
       </a>
@@ -59,7 +32,7 @@
       <a href="{{ url_for('users.purchase_history') }}" class="card-link">
         <div class="card mb-3 text-center">
           <div class="card-body">
-            <h2 style="color: black;">Your Recent Purchases</h2>
+            <h2 style="color: black;">Recent Purchases</h2>
           </div>
         </div>
       </a>
@@ -68,7 +41,7 @@
       <a href="{{ url_for('users.purchase_history') }}" class="card-link">
         <div class="card mb-3 text-center">
           <div class="card-body">
-            <h2 style="color: black;">Your Recent Purchases</h2>
+            <h2 style="color: black;">Recent Purchases</h2>
           </div>
         </div>
       </a>
@@ -93,7 +66,7 @@
   {% endfor %}
 </div>
 {% else %}
-<p><a href="{{ url_for('users.login') }}">Log in</a> to see your purchase history!</p>
+<p><a href="{{ url_for('users.login') }}">Log in</a> to see user profile!</p>
 {% endif %}
 
 {% endblock %}
