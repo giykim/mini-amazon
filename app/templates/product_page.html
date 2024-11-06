@@ -33,20 +33,25 @@
                 <h2 class="text-success">Official Price: N/A</h2>
             {% endif %}
             
+            {% if seller_info %}
             <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#sellersModal">
                 View All Sellers
             </button>
+            {% endif %}
             
             {% if current_user.is_authenticated %}
-            
-            <form action="{{ url_for('cart.cart') }}" method="post">
-                <input type="hidden" name="product_id" value="{{ product_info[0].id }}">
-                <input type="hidden" name="seller_id" value="{{ seller_info[0].id }}">
-                <input type="number" min="1" oninput="validity.valid||(value='');" value="1" name="quantity" required>
-                <button type="submit" class="btn btn-light mt-2" style="background: #f0c14b; border-color: #f0c14b;">
-                    Add to Cart
-                </button>
-            </form>
+                {% if seller_info %}
+                    <form action="{{ url_for('cart.cart') }}" method="post">
+                        <input type="hidden" name="product_id" value="{{ product_info[0].id }}">
+                        <input type="hidden" name="seller_id" value="{{ seller_info[0].id }}">
+                        <input type="number" min="1" oninput="validity.valid||(value='');" value="1" name="quantity" required>
+                        <button type="submit" class="btn btn-light mt-2" style="background: #f0c14b; border-color: #f0c14b;">
+                            Add to Cart
+                        </button>
+                    </form>
+                {% else %}
+                    No sellers
+                {% endif %}
             {% else %}
             <form action="{{ url_for('users.login') }}">
                 <input type="number" min="1" oninput="validity.valid||(value='');" value="1" name="quantity" required>

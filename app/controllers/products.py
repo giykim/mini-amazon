@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, redirect, url_for
 from flask_login import current_user
 from app import db
 import datetime
@@ -27,6 +27,32 @@ def product_page(product_id):
     review_info = Product.get_review_info(product_id)
 
     return render_template('product_page.html', product_info=product_info, seller_info=seller_info, review_info=review_info)
+
+
+@bp.route('/new-product', methods=['POST'])
+def new_product():
+    if current_user.is_authenticated:
+        name = request.form.get('name')
+        description = request.form.get('description')
+        pid, created = Product.new_product(name=name, description=description, uid=current_user.id)
+
+        print(pid, created)
+
+        if not created:
+            flash("Product already exists.", "error")
+
+        return redirect(url_for('products.product_page', product_id=pid))
+
+    else:
+        return redirect(url_for('index.index'))
+
+    return render_template('create_product.html')
+
+
+@bp.route('/create-product', methods=['GET'])
+def create_product():
+    return render_template('create_product.html')
+
 
 @bp.route('/vote', methods=['POST'])
 def vote():

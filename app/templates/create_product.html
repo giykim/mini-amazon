@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<body>
+    <div class="container mt-5">
+        <h2>New Product</h2>
+
+        {% if current_user.is_authenticated %}
+            <form action="{{ url_for('products.new_product') }}" method="post">
+                <div class="form-group">
+                    <label">Name</label>
+                    <input type="text" class="form-control" placeholder="Product Name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" class="form-control" placeholder="Product Description" name="description" required>
+                </div>
+                <button type="submit" class="btn btn-warning">Create Product</button>
+            </form>
+        {% else %}
+        {% endif %}
+    </div>
+</body>
+
+{% endblock %}

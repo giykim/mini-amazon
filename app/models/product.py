@@ -49,7 +49,7 @@ class Product:
         rows = app.db.execute("""
             SELECT p.id, p.name, p.description, MIN(s.price) as price
             FROM Products p
-            JOIN SoldBy s ON p.id = s.pid
+            LEFT JOIN SoldBy s ON p.id = s.pid
             WHERE name LIKE '%' || :query || '%'
                 AND available IS TRUE
             GROUP BY p.id
@@ -154,3 +154,37 @@ class Product:
             user_id=user_id, 
             value=value
         )
+
+    @staticmethod
+    def new_product(name, description, uid):
+        pid = app.db.execute("""
+            SELECT id
+            FROM Products
+            WHERE name=:name
+        """,
+            name=name
+        )
+
+        if pid:
+            return pid[0][0], False
+
+        result = app.db.execute("""
+            INSERT INTO Products (name, description)
+            VALUES (:name, :description)
+            RETURNING id
+        """, 
+            name=name,
+            description=description
+        )
+
+        pid = result[0][0]
+
+        app.db.execute("""
+            INSERT INTO CreatedProduct (pid, uid)
+            VALUES (:pid, :uid)
+        """, 
+            pid=pid,
+            uid=uid
+        )
+
+        return pid, True
