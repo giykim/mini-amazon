@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br>
+
+<h2>Review History:</h2>
+
+{% if current_user.is_authenticated %}
+
+<div class="container">
+  {% for review in reviews %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Review Of: {{ review.name }}</h5>
+        <p class="card-text"><strong>Review Type:</strong> {{ review.review_type }}</p>
+        <p class="card-text"><strong>Rating:</strong> {{ review.rating }}</p>
+        <p class="card-text"><strong>Description:</strong> {{ review.description }}</p>
+        <p class="card-text"><strong>Time Created:</strong> {{ review.time_created }}</p>
+        <p class="card-text"><strong>Helpfulness:</strong> {{ review.helpfulness }}</p>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% else %}
+<p><a href="{{ url_for('users.login') }}">Log in</a> to see your review history!</p>
+{% endif %}
+
+{% endblock %}

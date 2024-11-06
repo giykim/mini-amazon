@@ -14,7 +14,7 @@
       <a href="{{ url_for('users.user_info') }}" class="card-link">
         <div class="card mb-3 text-center">
           <div class="card-body">
-            <h2 style="color: black;">Info</h2>
+            <h2 style="color: black;">My Info</h2>
           </div>
         </div>
       </a>
@@ -23,7 +23,7 @@
       <a href="{{ url_for('users.purchase_history') }}" class="card-link">
         <div class="card mb-3 text-center">
           <div class="card-body">
-            <h2 style="color: black;">Recent Purchases</h2>
+            <h2 style="color: black;">Purchase History</h2>
           </div>
         </div>
       </a>
@@ -32,16 +32,16 @@
       <a href="{{ url_for('users.purchase_history') }}" class="card-link">
         <div class="card mb-3 text-center">
           <div class="card-body">
-            <h2 style="color: black;">Recent Purchases</h2>
+            <h2 style="color: black;">Purchase History</h2>
           </div>
         </div>
       </a>
     </div>
     <div class="col-md-6 mb-3">
-      <a href="{{ url_for('users.purchase_history') }}" class="card-link">
+      <a href="{{ url_for('users.review_history') }}" class="card-link">
         <div class="card mb-3 text-center">
           <div class="card-body">
-            <h2 style="color: black;">Recent Purchases</h2>
+            <h2 style="color: black;">Review History</h2>
           </div>
         </div>
       </a>
@@ -49,22 +49,6 @@
   </div>
 </div>
 
-
-<h2>Your recent reviews:</h2>
-<div class="container">
-  {% for review in reviews %}
-    <div class="card mb-3">
-      <div class="card-body">
-        <h5 class="card-title">Review Of: {{ review.name }}</h5>
-        <p class="card-text"><strong>Review Type:</strong> {{ review.review_type }}</p>
-        <p class="card-text"><strong>Rating:</strong> {{ review.rating }}</p>
-        <p class="card-text"><strong>Description:</strong> {{ review.description }}</p>
-        <p class="card-text"><strong>Time Created:</strong> {{ review.time_created }}</p>
-        <p class="card-text"><strong>Helpfulness:</strong> {{ review.helpfulness }}</p>
-      </div>
-    </div>
-  {% endfor %}
-</div>
 {% else %}
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see user profile!</p>
 {% endif %}

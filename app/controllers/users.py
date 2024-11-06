@@ -84,14 +84,7 @@ def logout():
 
 @bp.route('/profile', methods=['GET'])
 def profile():
-    if current_user.is_authenticated:
-        # get most recent reviews
-        reviews = Review.get_recent_reviews(current_user.id)
-
-    else:
-        reviews = None
-
-    return render_template('profile.html', reviews=reviews)
+    return render_template('profile.html')
 
 
 @bp.route('/user-info', methods=['POST', 'GET'])
@@ -121,6 +114,18 @@ def purchase_history():
         purchases = None
 
     return render_template('purchase_history.html', purchase_history=purchases)
+
+
+@bp.route('/review-history', methods=['GET'])
+def review_history():
+    if current_user.is_authenticated:
+        # get most recent reviews
+        reviews = Review.get_recent_reviews(current_user.id)
+
+    else:
+        reviews = None
+
+    return render_template('review_history.html', reviews=reviews)
 
 
 @bp.route('/edit-profile')
