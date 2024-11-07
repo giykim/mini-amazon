@@ -262,9 +262,6 @@
           <a href="{{ url_for('users.profile') }}" type="button" class="btn btn-dark action-btn">
             <span class="action-txt">My Profile</span>
           </a>
-          <a href="{{ url_for('products.create_product') }}" type="button" class="btn btn-dark action-btn">
-            <span class="action-txt">Create Product</span>
-          </a>
           {% if current_user.is_authenticated %}
               <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-dark action-btn">
                 <span class="action-txt">Log Out</span>

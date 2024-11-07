@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br>
+
+<h2 class="mt-4">My Created Products:</h2>
+<div class="container mt-4">
+    <div class="mb-4">
+        <form action="{{ url_for('products.create_product') }}">
+            <button type="submit" class="btn btn-warning">Create New Product</button>
+        </form>
+    </div>
+  <div class="row">
+    {% for product in products %}
+      <div class="col-md-4 mb-4">
+        <a href="{{ url_for('products.product_page', product_id=product.id) }}">
+          <div class="card">
+            <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+              <span style="color: #ccc;">Product Image Placeholder</span>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">{{ product.name }}</h5>
+              <p class="card-text">
+                <strong>Product ID:</strong> {{ product.id }}<br>
+                <strong>Description:</strong> {{ product.description }}<br>
+              </p>
+            </div>
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<br>
+
+{% endblock %}

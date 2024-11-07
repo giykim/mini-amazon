@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify, redirect, url_for
+from flask import render_template, request, jsonify, redirect, url_for, flash
 from flask_login import current_user
 from app import db
 import datetime
@@ -36,17 +36,14 @@ def new_product():
         description = request.form.get('description')
         pid, created = Product.new_product(name=name, description=description, uid=current_user.id)
 
-        print(pid, created)
-
         if not created:
+            print(True)
             flash("Product already exists.", "error")
 
         return redirect(url_for('products.product_page', product_id=pid))
 
     else:
         return redirect(url_for('index.index'))
-
-    return render_template('create_product.html')
 
 
 @bp.route('/create-product', methods=['GET'])

@@ -31,7 +31,7 @@ SELECT pg_catalog.setval('public.reviews_id_seq',
 \COPY SellerReviews FROM 'SellerReviews.csv' WITH DELIMITER ',' NULL '' CSV
 
 \COPY Categories FROM 'Categories.csv' WITH DELIMITER ',' NULL '' CSV
-SELECT pg_catalog.setval('public.products_id_seq',
+SELECT pg_catalog.setval('public.categories_id_seq',
                          (SELECT MAX(id)+1 FROM Categories),
                          false);
 

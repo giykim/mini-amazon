@@ -70,6 +70,18 @@ class Product:
         return rows
     
     @staticmethod
+    def get_user_products(uid):
+        rows = app.db.execute("""
+            SELECT p.id, p.name, p.description
+            FROM Products p
+            JOIN CreatedProduct c ON p.id = c.pid
+            WHERE c.uid = :uid
+            """,
+            uid = uid
+        )
+        return rows
+    
+    @staticmethod
     def get_seller_info(pid):
         rows = app.db.execute("""
             SELECT u.id as id, u.firstname AS sellerfirsta, u.lastname AS sellerlast, b.quantity, b.price

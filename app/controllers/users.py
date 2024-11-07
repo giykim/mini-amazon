@@ -10,6 +10,7 @@ from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from app.models.purchase import Purchase
 from app.models.reviews import Review
 from app.models.user import User
+from app.models.product import Product
 
 
 from flask import Blueprint
@@ -102,6 +103,16 @@ def user_info():
         user = None
 
     return render_template('user_info.html', user=user)
+
+
+@bp.route('/created-products', methods=['GET'])
+def created_products():
+    if current_user.is_authenticated:
+        products = Product.get_user_products(current_user.id)
+    else:
+        products = None
+
+    return render_template('created_products.html', products=products)
 
 
 @bp.route('/purchase-history', methods=['GET'])
