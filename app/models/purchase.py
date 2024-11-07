@@ -92,8 +92,8 @@ class Purchase:
             )
         else:
             app.db.execute('''
-                INSERT INTO Purchases (uid, pid, sid, time_purchased, quantity)
-                VALUES (:uid, :pid, :sid, NULL, :quantity)
+                INSERT INTO Purchases (uid, pid, sid, time_purchased, quantity, fulfilled)
+                VALUES (:uid, :pid, :sid, NULL, :quantity, FALSE)
                 ''',
                 uid=uid,
                 pid=pid,
