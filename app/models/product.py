@@ -166,7 +166,6 @@ class Product:
             user_id=user_id, 
             value=value
         )
-<<<<<<< Updated upstream
 
     @staticmethod
     def new_product(name, description, uid):
@@ -201,7 +200,6 @@ class Product:
         )
 
         return pid, True
-=======
     
     @staticmethod
     def get_user_votes_for_product(pid, user_id):
@@ -217,4 +215,3 @@ class Product:
 
         user_votes = {row[0]: row[1] for row in rows}
         return user_votes
->>>>>>> Stashed changes
