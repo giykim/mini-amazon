@@ -30,4 +30,7 @@ def create_app():
     from .controllers import inventories
     app.register_blueprint(inventories.bp)
 
+    from .controllers import social
+    app.register_blueprint(social.bp)
+
     return app

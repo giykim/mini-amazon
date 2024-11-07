@@ -215,3 +215,21 @@ class Product:
 
         user_votes = {row[0]: row[1] for row in rows}
         return user_votes
+
+
+    @staticmethod
+    def has_bought(uid, pid):
+        rows = app.db.execute("""
+            SELECT 1
+            FROM Purchases
+            WHERE time_purchased IS NOT NULL
+                AND uid = :uid
+                AND pid = :pid
+        """, 
+            uid=uid, 
+            pid=pid
+        )
+
+        if rows:
+            return True
+        return False
