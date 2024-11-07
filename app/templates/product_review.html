@@ -35,6 +35,7 @@
         <h2>Review for Product {{ product.name }}</h2>
 
         {% if current_user.is_authenticated %}
+            <form action="{{ url_for('social.new_product_review') }}" method="post">
                 <input type="hidden" name="product_id" value="{{ product.id }}">
                 <div class="form-group">
                     <label for="rating">Rating</label>
@@ -60,6 +61,7 @@
                     <input type="text" class="form-control" placeholder="Product Description" name="description" required>
                 </div>
                 <button type="submit" class="btn btn-warning">Create Product</button>
+            </form>
         {% else %}
         {% endif %}
     </div>

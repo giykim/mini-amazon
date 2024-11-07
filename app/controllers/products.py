@@ -51,7 +51,6 @@ def new_product():
         pid, created = Product.new_product(name=name, description=description, uid=current_user.id)
 
         if not created:
-            print(True)
             flash("Product already exists.", "error")
 
         return redirect(url_for('products.product_page', product_id=pid))
