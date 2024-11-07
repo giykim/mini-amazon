@@ -166,6 +166,7 @@ class Product:
             user_id=user_id, 
             value=value
         )
+<<<<<<< Updated upstream
 
     @staticmethod
     def new_product(name, description, uid):
@@ -200,3 +201,20 @@ class Product:
         )
 
         return pid, True
+=======
+    
+    @staticmethod
+    def get_user_votes_for_product(pid, user_id):
+        rows = app.db.execute("""
+            SELECT h.rid AS review_id, h.value AS vote_value
+            FROM Helpfulness AS h
+            JOIN ProductReviews AS pr ON pr.id = h.rid
+            WHERE pr.pid = :pid AND h.uid = :user_id
+        """, 
+            pid=pid, 
+            user_id=user_id
+        )
+
+        user_votes = {row[0]: row[1] for row in rows}
+        return user_votes
+>>>>>>> Stashed changes
