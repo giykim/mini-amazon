@@ -4,6 +4,25 @@
 
 {% block content %}
 
+<style>
+    .seller-link {
+        all: unset; /* Remove all default styles */
+        cursor: pointer; /* Make it clickable like a button */
+        background: none; /* Remove background */
+        border: none; /* Remove border */
+        font-size: inherit; /* Inherit font size */
+        color: inherit; /* Inherit text color */
+        text-decoration: underline; /* Underline for hyperlink-like appearance */
+    }
+
+    .seller-link:focus,
+    .seller-link:active {
+        outline: none; /* Remove focus outline */
+        box-shadow: none; /* Remove box shadow for active state */
+    }
+</style>
+
+
 <br>
 
 {% with messages = get_flashed_messages(with_categories=True) %}
@@ -32,7 +51,14 @@
             <h2 class="text-success">Price: $<span id="display-price">{{ "{:.2f}".format(seller_info[0].price) }}</span></h2>
             
             <!-- Seller Display, styled to match Price display -->
-            <h2 class="text-success">Sold By: <span id="current-seller-name">{{ seller_info[0].sellerfirst }} {{ seller_info[0].sellerlast }}</span></h2>
+            <form action="{{ url_for('inventories.get_stock') }}">
+                <input type="hidden" id="selected-seller-id" name="sid" value="{{ seller_info[0].id }}">
+                <h2 class="text-success">Sold By:
+                    <button type="submit" class="seller-link">
+                        <span id="current-seller-name">{{ seller_info[0].sellerfirst }} {{ seller_info[0].sellerlast }}</span>
+                    </button>
+                </h2>
+            </form>
 
             <!-- Seller Dropdown List, displayed below Seller Display -->
             <div class="mt-2">
@@ -57,7 +83,7 @@
             </form>
         </div>
     </div>
-</div>
+
     
     <div class="modal fade" id="sellersModal" tabindex="-1" aria-labelledby="sellersModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg">
