@@ -18,3 +18,5 @@ class Seller:
             id=id
         )
         return Seller(*(rows[0])) if rows else None
+    
+    

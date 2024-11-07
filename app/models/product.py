@@ -233,3 +233,16 @@ class Product:
         if rows:
             return True
         return False
+    
+    
+    # @staticmethod
+    # def get_sellers_for_product(pid):
+    #     rows = app.db.execute("""
+    #         SELECT u.firstname AS firstname, u.lastname AS lastname, s.quantity AS quantity, s.price AS price
+    #         FROM SoldBy AS s
+    #         JOIN Users AS u ON s.sid = u.id
+    #         WHERE s.pid = :pid
+    #     """, 
+    #         pid=pid
+    #     )
+    #     return rows
