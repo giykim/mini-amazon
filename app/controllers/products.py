@@ -26,8 +26,21 @@ def product_page(product_id):
     product_info = Product.get_product_info(product_id)
     seller_info = Product.get_seller_info(product_id)
     review_info = Product.get_review_info(product_id)
-    user_votes = Product.get_user_votes_for_product(product_id, current_user.id)
-    return render_template('product_page.html', product_info=product_info, seller_info=seller_info, review_info=review_info, user_votes=json.dumps(user_votes))
+
+    if current_user.is_authenticated:
+        has_bought = Product.has_bought(current_user.id, product_id)
+        user_votes = Product.get_user_votes_for_product(product_id, current_user.id)
+    else:
+        has_bought = False
+        user_votes = None
+
+    return render_template('product_page.html',
+        product_info=product_info,
+        seller_info=seller_info,
+        review_info=review_info,
+        user_votes=json.dumps(user_votes),
+        has_bought=has_bought
+    )
 
 
 @bp.route('/new-product', methods=['POST'])
