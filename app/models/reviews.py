@@ -49,3 +49,41 @@ class Review:
             reviewerid = reviewerid
         )
         return rows
+
+    
+    @staticmethod
+    def new_product_review(uid, pid, rating, description):
+        already_exists = app.db.execute("""
+            SELECT 1
+            FROM ProductReviews
+            WHERE uid=:uid
+                AND pid=:pid
+        """, 
+            uid=uid,
+            pid=pid
+        )
+
+        if already_exists:
+            return True
+
+        result = app.db.execute("""
+            INSERT INTO Reviews (rating, description, time_created)
+            VALUES (:rating, :description, CURRENT_TIMESTAMP)
+            RETURNING id
+        """, 
+            rating=rating,
+            description=description
+        )
+
+        id = result[0][0]
+
+        app.db.execute("""
+            INSERT INTO ProductReviews (id, uid, pid)
+            VALUES (:id, :uid, :pid)
+        """, 
+            id=id,
+            uid=uid,
+            pid=pid
+        )
+
+        return False
