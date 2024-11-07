@@ -56,6 +56,29 @@ class Inventory:
             ''',
             pid=pid,sid=sid)
         return rows
+    
+    @staticmethod
+    def get_inventory_details(sid):
+        # Retrieves the full inventory for a seller
+        rows = app.db.execute('''
+            SELECT p.id, p.name, p.description, i.quantity
+            FROM Products p
+            JOIN Inventory i ON p.id = i.pid
+            WHERE i.sid = :sid
+        ''', sid=sid)
+        return rows
+
+    @staticmethod
+    def get_sold_by_details(sid):
+        # Retrieves only actively sold items for a seller
+        rows = app.db.execute('''
+            SELECT p.id, p.name, p.description, s.quantity, s.price
+            FROM Products p
+            JOIN SoldBy s ON p.id = s.pid
+            WHERE s.sid = :sid
+            ORDER BY s.price ASC
+        ''', sid=sid)
+        return rows
         
     
 

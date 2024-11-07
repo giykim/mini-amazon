@@ -87,3 +87,16 @@ class Review:
         )
 
         return False
+    
+    @staticmethod
+    def get_seller_reviews(sid):
+        rows = app.db.execute("""
+                SELECT u.firstname, u.lastname, u.email, r.rating, r.description, r.time_created
+                FROM Reviews AS r
+                JOIN SellerReviews AS s ON r.id = s.id
+                JOIN Users AS u ON s.sid = u.id
+                WHERE s.sid = :sid
+            """,
+            sid = sid
+        )
+        return rows

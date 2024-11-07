@@ -2,34 +2,77 @@
 
 {% block content %}
 
-<br>
+<h2 class="mt-4">Inventory Search</h2>
 
-<h2 class="mt-4">Inventory for Seller ID: {{sid }}</h2>
-<div class="container mt-4">
-  <div class="row">
-    {% for s in stocked %}
-      <div class="col-md-4 mb-4">
-        <!-- Use the correct product_id for the product page link -->
-        <a href="{{ url_for('products.product_page', product_id=s[0].id) }}">
-          <div class="card">
-            <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-              <span style="color: #ccc;">Product Image Placeholder</span>
-            </div>
+<!-- JavaScript to handle non-seller alert -->
+<script>
+  function checkSellerStatus() {
+    const isSeller = {{ 'true' if is_seller else 'false' }};  // Backend-provided is_seller flag
+
+    if (!isSeller) {
+      alert("The user associated with this ID is not a seller!");
+      return false;  // Prevent form submission if not a seller
+    }
+    return true;  // Allow form submission if the user is a seller
+  }
+</script>
+
+{% if is_seller %}
+  <!-- Display seller information and inventory if the user is a seller -->
+  <div>
+    <h3>Seller: {{ user_info.firstname }} {{ user_info.lastname }} ({{ user_info.email }})</h3>
+    
+    <!-- Display Seller Reviews -->
+    <div class="container mt-4">
+      <h3>Reviews for Seller</h3>
+      {% if seller_reviews %}
+        {% for review in seller_reviews %}
+          <div class="card mb-3">
             <div class="card-body">
-              <h5 class="card-title">{{ s[0].name }}</h5>
-              <p class="card-text">
-                <strong>Description:</strong> {{ s[0].description }}<br>
-                <strong>Seller:</strong> {{ s[0].firstname + " " + s[0].lastname }}<br>
-                <strong>In Stock:</strong> {{ s[0].quantity }}
-              </p>
+              <p class="card-text"><strong>Rating:</strong> {{ review.rating }}/5</p>
+              <p class="card-text">{{ review.description }}</p>
+              <p class="card-text"><small class="text-muted">Reviewed on {{ review.time_created }}</small></p>
             </div>
           </div>
-        </a>
-      </div>
-    {% endfor %}
-  </div>
-</div>
+        {% endfor %}
+      {% else %}
+        <p>No reviews available for this seller.</p>
+      {% endif %}
+    </div>
 
-<br>
+    <!-- Display Products -->
+    <div class="container mt-4">
+      <div class="row">
+        {% if stocked %}
+          {% for s in stocked %}
+            <div class="col-md-4 mb-4">
+              <a href="{{ url_for('products.product_page', product_id=s.id) }}">
+                <div class="card">
+                  <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                    <span style="color: #ccc;">Product Image Placeholder</span>
+                  </div>
+                  <div class="card-body">
+                    <h5 class="card-title">{{ s.name }}</h5> <!-- Product name -->
+                    <p class="card-text">
+                      <strong>Description:</strong> {{ s.description }}<br> <!-- Product description -->
+                      {% if s.quantity is not none %}
+                        <strong>In Stock:</strong> {{ s.quantity }}<br> <!-- Quantity -->
+                      {% endif %}
+                      {% if s.price is not none %}
+                        <strong>Price:</strong> ${{ "%.2f"|format(s.price) }} <!-- Price -->
+                      {% endif %}
+                    </p>
+                  </div>
+                </div>
+              </a>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p>This seller currently has no products listed.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endif %}
 
 {% endblock %}
