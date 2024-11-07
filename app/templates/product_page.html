@@ -109,6 +109,16 @@
     
     <div class="mt-5">
         <h3>Customer Reviews</h3>
+        {% if has_bought %}
+            <div class="mb-4">
+                <form action="{{ url_for('social.product_review') }}">
+                    <input type="hidden" name="product_id" value="{{ product_info[0].id }}">
+                    <button type="submit" class="btn btn-warning">Write Review</button>
+                </form>
+            </div>
+        {% else %}
+            You must purchase this product before writing a review!
+        {% endif %}
         {% if review_info %}
             {% for review in review_info %}
                 <div class="card mb-4" id="review-{{ review.id }}">
