@@ -18,8 +18,11 @@ def get_stock():
         return "Not valid"
     pids = Inventory.get_inventory(sid)
     stocked = []
+    print(pids)
     for p in pids:
         stocked.append(Inventory.get_product_detail(p[0],sid))
+    print(True)
+    print(stocked)
     return render_template('stock.html', sid=sid, stocked=stocked)
 
 

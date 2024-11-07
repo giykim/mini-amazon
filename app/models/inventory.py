@@ -48,7 +48,7 @@ class Inventory:
             JOIN stock_info s on p.id = s.pid
             ),
             full_description AS (
-            SELECT ps.name, ps.description, ps.quantity, u.firstname, u.lastname, u.email
+            SELECT :pid as id, ps.name, ps.description, ps.quantity, u.firstname, u.lastname, u.email
             FROM psinfo ps
             JOIN uinfo u ON ps.sid = u.id
             )

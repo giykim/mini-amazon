@@ -9,7 +9,8 @@
   <div class="row">
     {% for s in stocked %}
       <div class="col-md-4 mb-4">
-        <a href="{{ url_for('products.product_page', product_id=sid) }}">
+        <!-- Use the correct product_id for the product page link -->
+        <a href="{{ url_for('products.product_page', product_id=s[0].id) }}">
           <div class="card">
             <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
               <span style="color: #ccc;">Product Image Placeholder</span>
@@ -17,8 +18,8 @@
             <div class="card-body">
               <h5 class="card-title">{{ s[0].name }}</h5>
               <p class="card-text">
-                <strong>Description:</strong> {{ s[0].description}}<br>
-                <strong>Seller:</strong> {{ s[0].firstname + " " + s[0].lastname}}
+                <strong>Description:</strong> {{ s[0].description }}<br>
+                <strong>Seller:</strong> {{ s[0].firstname + " " + s[0].lastname }}<br>
                 <strong>In Stock:</strong> {{ s[0].quantity }}
               </p>
             </div>
