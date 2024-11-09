@@ -1,34 +1,112 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <br>
 
-<h2 class="mt-4">Products for sale:</h2>
+<h2 class="mt-4">Products for Sale</h2>
 <div class="container mt-4">
   <div class="row">
     {% for product in avail_products %}
-    <div class="col-md-4 mb-4">
-      <a href="{{ url_for('products.product_page', product_id=product.id) }}">
-        <div class="card">
-          <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-            <span style="color: #ccc;">Product Image Placeholder</span>
+      <div class="col-md-4 mb-4">
+        <a href="{{ url_for('products.product_page', product_id=product[0]) }}">
+          <div class="card">
+            <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+              <span style="color: #ccc;">Product Image Placeholder</span>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">{{ product.name }}</h5> 
+              <p class="card-text">
+                <strong>Description:</strong> {{ product.description }}<br> 
+                <strong>Price:</strong> ${{ "%.2f"|format(product.price) }} 
+              </p>
+            </div>
           </div>
-          <div class="card-body">
-            <h5 class="card-title">{{ product.name }}</h5>
-            <p class="card-text">
-              <strong>Product ID:</strong> {{ product.id }}<br>
-              <strong>Description:</strong> {{ product.description }}<br>
-              <strong>Price:</strong> {{ product.price }}
-            </p>
-          </div>
-        </div>
-      </a>
-    </div>
+        </a>
+      </div>
     {% endfor %}
   </div>
 </div>
 
-<br>
+<div class="container mt-4 text-center">
+  <form action="{{ url_for('index.index') }}" method="get" onsubmit="return validatePageInput();">
+    <label for="page-input">Go to page:</label>
+    <input 
+      type="number" 
+      id="page-input" 
+      name="page" 
+      min="1" 
+      max="{{ total_pages }}" 
+      value="{{ page }}" 
+      required
+      style="width: 60px; text-align: center; margin-right: 5px;"
+    >
+    <button type="submit" class="btn btn-primary">Go</button>
+  </form>
+</div>
+
+<!-- Pagination Controls -->
+<div class="container mt-4">
+  <nav aria-label="Product pagination">
+    <ul class="pagination justify-content-center">
+      <!-- Previous Button -->
+      {% if page > 1 %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('index.index', page=page-1) }}" aria-label="Previous">
+          <span aria-hidden="true">&laquo; Previous</span>
+        </a>
+      </li>
+      {% endif %}
+
+      <!-- First Page and Leading Ellipsis -->
+      {% if page > 3 %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('index.index', page=1) }}">1</a>
+      </li>
+      <li class="page-item disabled"><span class="page-link">...</span></li>
+      {% endif %}
+
+      <!-- Centered Page Numbers -->
+      {% set start_page = 1 %}
+      {% set end_page = total_pages %}
+
+      {% if page <= 3 %}
+        {% set start_page = 1 %}
+        {% set end_page = 5 if total_pages >= 5 else total_pages %}
+      {% elif page >= total_pages - 2 %}
+        {% set start_page = total_pages - 4 if total_pages > 5 else 1 %}
+        {% set end_page = total_pages %}
+      {% else %}
+        {% set start_page = page - 2 %}
+        {% set end_page = page + 2 %}
+      {% endif %}
+
+      {% for p in range(start_page, end_page + 1) %}
+      <li class="page-item {% if p == page %}active{% endif %}">
+        <a class="page-link" href="{{ url_for('index.index', page=p) }}">{{ p }}</a>
+      </li>
+      {% endfor %}
+
+      <!-- Trailing Ellipsis and Last Page -->
+      {% if page < total_pages - 2 %}
+      <li class="page-item disabled"><span class="page-link">...</span></li>
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('index.index', page=total_pages) }}">{{ total_pages }}</a>
+      </li>
+      {% endif %}
+
+      <!-- Next Button -->
+      {% if page < total_pages %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('index.index', page=page+1) }}" aria-label="Next">
+          <span aria-hidden="true">Next &raquo;</span>
+        </a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+
+
+
 
 {% endblock %}

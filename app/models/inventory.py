@@ -69,16 +69,27 @@ class Inventory:
         return rows
 
     @staticmethod
-    def get_sold_by_details(sid):
-        # Retrieves only actively sold items for a seller
+    def get_sold_by_details_paginated(sid, page, per_page=12):
+        offset = (page - 1) * per_page
         rows = app.db.execute('''
             SELECT p.id, p.name, p.description, s.quantity, s.price
             FROM Products p
             JOIN SoldBy s ON p.id = s.pid
             WHERE s.sid = :sid
             ORDER BY s.price ASC
-        ''', sid=sid)
+            LIMIT :per_page OFFSET :offset
+        ''', sid=sid, per_page=per_page, offset=offset)
         return rows
+
+    @staticmethod
+    def count_sold_products(sid):
+        rows = app.db.execute('''
+            SELECT COUNT(*)
+            FROM SoldBy
+            WHERE sid = :sid
+        ''', sid=sid)
+        return rows[0][0] if rows else 0
+
         
     
 

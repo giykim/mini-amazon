@@ -23,9 +23,15 @@ def search():
 
 @bp.route('/product-page/<int:product_id>', methods=['GET'])
 def product_page(product_id):
+    page = request.args.get('page', 1, type=int)
+    per_page = 3  # Set reviews per page
+
     product_info = Product.get_product_info(product_id)
     seller_info = Product.get_seller_info(product_id)
-    review_info = Product.get_review_info(product_id)
+    review_info = Product.get_reviews_paginated(product_id, page, per_page)
+    total_reviews = Product.count_reviews(product_id)
+
+    total_pages = (total_reviews + per_page - 1) // per_page
 
     if current_user.is_authenticated:
         has_bought = Product.has_bought(current_user.id, product_id)
@@ -38,6 +44,8 @@ def product_page(product_id):
         product_info=product_info,
         seller_info=seller_info,
         review_info=review_info,
+        total_pages=total_pages,
+        current_page=page,
         user_votes=json.dumps(user_votes),
         has_bought=has_bought
     )

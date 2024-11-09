@@ -47,7 +47,7 @@ def gen_products(num_products):
     for pid in tqdm(range(num_products), desc="Generating Products"):
         name = fake.unique.sentence(nb_words=2)[:-1]  # Unique name, strip trailing period
         description = fake.text(max_nb_chars=100)  # Random description
-        available = fake.boolean(chance_of_getting_true=70)  # 70% chance of being available
+        available = True  # 70% chance of being available
         writer.writerow([pid, name, description, available])
         product_ids.append(pid)
     return product_ids

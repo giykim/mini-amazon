@@ -88,15 +88,53 @@ class Review:
 
         return False
     
+    # In reviews.py
     @staticmethod
-    def get_seller_reviews(sid):
+    def get_seller_reviews_paginated(sid, page, per_page=5):
+        offset = (page - 1) * per_page
         rows = app.db.execute("""
-                SELECT u.firstname, u.lastname, u.email, r.rating, r.description, r.time_created
+                SELECT r.id, u.firstname, u.lastname, r.rating, r.description, r.time_created, COALESCE(SUM(h.value), 0) AS helpfulness
                 FROM Reviews AS r
                 JOIN SellerReviews AS s ON r.id = s.id
-                JOIN Users AS u ON s.sid = u.id
+                JOIN Users AS u ON s.uid = u.id
+                LEFT JOIN Helpfulness AS h ON h.rid = r.id
                 WHERE s.sid = :sid
+                GROUP BY r.id, u.firstname, u.lastname, r.rating, r.description, r.time_created
+                ORDER BY r.time_created DESC
+                LIMIT :per_page OFFSET :offset
             """,
-            sid = sid
+            sid=sid, per_page=per_page, offset=offset
         )
         return rows
+
+    @staticmethod
+    def count_seller_reviews(sid):
+        rows = app.db.execute("""
+            SELECT COUNT(*)
+            FROM SellerReviews
+            WHERE sid = :sid
+        """, sid=sid)
+        return rows[0][0] if rows else 0
+
+    @staticmethod
+    def update_vote(review_id, user_id, value):
+        app.db.execute("""
+            UPDATE Helpfulness
+            SET value = :value
+            WHERE rid = :review_id AND uid = :user_id
+        """, 
+            value=value, 
+            review_id=review_id, 
+            user_id=user_id
+        )
+
+    @staticmethod
+    def add_vote(review_id, user_id, value):
+        app.db.execute("""
+            INSERT INTO Helpfulness (rid, uid, value)
+            VALUES (:review_id, :user_id, :value)
+        """, 
+            review_id=review_id, 
+            user_id=user_id, 
+            value=value
+        )
