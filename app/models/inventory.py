@@ -89,6 +89,15 @@ class Inventory:
             WHERE sid = :sid
         ''', sid=sid)
         return rows[0][0] if rows else 0
+    @staticmethod
+    def set_quantity(sid, pid, q):
+        rows = app.db.execute('''
+            UPDATE Inventory
+            SET quantity = q 
+            WHERE sid = :sid AND pid = :pid
+        ''', pid=pid,sid=sid)
+        return rows[0][0] if rows else 0
+    
 
         
     

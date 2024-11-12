@@ -46,7 +46,7 @@ def get_stock():
     if is_seller: 
         if current_user.is_authenticated and str(sid) == str(current_user.id):
             # Display the seller's full inventory if `sid` matches current user ID
-            # stocked = Inventory.get_inventory_details(sid)  # Retrieves full inventory
+            # stocked = Inventory.get_inventory_details(sid) Retrieves full inventory
             stocked = Inventory.get_sold_by_details_paginated(sid, product_page, product_per_page)
         else:
             # Display only products actively sold by the seller if `sid` is different
@@ -65,8 +65,8 @@ def get_stock():
                            current_page=page,
                            current_product_page=product_page,
                            total_pages=total_pages,
-                           product_total_pages=product_total_pages)
-
+                           product_total_pages=product_total_pages,
+                           mine = False)
 
 @bp.route('/vote-seller-review', methods=['POST'])
 def vote_seller_review():
@@ -135,9 +135,10 @@ def get_s_info():
     stocked = None
 
     if is_seller: 
-        if str(sid) == str(current_user.id):
+        if current_user.is_authenticated and str(sid) == str(current_user.id):
             # Display the seller's full inventory if `sid` matches current user ID
-            stocked = Inventory.get_inventory_details(sid)  # Retrieves full inventory
+            # stocked = Inventory.get_inventory_details(sid)  # Retrieves full inventory
+            stocked = Inventory.get_sold_by_details_paginated(sid, product_page, product_per_page)
         else:
             # Display only products actively sold by the seller if `sid` is different
             stocked = Inventory.get_sold_by_details_paginated(sid, product_page, product_per_page)  # Retrieves only items from `SoldBy` table
@@ -155,4 +156,28 @@ def get_s_info():
                            current_page=page,
                            current_product_page=product_page,
                            total_pages=total_pages,
-                           product_total_pages=product_total_pages)
+                           product_total_pages=product_total_pages,
+                           mine = True)
+
+@bp.route('/update_stock', methods=['POST'])
+def update_stock():
+    product_id = request.form['productID']
+    action = request.form['action']
+    quantity = int(request.form['quantity'])
+
+    valid = Product.get(product_id)
+
+    if valid:
+        if action == 'add':
+            q = Inventory.get_product_detail(product_id,current_user.id)[0][3]+quantity
+            Inventory.set_quantity(product_id,current_user.id,q)
+        elif action == 'remove':
+            q = max(0,Inventory.get_product_detail(product_id,current_user.id)[3]-quantity)
+            Inventory.set_quantity(product_id,current_user.id,q)
+    return redirect(url_for('my_inventory'))
+
+
+
+
+
+
