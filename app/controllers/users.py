@@ -119,22 +119,19 @@ def created_products():
 def purchase_history():
     page = request.args.get('page', 1, type=int)
     per_page = 3
+    offset = (page - 1) * per_page
 
     if current_user.is_authenticated:
         # Find the products current user has bought to display on current page
-        # purchases = Purchase.get_paginated(uid=current_user.id, page=page, per_page=per_page)
-
         all_purchases = Purchase.get_all_by_uid(uid=current_user.id)
+
         purchases_count = len(all_purchases)
-
-        offset = (page - 1) * per_page
-
         purchases = all_purchases[offset:offset+per_page]
     else:
         purchases_count = 0
         purchases = None
 
-    # Calculate total pages based on the count of available products
+    # Calculate total pages based on the count of purchases
     total_pages = (purchases_count + per_page - 1) // per_page  # Calculate the number of pages
 
     return render_template(
@@ -147,14 +144,29 @@ def purchase_history():
 
 @bp.route('/review-history', methods=['GET'])
 def review_history():
+    page = request.args.get('page', 1, type=int)
+    per_page = 3
+    offset = (page - 1) * per_page
+
     if current_user.is_authenticated:
         # get most recent reviews
-        reviews = Review.get_recent_reviews(current_user.id)
+        all_reviews = Review.get_recent_reviews(current_user.id)
 
+        reviews_count = len(all_reviews)
+        reviews = all_reviews[offset:offset+per_page]
     else:
+        reviews_count = 0
         reviews = None
+    
+    # Calculate total pages based on the count of reviews
+    total_pages = (reviews_count + per_page - 1) // per_page  # Calculate the number of pages
 
-    return render_template('review_history.html', reviews=reviews)
+    return render_template(
+        'review_history.html',
+        reviews=reviews,
+        page=page,
+        total_pages=total_pages
+        )
 
 
 @bp.route('/edit-profile')
