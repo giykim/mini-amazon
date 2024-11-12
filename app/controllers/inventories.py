@@ -46,7 +46,8 @@ def get_stock():
     if is_seller: 
         if current_user.is_authenticated and str(sid) == str(current_user.id):
             # Display the seller's full inventory if `sid` matches current user ID
-            stocked = Inventory.get_inventory_details(sid)  # Retrieves full inventory
+            # stocked = Inventory.get_inventory_details(sid)  # Retrieves full inventory
+            stocked = Inventory.get_sold_by_details_paginated(sid, product_page, product_per_page)
         else:
             # Display only products actively sold by the seller if `sid` is different
             stocked = Inventory.get_sold_by_details_paginated(sid, product_page, product_per_page)  # Retrieves only items from `SoldBy` table
