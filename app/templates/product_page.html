@@ -123,61 +123,102 @@
       </div>
     </div>
     
-    <div class="mt-5">
-        <h3>Customer Reviews</h3>
-        {% if has_bought %}
-            <div class="mb-4">
-                <form action="{{ url_for('social.product_review') }}">
-                    <input type="hidden" name="product_id" value="{{ product_info[0].id }}">
-                    <button type="submit" class="btn btn-warning">Write Review</button>
-                </form>
-            </div>
-        {% else %}
-            You must purchase this product before writing a review!
-        {% endif %}
-        {% if review_info %}
-            {% for review in review_info %}
-                <div class="card mb-4" id="review-{{ review.id }}">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
+    <!-- Customer Reviews Section -->
+<div class="mt-5">
+    <h3>Customer Reviews</h3>
+    {% if has_bought %}
+        <div class="mb-4">
+            <form action="{{ url_for('social.product_review') }}">
+                <input type="hidden" name="product_id" value="{{ product_info[0].id }}">
+                <button type="submit" class="btn btn-warning">Write Review</button>
+            </form>
+        </div>
+    {% else %}
+        You must purchase this product before writing a review!
+    {% endif %}
+    
+    {% if review_info %}
+        {% for review in review_info %}
+            <div class="card mb-4" id="review-{{ review.id }}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
                             <h5 class="card-title">{{ review.reviewfirst }} {{ review.reviewlast }}</h5>
-                            <span class="badge bg-warning text-dark">{{ review.rating }}/5</span>
+                            <p class="card-text">{{ review.ratingdescrip }}</p>
+                            <p class="card-text"><small class="text-muted">Reviewed on {{ review.time_created.strftime('%B %d, %Y') }}</small></p>
                         </div>
-
-                        <p class="card-text mt-2">{{ review.ratingdescrip }}</p>
-
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">Reviewed on {{ review.time_created.strftime('%B %d, %Y') }}</small>
-                            
-                            <div class="d-flex align-items-center">
-                                <small class="text-muted me-2">
-                                    Helpfulness: <span class="helpfulness-count">{{ review.helpfulness }}</span>
-                                </small>
-
-                                <button 
-                                    class="vote-button upvote-button me-1" 
-                                    data-review-id="{{ review.id }}" 
-                                    aria-label="Upvote"
-                                >
-                                    <i class="fas fa-thumbs-up text-success"></i>
-                                </button>
-
-                                <button 
-                                    class="vote-button downvote-button" 
-                                    data-review-id="{{ review.id }}" 
-                                    aria-label="Downvote"
-                                >
-                                    <i class="fas fa-thumbs-down text-danger"></i>
-                                </button>
-                            </div>
+                        <!-- Rating badge styled similar to seller reviews -->
+                        <div class="rating" style="background-color: #FFC107; color: black; padding: 5px 10px; border-radius: 5px;">
+                            {{ review.rating }}/5
                         </div>
                     </div>
+
+                    <!-- Helpfulness Section with Voting Buttons -->
+                    <div class="d-flex justify-content-end align-items-center" style="margin-top: -30px;"> <!-- Adjusted alignment -->
+                        <!-- Helpfulness Count -->
+                        <small class="text-muted me-2">Helpfulness: <span class="helpfulness-count" data-review-id="{{ review.id }}">{{ review.helpfulness }}</span></small>
+
+                        <!-- Voting Buttons with Gray Box Styling -->
+                        <button 
+                        class="vote-button upvote-button me-1" 
+                        data-review-id="{{ review.id }}" 
+                        data-vote="1" 
+                        aria-label="Upvote"
+                        style="border: 1px solid #ccc; background-color: #f8f9fa; padding: 5px; border-radius: 5px;"
+                        >
+                        <i class="fas fa-thumbs-up text-success" style="font-size: 1.2em;"></i>
+                        </button>
+
+                        <button 
+                        class="vote-button downvote-button" 
+                        data-review-id="{{ review.id }}" 
+                        data-vote="-1" 
+                        aria-label="Downvote"
+                        style="border: 1px solid #ccc; background-color: #f8f9fa; padding: 5px; border-radius: 5px;"
+                        >
+                        <i class="fas fa-thumbs-down text-danger" style="font-size: 1.2em;"></i>
+                        </button>
+                    </div>
                 </div>
-            {% endfor %}
-        {% else %}
-            <p>No reviews available for this product yet.</p>
-        {% endif %}
-    </div>
+            </div>
+        {% endfor %}
+        
+        <!-- Pagination controls for reviews -->
+        <nav aria-label="Review pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if current_page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('products.product_page', product_id=product_info[0].id, page=current_page-1) }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% set start_page = current_page - 2 if current_page > 3 else 1 %}
+                {% set end_page = current_page + 2 if current_page < total_pages - 2 else total_pages %}
+
+                {% for page_num in range(start_page, end_page + 1) %}
+                    <li class="page-item {% if page_num == current_page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('products.product_page', product_id=product_info[0].id, page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if current_page < total_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('products.product_page', product_id=product_info[0].id, page=current_page+1) }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+    {% else %}
+        <p>No reviews available for this product yet.</p>
+    {% endif %}
+</div>
+
+    
     
     <div class="mt-5">
         <h3>Related Products</h3>

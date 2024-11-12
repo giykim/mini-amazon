@@ -1,71 +1,146 @@
 from werkzeug.security import generate_password_hash
 import csv
 from faker import Faker
+import random
+from datetime import datetime
+from tqdm import tqdm
 
-num_users = 100
-num_products = 2000
-num_purchases = 2500
+# Configuration for the number of entries in each table
+NUM_USERS = 2000
+NUM_SELLERS = 100
+NUM_PRODUCTS = 500
+NUM_INVENTORY = 4000
+NUM_SOLD_BY = 2000
+NUM_REVIEWS = 2000
 
 Faker.seed(0)
 fake = Faker()
 
-
-def get_csv_writer(f):
-    return csv.writer(f, dialect='unix')
-
+def get_csv_writer(filename):
+    return csv.writer(open(filename, 'w'), dialect='unix')
 
 def gen_users(num_users):
-    with open('Users.csv', 'w') as f:
-        writer = get_csv_writer(f)
-        print('Users...', end=' ', flush=True)
-        for uid in range(num_users):
-            if uid % 10 == 0:
-                print(f'{uid}', end=' ', flush=True)
-            profile = fake.profile()
-            email = profile['mail']
-            plain_password = f'pass{uid}'
-            password = generate_password_hash(plain_password)
-            name_components = profile['name'].split(' ')
-            firstname = name_components[0]
-            lastname = name_components[-1]
-            writer.writerow([uid, email, password, firstname, lastname])
-        print(f'{num_users} generated')
-    return
+    writer = get_csv_writer('Users.csv')
+    users = []  # Keep track of user IDs and their plaintext passwords for testing
+    for uid in tqdm(range(num_users)):
+        email = fake.unique.email()  # Ensure email is unique
+        plaintext_password = f'password{uid}'  # Plaintext password for testing
+        hashed_password = generate_password_hash(plaintext_password)  # Hashed password
+        firstname = fake.first_name()
+        lastname = fake.last_name()
+        address = fake.address().replace("\n", ", ")  # Single-line address
+        balance = round(random.uniform(0, 1000), 2)  # Random balance >= 0
+        writer.writerow([uid, email, hashed_password, firstname, lastname, address, balance])
+        users.append(uid)
+    return users
 
+def gen_sellers(user_ids, num_sellers):
+    writer = get_csv_writer('Sellers.csv')
+    sellers = random.sample(user_ids, num_sellers)  # Randomly select seller IDs from users
+    for sid in sellers:
+        writer.writerow([sid])  # Write seller ID
+    return sellers
 
 def gen_products(num_products):
-    available_pids = []
-    with open('Products.csv', 'w') as f:
-        writer = get_csv_writer(f)
-        print('Products...', end=' ', flush=True)
-        for pid in range(num_products):
-            if pid % 100 == 0:
-                print(f'{pid}', end=' ', flush=True)
-            name = fake.sentence(nb_words=4)[:-1]
-            price = f'{str(fake.random_int(max=500))}.{fake.random_int(max=99):02}'
-            available = fake.random_element(elements=('true', 'false'))
-            if available == 'true':
-                available_pids.append(pid)
-            writer.writerow([pid, name, price, available])
-        print(f'{num_products} generated; {len(available_pids)} available')
-    return available_pids
+    writer = get_csv_writer('Products.csv')
+    product_ids = []  # Track product IDs
+    for pid in tqdm(range(num_products), desc="Generating Products"):
+        name = fake.unique.sentence(nb_words=2)[:-1]  # Unique name, strip trailing period
+        description = fake.text(max_nb_chars=100)  # Random description
+        available = True  # 70% chance of being available
+        writer.writerow([pid, name, description, available])
+        product_ids.append(pid)
+    return product_ids
+
+def gen_inventory(seller_ids, product_ids, num_entries):
+    writer = get_csv_writer('Inventory.csv')
+    inventory = {}  # Track inventory as a dictionary {(sid, pid): quantity}
+
+    for _ in tqdm(range(num_entries), desc="Generating Inventory"):
+        sid = random.choice(seller_ids)  # Select a seller
+        pid = random.choice(product_ids)  # Select a product
+
+        # Ensure (sid, pid) is unique
+        if (sid, pid) not in inventory:
+            quantity = random.randint(10, 500)  # Random inventory quantity
+            inventory[(sid, pid)] = quantity
+            writer.writerow([sid, pid, quantity])
+
+    return inventory
+
+def gen_sold_by(inventory, num_entries):
+    writer = get_csv_writer('SoldBy.csv')
+    sold_by = set()  # Track (sid, pid) pairs
+
+    for _ in tqdm(range(num_entries), desc="Generating SoldBy"):
+        sid, pid = random.choice(list(inventory.keys()))  # Choose from inventory
+        max_quantity = inventory[(sid, pid)]  # Maximum quantity available in inventory
+
+        # Ensure (sid, pid) is unique
+        if (sid, pid) not in sold_by:
+            quantity = random.randint(1, max_quantity)  # Quantity sold must be <= inventory
+            price = round(random.uniform(5, 500), 2)  # Random price
+            sold_by.add((sid, pid))  # Mark this (sid, pid) pair as used
+            writer.writerow([sid, pid, quantity, price])
+
+def gen_reviews(num_reviews):
+    writer = get_csv_writer('Reviews.csv')
+    review_ids = []
+
+    for rid in tqdm(range(num_reviews), desc="Generating Reviews"):
+        rating = random.randint(1, 5)  # Random rating between 1 and 5
+        description = fake.text(max_nb_chars=100)  # Description text
+        time_created = fake.date_time_this_decade()  # Timestamp for review
+        writer.writerow([rid, rating, description, time_created])
+        review_ids.append(rid)
+
+    return review_ids
+
+def gen_product_reviews_and_seller_reviews(review_ids, user_ids, product_ids, seller_ids):
+    product_writer = get_csv_writer('ProductReviews.csv')
+    seller_writer = get_csv_writer('SellerReviews.csv')
+    used_product_pairs = set()  # Track (uid, pid) for uniqueness in ProductReviews
+    used_seller_pairs = set()   # Track (uid, sid) for uniqueness in SellerReviews
+
+    for rid in tqdm(review_ids, desc="Generating ProductReviews and SellerReviews"):
+        uid = random.choice(user_ids)  # Select a random user for the review
+
+        if random.choice([True, False]):  # Randomly decide if it's a product review
+            # Generate ProductReview entry
+            while True:
+                pid = random.choice(product_ids)
+                if (uid, pid) not in used_product_pairs:
+                    used_product_pairs.add((uid, pid))
+                    product_writer.writerow([rid, uid, pid])  # Write to ProductReviews.csv
+                    break
+        else:
+            # Generate SellerReview entry
+            while True:
+                sid = random.choice(seller_ids)
+                if (uid, sid) not in used_seller_pairs:
+                    used_seller_pairs.add((uid, sid))
+                    seller_writer.writerow([rid, uid, sid])  # Write to SellerReviews.csv
+                    break
 
 
-def gen_purchases(num_purchases, available_pids):
-    with open('Purchases.csv', 'w') as f:
-        writer = get_csv_writer(f)
-        print('Purchases...', end=' ', flush=True)
-        for id in range(num_purchases):
-            if id % 100 == 0:
-                print(f'{id}', end=' ', flush=True)
-            uid = fake.random_int(min=0, max=num_users-1)
-            pid = fake.random_element(elements=available_pids)
-            time_purchased = fake.date_time()
-            writer.writerow([id, uid, pid, time_purchased])
-        print(f'{num_purchases} generated')
-    return
+def gen_helpfulness(review_ids, user_ids):
+    writer = get_csv_writer('Helpfulness.csv')
+    used_pairs = set()  # Track (uid, rid) for uniqueness
+
+    for rid in tqdm(review_ids, desc="Generating Helpfulness"):
+        uid = random.choice(user_ids)
+        if (uid, rid) not in used_pairs:
+            used_pairs.add((uid, rid))
+            value = random.choice([-1, 0, 1])  # Random feedback value
+            writer.writerow([uid, rid, value])
 
 
-gen_users(num_users)
-available_pids = gen_products(num_products)
-gen_purchases(num_purchases, available_pids)
+
+user_ids = gen_users(NUM_USERS)  # Generate users
+seller_ids = gen_sellers(user_ids, NUM_SELLERS)  # Generate sellers from users
+product_ids = gen_products(NUM_PRODUCTS)  # Generate products
+inventory = gen_inventory(seller_ids, product_ids, NUM_INVENTORY)
+gen_sold_by(inventory, NUM_SOLD_BY)
+review_ids = gen_reviews(NUM_REVIEWS)
+gen_product_reviews_and_seller_reviews(review_ids, user_ids, product_ids, seller_ids)
+gen_helpfulness(review_ids, user_ids)

@@ -234,6 +234,65 @@ class Product:
             return True
         return False
     
+    @staticmethod
+    def get_available_products_paginated(page, per_page=12, available=True):
+        offset = (page - 1) * per_page
+        print(f"Fetching products for page {page} with OFFSET {offset} and LIMIT {per_page}")
+        rows = app.db.execute('''
+            SELECT p.id, p.name, p.description, p.available, MIN(s.price) AS price
+            FROM Products p
+            JOIN SoldBy s ON p.id = s.pid
+            WHERE p.available = :available
+            GROUP BY p.id
+            ORDER BY p.id
+            LIMIT :per_page OFFSET :offset
+            ''',
+            per_page=per_page, offset=offset, available=available)
+        print(f"Fetched {len(rows)} products for page {page}")
+        return rows
+    
+    @staticmethod
+    def count_available():
+        result = app.db.execute('''
+            SELECT COUNT(DISTINCT p.id)
+            FROM Products p
+            JOIN SoldBy s ON p.id = s.pid
+            WHERE available = TRUE
+        ''')
+        return result[0][0] if result else 0
+    
+    @staticmethod
+    def get_reviews_paginated(pid, page, per_page=5):
+        offset = (page - 1) * per_page
+        rows = app.db.execute('''
+            SELECT r1.id AS id, u1.firstname AS reviewfirst, u1.lastname AS reviewlast, r1.rating, 
+                r1.description AS ratingdescrip, r1.time_created, COALESCE(SUM(h.value), 0) AS helpfulness
+            FROM Products AS p
+            JOIN ProductReviews AS r ON p.id = r.pid
+            JOIN Reviews AS r1 ON r1.id = r.id
+            JOIN Users AS u1 ON u1.id = r.uid
+            LEFT JOIN Helpfulness AS h ON h.rid = r.id
+            WHERE p.id = :pid
+            GROUP BY r1.id, u1.firstname, u1.lastname, r1.rating, r1.description, r1.time_created
+            ORDER BY r1.time_created DESC
+            LIMIT :per_page OFFSET :offset
+            ''',
+            pid=pid, per_page=per_page, offset=offset
+        )
+        return rows
+
+    @staticmethod
+    def count_reviews(pid):
+        result = app.db.execute('''
+            SELECT COUNT(r1.id)
+            FROM ProductReviews AS r
+            JOIN Reviews AS r1 ON r.id = r1.id
+            WHERE r.pid = :pid
+            ''',
+            pid=pid
+        )
+        return result[0][0] if result else 0
+
     
     # @staticmethod
     # def get_sellers_for_product(pid):

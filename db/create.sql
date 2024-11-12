@@ -90,7 +90,8 @@ CREATE TABLE CategoryOf (
 CREATE TABLE Inventory (
     sid INT NOT NULL REFERENCES Sellers(id),
     pid INT NOT NULL REFERENCES Products(id),
-    quantity INT NOT NULL
+    quantity INT NOT NULL,
+    UNIQUE (sid, pid)
 );
 
 CREATE TABLE Helpfulness (
