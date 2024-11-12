@@ -48,39 +48,43 @@
         
         <div class="col-md-6 d-flex flex-column align-items-start">
             <!-- Display Price, updates when selecting different sellers -->
-            <h2 class="text-success">Price: $<span id="display-price">{{ "{:.2f}".format(seller_info[0].price) }}</span></h2>
-            
-            <!-- Seller Display, styled to match Price display -->
-            <form action="{{ url_for('inventories.get_stock') }}">
-                <input type="hidden" id="selected-seller-id" name="sid" value="{{ seller_info[0].id }}">
-                <h2 class="text-success">Sold By:
-                    <button type="submit" class="seller-link">
-                        <span id="current-seller-name">{{ seller_info[0].sellerfirst }} {{ seller_info[0].sellerlast }}</span>
+            {% if seller_info %}
+                <h2 class="text-success">Price: $<span id="display-price">{{ "{:.2f}".format(seller_info[0].price) }}</span></h2>
+                
+                <!-- Seller Display, styled to match Price display -->
+                <form action="{{ url_for('inventories.get_stock') }}">
+                    <input type="hidden" id="selected-seller-id" name="sid" value="{{ seller_info[0].id }}">
+                    <h2 class="text-success">Sold By:
+                        <button type="submit" class="seller-link">
+                            <span id="current-seller-name">{{ seller_info[0].sellerfirst }} {{ seller_info[0].sellerlast }}</span>
+                        </button>
+                    </h2>
+                </form>
+
+                <!-- Seller Dropdown List, displayed below Seller Display -->
+                <div class="mt-2">
+                    <select class="form-select" id="seller-select">
+                        {% for seller in seller_info %}
+                        <option value="{{ seller.id }}" data-price="{{ seller.price }}" data-quantity="{{ seller.quantity }}" 
+                                data-name="{{ seller.sellerfirst }} {{ seller.sellerlast }}">
+                            {{ seller.sellerfirst }} {{ seller.sellerlast }} - ${{ "{:.2f}".format(seller.price) }} (Qty: {{ seller.quantity }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Quantity and Add to Cart Form -->
+                <form action="{{ url_for('cart.cart') }}" method="post" class="mt-3">
+                    <input type="hidden" name="product_id" value="{{ product_info[0].id }}">
+                    <input type="hidden" name="seller_id" id="selected-seller-id" value="{{ seller_info[0].id }}">
+                    <input type="number" min="1" max="{{ seller_info[0].quantity }}" value="1" name="quantity" id="quantity-input" required>
+                    <button type="submit" class="btn btn-light mt-2" style="background: #f0c14b; border-color: #f0c14b;">
+                        Add to Cart
                     </button>
-                </h2>
-            </form>
-
-            <!-- Seller Dropdown List, displayed below Seller Display -->
-            <div class="mt-2">
-                <select class="form-select" id="seller-select">
-                    {% for seller in seller_info %}
-                    <option value="{{ seller.id }}" data-price="{{ seller.price }}" data-quantity="{{ seller.quantity }}" 
-                            data-name="{{ seller.sellerfirst }} {{ seller.sellerlast }}">
-                        {{ seller.sellerfirst }} {{ seller.sellerlast }} - ${{ "{:.2f}".format(seller.price) }} (Qty: {{ seller.quantity }})
-                    </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <!-- Quantity and Add to Cart Form -->
-            <form action="{{ url_for('cart.cart') }}" method="post" class="mt-3">
-                <input type="hidden" name="product_id" value="{{ product_info[0].id }}">
-                <input type="hidden" name="seller_id" id="selected-seller-id" value="{{ seller_info[0].id }}">
-                <input type="number" min="1" max="{{ seller_info[0].quantity }}" value="1" name="quantity" id="quantity-input" required>
-                <button type="submit" class="btn btn-light mt-2" style="background: #f0c14b; border-color: #f0c14b;">
-                    Add to Cart
-                </button>
-            </form>
+                </form>
+            {% else %}
+            <h2>This product is not sold by any sellers</h2>
+            {% endif %}
         </div>
     </div>
 

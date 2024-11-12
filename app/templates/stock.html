@@ -89,69 +89,68 @@
   {% endif %}
 </div>
 
-    <!-- Product List -->
-    <div class="container mt-5">
-      <h3>Products Available</h3>
-      <div class="row">
-        {% if stocked %}
-          {% for s in stocked %}
-            <div class="col-md-4 mb-4">
-              <a href="{{ url_for('products.product_page', product_id=s.id) }}">
-                <div class="card">
-                  <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                    <span style="color: #ccc;">Product Image Placeholder</span>
-                  </div>
-                  <div class="card-body">
-                    <h5 class="card-title">{{ s.name }}</h5>
-                    <p class="card-text">
-                      <strong>Description:</strong> {{ s.description }}<br>
-                      {% if s.quantity is not none %}
-                        <strong>In Stock:</strong> {{ s.quantity }}<br>
-                      {% endif %}
-                      {% if s.price is not none %}
-                        <strong>Price:</strong> ${{ "%.2f"|format(s.price) }}
-                      {% endif %}
-                    </p>
-                  </div>
+<!-- Product List -->
+<div class="container mt-5">
+    <h3>Products Available</h3>
+    <div class="row">
+    {% if stocked %}
+        {% for s in stocked %}
+        <div class="col-md-4 mb-4">
+            <a href="{{ url_for('products.product_page', product_id=s.id) }}">
+            <div class="card">
+                <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                <span style="color: #ccc;">Product Image Placeholder</span>
                 </div>
-              </a>
+                <div class="card-body">
+                <h5 class="card-title">{{ s.name }}</h5>
+                <p class="card-text">
+                    <strong>Description:</strong> {{ s.description }}<br>
+                    {% if s.quantity is not none %}
+                    <strong>In Stock:</strong> {{ s.quantity }}<br>
+                    {% endif %}
+                    {% if s.price is not none %}
+                    <strong>Price:</strong> ${{ "%.2f"|format(s.price) }}
+                    {% endif %}
+                </p>
+                </div>
             </div>
-          {% endfor %}
+            </a>
         </div>
-
-          <!-- Pagination Controls for Products -->
-            <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4"> <!-- Flex container for centering -->
-                <ul class="pagination">
-                    {% if current_product_page > 1 %}
-                        <li class="page-item">
-                            <a class="page-link" href="{{ url_for('inventories.get_stock', sid=sid, page=current_page, product_page=current_product_page-1) }}" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
-                    {% endif %}
-
-                    {% set start_page = current_product_page - 2 if current_product_page > 3 else 1 %}
-                    {% set end_page = current_product_page + 2 if current_product_page < product_total_pages - 2 else product_total_pages %}
-
-                    {% for page_num in range(start_page, end_page + 1) %}
-                        <li class="page-item {% if page_num == current_product_page %}active{% endif %}">
-                            <a class="page-link" href="{{ url_for('inventories.get_stock', sid=sid, page=current_page, product_page=page_num) }}">{{ page_num }}</a>
-                        </li>
-                    {% endfor %}
-
-                    {% if current_product_page < product_total_pages %}
-                        <li class="page-item">
-                            <a class="page-link" href="{{ url_for('inventories.get_stock', sid=sid, page=current_page, product_page=current_product_page+1) }}" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        {% else %}
-          <p>This seller currently has no products listed.</p>
-        {% endif %}
+        {% endfor %}
     </div>
+
+        <!-- Pagination Controls for Products -->
+        <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4"> <!-- Flex container for centering -->
+            <ul class="pagination">
+                {% if current_product_page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('inventories.get_stock', sid=sid, page=current_page, product_page=current_product_page-1) }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% set start_page = current_product_page - 2 if current_product_page > 3 else 1 %}
+                {% set end_page = current_product_page + 2 if current_product_page < product_total_pages - 2 else product_total_pages %}
+
+                {% for page_num in range(start_page, end_page + 1) %}
+                    <li class="page-item {% if page_num == current_product_page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('inventories.get_stock', sid=sid, page=current_page, product_page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if current_product_page < product_total_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('inventories.get_stock', sid=sid, page=current_page, product_page=current_product_page+1) }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% else %}
+        <p>This seller currently has no products listed.</p>
+    {% endif %}
 </div>
 {% else %}
   <div class="alert alert-warning mt-4" role="alert">

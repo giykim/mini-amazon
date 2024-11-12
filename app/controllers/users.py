@@ -107,12 +107,28 @@ def user_info():
 
 @bp.route('/created-products', methods=['GET'])
 def created_products():
+    page = request.args.get('page', 1, type=int)
+    per_page = 9
+    offset = (page - 1) * per_page
+
     if current_user.is_authenticated:
-        products = Product.get_user_products(current_user.id)
+        all_products = Product.get_user_products(current_user.id)
+
+        products_count = len(all_products)
+        products = all_products[offset:offset+per_page]
     else:
+        products_count = 0
         products = None
 
-    return render_template('created_products.html', products=products)
+    # Calculate total pages based on the count of created products
+    total_pages = (products_count + per_page - 1) // per_page  # Calculate the number of pages
+
+    return render_template(
+        'created_products.html',
+        products=products,
+        page=page,
+        total_pages=total_pages
+        )
 
 
 @bp.route('/purchase-history', methods=['GET'])
