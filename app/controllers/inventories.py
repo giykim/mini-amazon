@@ -44,7 +44,7 @@ def get_stock():
     stocked = None
 
     if is_seller: 
-        if str(sid) == str(current_user.id):
+        if current_user.is_authenticated and str(sid) == str(current_user.id):
             # Display the seller's full inventory if `sid` matches current user ID
             stocked = Inventory.get_inventory_details(sid)  # Retrieves full inventory
         else:
@@ -65,6 +65,7 @@ def get_stock():
                            current_product_page=product_page,
                            total_pages=total_pages,
                            product_total_pages=product_total_pages)
+
 
 @bp.route('/vote-seller-review', methods=['POST'])
 def vote_seller_review():
@@ -102,3 +103,55 @@ def vote_seller_review():
         Review.update_vote(review_id, current_user.id, 0)
         user_vote = 0
     return jsonify({'success': True, 'new_helpfulness': helpfulness, 'user_vote': user_vote})
+
+@bp.route('/my_inventory', methods = ['GET','POST'])
+def get_s_info():
+    sid = current_user.id
+    # for reviews
+    page = request.args.get('page', 1, type=int)
+    per_page = 3
+
+    # for products sold by
+    product_page = request.args.get('product_page', 1, type=int)
+    product_per_page = 9
+
+    seller = Seller.get(sid)
+    if seller is None:
+        is_seller = False
+    else:
+        is_seller = True
+    
+    user_info = User.get(sid) if is_seller else None
+
+    # retrieving paginated reviews
+    total_reviews = Review.count_seller_reviews(sid) if is_seller else 0
+    total_pages = (total_reviews + per_page - 1) // per_page
+    seller_reviews = Review.get_seller_reviews_paginated(sid, page, per_page) if is_seller else None
+
+    # retrieving paginated products
+    total_products = Inventory.count_sold_products(sid) if is_seller else 0
+    product_total_pages = (total_products + product_per_page - 1) // product_per_page
+    stocked = None
+
+    if is_seller: 
+        if str(sid) == str(current_user.id):
+            # Display the seller's full inventory if `sid` matches current user ID
+            stocked = Inventory.get_inventory_details(sid)  # Retrieves full inventory
+        else:
+            # Display only products actively sold by the seller if `sid` is different
+            stocked = Inventory.get_sold_by_details_paginated(sid, product_page, product_per_page)  # Retrieves only items from `SoldBy` table
+    
+    # pids = Inventory.get_inventory(sid)
+    # stocked = []
+    # for p in pids:
+    #     stocked.append(Inventory.get_product_detail(p[0],sid))
+    return render_template('stock.html', 
+                           sid=sid, 
+                           is_seller=is_seller, 
+                           user_info=user_info, 
+                           seller_reviews=seller_reviews, 
+                           stocked=stocked,
+                           current_page=page,
+                           current_product_page=product_page,
+                           total_pages=total_pages,
+                           product_total_pages=product_total_pages)
