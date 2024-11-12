@@ -172,7 +172,7 @@
     </div>
     {% endif %}
     {% endif %}
-
+    {% if mine == True %}
     <h1>Inventory Management</h1>
     {% for item in stocked %}
     <div class="inventory-item">
@@ -197,6 +197,7 @@
     </div>
     <hr>
     {% endfor %}
+    {% endif %}
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
