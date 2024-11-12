@@ -177,12 +177,12 @@
     {% for item in stocked %}
     <div class="inventory-item">
         <h3>{{ item.name }}</h3>
-        <p>Quantity: {{ item.quantity }}</p>
+        <p>Quantity: {{ item.quantity}}</p>
 
         <!-- Add Stock Form -->
         <form action="{{ url_for('inventories.update_stock') }}" method="POST">
             <input type="hidden" name="action" value="add">
-            <input type="hidden" name="productID" value="{{ item.productID }}">
+            <input type="hidden" name="productID" value="{{ item.id }}">
             <input type="number" name="quantity" min="1" value="1">
             <button type="submit">Add Stock</button>
         </form>
@@ -190,7 +190,7 @@
         <!-- Remove Stock Form -->
         <form action="{{ url_for('inventories.update_stock') }}" method="POST">
             <input type="hidden" name="action" value="remove">
-            <input type="hidden" name="productID" value="{{ item.productID }}">
+            <input type="hidden" name="productID" value="{{ item.id }}">
             <input type="number" name="quantity" min="1" value="1">
             <button type="submit">Remove Stock</button>
         </form>

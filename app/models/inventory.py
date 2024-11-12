@@ -15,7 +15,9 @@ class Inventory:
             WHERE sid = :sid
             ''',
             sid=sid)
-        return rows
+        if len(rows) < 1:
+            return False
+        return rows 
 
     @staticmethod
     def get_sellers(pid):
@@ -93,9 +95,9 @@ class Inventory:
     def set_quantity(sid, pid, q):
         rows = app.db.execute('''
             UPDATE Inventory
-            SET quantity = q 
+            SET quantity = :q 
             WHERE sid = :sid AND pid = :pid
-        ''', pid=pid,sid=sid)
+        ''', pid=pid,sid=sid, q=q)
         return rows[0][0] if rows else 0
     
 

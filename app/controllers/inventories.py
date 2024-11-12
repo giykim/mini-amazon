@@ -159,7 +159,7 @@ def get_s_info():
                            product_total_pages=product_total_pages,
                            mine = True)
 
-@bp.route('/update_stock', methods=['POST'])
+@bp.route('/update_stock', methods=['GET', 'POST'])
 def update_stock():
     product_id = request.form['productID']
     action = request.form['action']
@@ -167,14 +167,14 @@ def update_stock():
 
     valid = Product.get(product_id)
 
-    if valid:
+    if valid != None:
         if action == 'add':
             q = Inventory.get_product_detail(product_id,current_user.id)[0][3]+quantity
             Inventory.set_quantity(product_id,current_user.id,q)
         elif action == 'remove':
             q = max(0,Inventory.get_product_detail(product_id,current_user.id)[3]-quantity)
             Inventory.set_quantity(product_id,current_user.id,q)
-    return redirect(url_for('my_inventory'))
+    return redirect(url_for('inventories.get_s_info'))
 
 
 
