@@ -53,7 +53,7 @@
                 
                 <!-- Seller Display, styled to match Price display -->
                 <form action="{{ url_for('inventories.get_stock') }}">
-                    <input type="hidden" id="selected-seller-id" name="sid" value="{{ seller_info[0].id }}">
+                    <input type="hidden" class="selected-seller-id" name="sid" value="{{ seller_info[0].id }}">
                     <h2 class="text-success">Sold By:
                         <button type="submit" class="seller-link">
                             <span id="current-seller-name">{{ seller_info[0].sellerfirst }} {{ seller_info[0].sellerlast }}</span>
@@ -76,7 +76,7 @@
                 <!-- Quantity and Add to Cart Form -->
                 <form action="{{ url_for('cart.cart') }}" method="post" class="mt-3">
                     <input type="hidden" name="product_id" value="{{ product_info[0].id }}">
-                    <input type="hidden" name="seller_id" id="selected-seller-id" value="{{ seller_info[0].id }}">
+                    <input type="hidden" name="seller_id" class="selected-seller-id" value="{{ seller_info[0].id }}">
                     <input type="number" min="1" max="{{ seller_info[0].quantity }}" value="1" name="quantity" id="quantity-input" required>
                     <button type="submit" class="btn btn-light mt-2" style="background: #f0c14b; border-color: #f0c14b;">
                         Add to Cart
@@ -331,10 +331,10 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const selectedSellerIds = document.querySelectorAll('.selected-seller-id');
         const sellerSelect = document.getElementById('seller-select');
         const displayPrice = document.getElementById('display-price');
         const quantityInput = document.getElementById('quantity-input');
-        const selectedSellerId = document.getElementById('selected-seller-id');
         const currentSellerName = document.getElementById('current-seller-name');
 
         // Set initial seller name and price display based on default selection
@@ -352,8 +352,11 @@
             // Update displayed price, quantity, seller ID, and seller name
             displayPrice.textContent = parseFloat(selectedPrice).toFixed(2);
             quantityInput.max = selectedQuantity;
-            selectedSellerId.value = selectedSeller;
             currentSellerName.textContent = selectedSellerName;
+
+            selectedSellerIds.forEach(element => {
+                element.value = selectedSeller;
+            });
         });
     });
 </script>

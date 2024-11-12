@@ -74,6 +74,7 @@
       <div class="item-details">
         <h3>{{ product.name }}</h3>
         <p>{{ product.description }}</p>
+        <p>Sold by: {{ product.seller_first }} {{ product.seller_last }}</p>
       </div>
       <div class="item-price">${{ product.price }}</div>
       <form action="{{ url_for('cart.cart') }}" method="post" onsubmit="return validateQuantity(this)">
