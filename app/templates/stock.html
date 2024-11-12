@@ -4,221 +4,244 @@
 {% if is_seller %}
 
 <h2 class="mt-4">Seller Search</h2>
-  <div>
+<div>
     <h3>Seller: {{ user_info.firstname }} {{ user_info.lastname }} ({{ user_info.email }})</h3>
-    
-<!-- Display Seller Reviews -->
-<div class="container mt-5">
-  <h3>Reviews for Seller</h3>
-  {% if seller_reviews %}
-      {% for review in seller_reviews %}
-          <div class="card mb-4" id="review-{{ review.id }}">
-              <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-start">
-                      <div>
-                          <h5 class="card-title">{{ review.firstname }} {{ review.lastname }}</h5>
-                          <p class="card-text">{{ review.description }}</p>
-                          <p class="card-text"><small class="text-muted">Reviewed on {{ review.time_created.strftime('%B %d, %Y') }}</small></p>
-                      </div>
-                      <div class="rating" style="background-color: #FFC107; color: black; padding: 5px 10px; border-radius: 5px;">
-                          {{ review.rating }}/5
-                      </div>
-                  </div>
 
-                  <!-- Helpfulness Section with Voting Buttons -->
-                  <div class="d-flex justify-content-end align-items-center" style="margin-top: -30px;"> <!-- Adjusted alignment -->
+    <!-- Display Seller Reviews -->
+    <div class="container mt-5">
+        <h3>Reviews for Seller</h3>
+        {% if seller_reviews %}
+        {% for review in seller_reviews %}
+        <div class="card mb-4" id="review-{{ review.id }}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5 class="card-title">{{ review.firstname }} {{ review.lastname }}</h5>
+                        <p class="card-text">{{ review.description }}</p>
+                        <p class="card-text"><small class="text-muted">Reviewed on {{ review.time_created.strftime('%B
+                                %d, %Y') }}</small></p>
+                    </div>
+                    <div class="rating"
+                        style="background-color: #FFC107; color: black; padding: 5px 10px; border-radius: 5px;">
+                        {{ review.rating }}/5
+                    </div>
+                </div>
+
+                <!-- Helpfulness Section with Voting Buttons -->
+                <div class="d-flex justify-content-end align-items-center" style="margin-top: -30px;">
+                    <!-- Adjusted alignment -->
                     <!-- Helpfulness Count -->
-                    <small class="text-muted me-2">Helpfulness: <span class="helpfulness-count" data-review-id="{{ review.id }}">{{ review.helpfulness }}</span></small>
+                    <small class="text-muted me-2">Helpfulness: <span class="helpfulness-count"
+                            data-review-id="{{ review.id }}">{{ review.helpfulness }}</span></small>
 
                     <!-- Voting Buttons with Gray Box Styling -->
-                    <button 
-                    class="vote-button upvote-button me-1" 
-                    data-review-id="{{ review.id }}" 
-                    data-vote="1" 
-                    aria-label="Upvote"
-                    style="border: 1px solid #ccc; background-color: #f8f9fa; padding: 5px; border-radius: 5px;"
-                    >
-                    <i class="fas fa-thumbs-up text-success" style="font-size: 1.2em;"></i>
+                    <button class="vote-button upvote-button me-1" data-review-id="{{ review.id }}" data-vote="1"
+                        aria-label="Upvote"
+                        style="border: 1px solid #ccc; background-color: #f8f9fa; padding: 5px; border-radius: 5px;">
+                        <i class="fas fa-thumbs-up text-success" style="font-size: 1.2em;"></i>
                     </button>
 
-                    <button 
-                    class="vote-button downvote-button" 
-                    data-review-id="{{ review.id }}" 
-                    data-vote="-1" 
-                    aria-label="Downvote"
-                    style="border: 1px solid #ccc; background-color: #f8f9fa; padding: 5px; border-radius: 5px;"
-                    >
-                    <i class="fas fa-thumbs-down text-danger" style="font-size: 1.2em;"></i>
+                    <button class="vote-button downvote-button" data-review-id="{{ review.id }}" data-vote="-1"
+                        aria-label="Downvote"
+                        style="border: 1px solid #ccc; background-color: #f8f9fa; padding: 5px; border-radius: 5px;">
+                        <i class="fas fa-thumbs-down text-danger" style="font-size: 1.2em;"></i>
                     </button>
-                </div>
-              </div>
-          </div>
-      {% endfor %}
-
-      <!-- Pagination Controls -->
-      <nav aria-label="Review pagination" class="mt-4">
-          <ul class="pagination justify-content-center">
-              {% if current_page > 1 %}
-                  <li class="page-item">
-                      <a class="page-link" href="{{ url_for('inventories.get_stock', sid=sid, page=current_page-1) }}" aria-label="Previous">
-                          <span aria-hidden="true">&laquo;</span>
-                      </a>
-                  </li>
-              {% endif %}
-
-              {% set start_page = current_page - 2 if current_page > 3 else 1 %}
-              {% set end_page = current_page + 2 if current_page < total_pages - 2 else total_pages %}
-
-              {% for page_num in range(start_page, end_page + 1) %}
-                  <li class="page-item {% if page_num == current_page %}active{% endif %}">
-                      <a class="page-link" href="{{ url_for('inventories.get_stock', sid=sid, page=page_num) }}">{{ page_num }}</a>
-                  </li>
-              {% endfor %}
-
-              {% if current_page < total_pages %}
-                  <li class="page-item">
-                      <a class="page-link" href="{{ url_for('inventories.get_stock', sid=sid, page=current_page+1) }}" aria-label="Next">
-                          <span aria-hidden="true">&raquo;</span>
-                      </a>
-                  </li>
-              {% endif %}
-          </ul>
-      </nav>
-  {% else %}
-      <p>No reviews available for this seller.</p>
-  {% endif %}
-</div>
-
-<!-- Product List -->
-<div class="container mt-5">
-    <h3>Products Available</h3>
-    <div class="row">
-    {% if stocked %}
-        {% for s in stocked %}
-        <div class="col-md-4 mb-4">
-            <a href="{{ url_for('products.product_page', product_id=s.id) }}">
-            <div class="card">
-                <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                <span style="color: #ccc;">Product Image Placeholder</span>
-                </div>
-                <div class="card-body">
-                <h5 class="card-title">{{ s.name }}</h5>
-                <p class="card-text">
-                    <strong>Description:</strong> {{ s.description }}<br>
-                    {% if s.quantity is not none %}
-                    <strong>In Stock:</strong> {{ s.quantity }}<br>
-                    {% endif %}
-                    {% if s.price is not none %}
-                    <strong>Price:</strong> ${{ "%.2f"|format(s.price) }}
-                    {% endif %}
-                </p>
                 </div>
             </div>
-            </a>
         </div>
         {% endfor %}
+
+        <!-- Pagination Controls -->
+        <nav aria-label="Review pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if current_page > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('inventories.get_stock', sid=sid, page=current_page-1) }}"
+                        aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% set start_page = current_page - 2 if current_page > 3 else 1 %}
+                {% set end_page = current_page + 2 if current_page < total_pages - 2 else total_pages %} {% for page_num
+                    in range(start_page, end_page + 1) %} <li
+                    class="page-item {% if page_num == current_page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('inventories.get_stock', sid=sid, page=page_num) }}">{{
+                        page_num }}</a>
+                    </li>
+                    {% endfor %}
+
+                    {% if current_page < total_pages %} <li class="page-item">
+                        <a class="page-link" href="{{ url_for('inventories.get_stock', sid=sid, page=current_page+1) }}"
+                            aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                        </li>
+                        {% endif %}
+            </ul>
+        </nav>
+        {% else %}
+        <p>No reviews available for this seller.</p>
+        {% endif %}
     </div>
 
+    <!-- Product List -->
+    <div class="container mt-5">
+        <h3>Products Available</h3>
+        <div class="row">
+            {% if stocked %}
+            {% for s in stocked %}
+            <div class="col-md-4 mb-4">
+                <a href="{{ url_for('products.product_page', product_id=s.id) }}">
+                    <div class="card">
+                        <div class="card-img-top"
+                            style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                            <span style="color: #ccc;">Product Image Placeholder</span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ s.name }}</h5>
+                            <p class="card-text">
+                                <strong>Description:</strong> {{ s.description }}<br>
+                                {% if s.quantity is not none %}
+                                <strong>In Stock:</strong> {{ s.quantity }}<br>
+                                {% endif %}
+                                {% if s.price is not none %}
+                                <strong>Price:</strong> ${{ "%.2f"|format(s.price) }}
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
         <!-- Pagination Controls for Products -->
-        <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4"> <!-- Flex container for centering -->
+        <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4">
+            <!-- Flex container for centering -->
             <ul class="pagination">
                 {% if current_product_page > 1 %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for('inventories.get_stock', sid=sid, page=current_page, product_page=current_product_page-1) }}" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
+                <li class="page-item">
+                    <a class="page-link"
+                        href="{{ url_for('inventories.get_stock', sid=sid, page=current_page, product_page=current_product_page-1) }}"
+                        aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
                 {% endif %}
 
                 {% set start_page = current_product_page - 2 if current_product_page > 3 else 1 %}
-                {% set end_page = current_product_page + 2 if current_product_page < product_total_pages - 2 else product_total_pages %}
-
-                {% for page_num in range(start_page, end_page + 1) %}
-                    <li class="page-item {% if page_num == current_product_page %}active{% endif %}">
-                        <a class="page-link" href="{{ url_for('inventories.get_stock', sid=sid, page=current_page, product_page=page_num) }}">{{ page_num }}</a>
+                {% set end_page = current_product_page + 2 if current_product_page < product_total_pages - 2 else
+                    product_total_pages %} {% for page_num in range(start_page, end_page + 1) %} <li
+                    class="page-item {% if page_num == current_product_page %}active{% endif %}">
+                    <a class="page-link"
+                        href="{{ url_for('inventories.get_stock', sid=sid, page=current_page, product_page=page_num) }}">{{
+                        page_num }}</a>
                     </li>
-                {% endfor %}
+                    {% endfor %}
 
-                {% if current_product_page < product_total_pages %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for('inventories.get_stock', sid=sid, page=current_page, product_page=current_product_page+1) }}" aria-label="Next">
+                    {% if current_product_page < product_total_pages %} <li class="page-item">
+                        <a class="page-link"
+                            href="{{ url_for('inventories.get_stock', sid=sid, page=current_page, product_page=current_product_page+1) }}"
+                            aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
-                    </li>
-                {% endif %}
+                        </li>
+                        {% endif %}
             </ul>
         </nav>
-    {% else %}
+        {% else %}
         <p>This seller currently has no products listed.</p>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="alert alert-warning mt-4" role="alert">
+        The user associated with this ID is not a seller!
+    </div>
     {% endif %}
-</div>
-{% else %}
-  <div class="alert alert-warning mt-4" role="alert">
-    The user associated with this ID is not a seller!
-  </div>
-{% endif %}
 
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-      const upvoteButtons = document.querySelectorAll('.upvote-button');
-      const downvoteButtons = document.querySelectorAll('.downvote-button');
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const activeColor = '#FFC107'; // Active color for selected buttons
+            const defaultColor = '#f8f9fa'; // Default color for unselected buttons
 
-      upvoteButtons.forEach(button => {
-          button.addEventListener('click', () => handleVote(button, 1));
-      });
+            // Loop through each helpfulness count and style the corresponding buttons
+            document.querySelectorAll('.helpfulness-count').forEach(helpfulnessElement => {
+                const helpfulness = parseInt(helpfulnessElement.textContent, 10);
+                const reviewId = helpfulnessElement.getAttribute('data-review-id');
+                const upvoteButton = document.querySelector(`.upvote-button[data-review-id="${reviewId}"]`);
+                const downvoteButton = document.querySelector(`.downvote-button[data-review-id="${reviewId}"]`);
 
-      downvoteButtons.forEach(button => {
-          button.addEventListener('click', () => handleVote(button, -1));
-      });
+                // Set button colors based on helpfulness value
+                if (helpfulness > 0) {
+                    upvoteButton.style.backgroundColor = activeColor;
+                    downvoteButton.style.backgroundColor = defaultColor;
+                } else if (helpfulness < 0) {
+                    downvoteButton.style.backgroundColor = activeColor;
+                    upvoteButton.style.backgroundColor = defaultColor;
+                } else {
+                    // Neutral color if helpfulness is 0
+                    upvoteButton.style.backgroundColor = defaultColor;
+                    downvoteButton.style.backgroundColor = defaultColor;
+                }
+            });
 
-      function handleVote(button, voteValue) {
-          const reviewId = button.getAttribute('data-review-id');
-          const reviewCard = document.getElementById(`review-${reviewId}`);
-          const helpfulnessCount = reviewCard.querySelector('.helpfulness-count');
-          const upvoteButton = reviewCard.querySelector('.upvote-button');
-          const downvoteButton = reviewCard.querySelector('.downvote-button');
+            const upvoteButtons = document.querySelectorAll('.upvote-button');
+            const downvoteButtons = document.querySelectorAll('.downvote-button');
 
-          let currentVote = upvoteButton.classList.contains('active') ? 1 :
-                          downvoteButton.classList.contains('active') ? -1 : 0;
+            upvoteButtons.forEach(button => {
+                button.addEventListener('click', () => handleVote(button, 1));
+            });
 
-          let newVote = (currentVote === voteValue) ? 0 : voteValue;
+            downvoteButtons.forEach(button => {
+                button.addEventListener('click', () => handleVote(button, -1));
+            });
 
-          fetch('/vote', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ review_id: reviewId, vote: newVote })
-          })
-          .then(response => response.json())
-          .then(data => {
-              if (data.success) {
-                  helpfulnessCount.textContent = data.new_helpfulness;
+            function handleVote(button, voteValue) {
+                const reviewId = button.getAttribute('data-review-id');
+                const reviewCard = document.getElementById(`review-${reviewId}`);
+                const helpfulnessCount = reviewCard.querySelector('.helpfulness-count');
+                const upvoteButton = reviewCard.querySelector('.upvote-button');
+                const downvoteButton = reviewCard.querySelector('.downvote-button');
 
-                  // Apply a darker yellow when active
-                  const activeColor = '#FFC107';
-                  const defaultColor = '';
+                let currentVote = upvoteButton.classList.contains('active') ? 1 :
+                    downvoteButton.classList.contains('active') ? -1 : 0;
 
-                  if (data.user_vote === 1) {
-                      upvoteButton.classList.add('active');
-                      downvoteButton.classList.remove('active');
-                      upvoteButton.style.backgroundColor = activeColor;
-                      downvoteButton.style.backgroundColor = defaultColor;
-                  } else if (data.user_vote === -1) {
-                      downvoteButton.classList.add('active');
-                      upvoteButton.classList.remove('active');
-                      downvoteButton.style.backgroundColor = activeColor;
-                      upvoteButton.style.backgroundColor = defaultColor;
-                  } else {
-                      upvoteButton.classList.remove('active');
-                      downvoteButton.classList.remove('active');
-                      upvoteButton.style.backgroundColor = defaultColor;
-                      downvoteButton.style.backgroundColor = defaultColor;
-                  }
-              } else {
-                  console.error("Error:", data.message);
-              }
-          })
-          .catch(error => console.error("Fetch error:", error));
-      }
-  });
-</script>
-{% endblock %}
+                let newVote = (currentVote === voteValue) ? 0 : voteValue;
+
+                fetch('/vote', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ review_id: reviewId, vote: newVote })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            helpfulnessCount.textContent = data.new_helpfulness;
+
+                            if (data.user_vote === 1) {
+                                upvoteButton.classList.add('active');
+                                downvoteButton.classList.remove('active');
+                                upvoteButton.style.backgroundColor = activeColor;
+                                downvoteButton.style.backgroundColor = defaultColor;
+                            } else if (data.user_vote === -1) {
+                                downvoteButton.classList.add('active');
+                                upvoteButton.classList.remove('active');
+                                downvoteButton.style.backgroundColor = activeColor;
+                                upvoteButton.style.backgroundColor = defaultColor;
+                            } else {
+                                upvoteButton.classList.remove('active');
+                                downvoteButton.classList.remove('active');
+                                upvoteButton.style.backgroundColor = defaultColor;
+                                downvoteButton.style.backgroundColor = defaultColor;
+                            }
+                        } else {
+                            console.error("Error:", data.message);
+                        }
+                    })
+                    .catch(error => console.error("Fetch error:", error));
+            }
+        });
+    </script>
+    {% endblock %}
