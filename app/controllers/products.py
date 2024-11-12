@@ -14,11 +14,27 @@ bp = Blueprint('products', __name__)
 
 @bp.route('/search', methods=['GET'])
 def search():
+    page = request.args.get('page', 1, type=int)
+    per_page = 9
+    offset = (page - 1) * per_page
+
     query = request.args.get('query')
 
-    products = Product.search_products(query)
+    all_products = Product.search_products(query)
+    products_count = len(all_products)
+    products = all_products[offset:offset+per_page]
 
-    return render_template('search.html', query=query, products=products)
+    # Calculate total pages based on the count of created products
+    total_pages = (products_count + per_page - 1) // per_page  # Calculate the number of pages
+
+    return render_template(
+        'search.html',
+        query=query,
+        products_count=products_count,
+        products=products,
+        page=page,
+        total_pages=total_pages
+        )
 
 
 @bp.route('/product-page/<int:product_id>', methods=['GET'])
