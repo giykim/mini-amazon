@@ -7,18 +7,47 @@
 <h2 class="mt-4">Purchase History:</h2>
 
 {% if current_user.is_authenticated %}
-    <div class="container mt-4">
+<div class="container mt-4">
+    {% if purchase_history %}
         {% for purchase in purchase_history %}
             <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">{{ purchase.product_name }}</h5>
-                <p class="card-text"><strong>Seller:</strong> {{ purchase.seller_first }} {{ purchase.seller_last }}</p>
-                <p class="card-text"><strong>Time Purchased:</strong> {{ purchase.time_purchased }}</p>
-                <p class="card-text"><strong>Quantity:</strong> {{ purchase.quantity }}</p>
-            </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ purchase.product_name }}</h5>
+                    <p class="card-text"><strong>Seller:</strong> {{ purchase.seller_first }} {{ purchase.seller_last }}</p>
+                    <p class="card-text"><strong>Time Purchased:</strong> {{ purchase.time_purchased }}</p>
+                    <p class="card-text"><strong>Quantity:</strong> {{ purchase.quantity }}</p>
+                </div>
             </div>
         {% endfor %}
-    </div>
+        <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4">
+            <ul class="pagination">
+                {% if page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('users.purchase_history', page=page-1) }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% set start_page = page - 2 if page > 3 else 1 %}
+                {% set end_page = page + 2 if page < total_pages - 2 else total_pages %}
+                {% for page_num in range(start_page, end_page + 1) %}
+                    <li class="page-item {% if page_num == page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('users.purchase_history', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if page < total_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('users.purchase_history', page=page+1) }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
 
 {% else %}
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your purchase history!</p>

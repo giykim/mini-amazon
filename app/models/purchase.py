@@ -24,6 +24,23 @@ class Purchase:
         )
         return Purchase(*(rows[0])) if rows else None
 
+    
+    @staticmethod
+    def get_all_by_uid(uid):
+        rows = app.db.execute('''
+            SELECT pu.uid, pu.pid, pu.sid, pu.time_purchased, pu.quantity,
+                pr.name AS product_name, u.firstname AS seller_first, u.lastname AS seller_last
+            FROM Purchases pu
+            JOIN Products pr ON pu.pid = pr.id
+            JOIN Users u ON pu.sid = u.id
+            WHERE uid = :uid
+            ORDER BY time_purchased DESC
+            ''',
+            uid=uid
+        )
+        return rows
+
+
     @staticmethod
     def get_all_by_uid_since(uid, since):
         rows = app.db.execute('''
@@ -131,3 +148,24 @@ class Purchase:
         )
 
         # Need sellers to fulfill order
+
+    
+    @staticmethod
+    def get_paginated(uid, page, per_page):
+        offset = (page - 1) * per_page
+
+        rows = app.db.execute('''
+            SELECT pu.uid, pu.pid, pu.sid, pu.time_purchased, pu.quantity,
+                pr.name AS product_name, u.firstname AS seller_first, u.lastname AS seller_last
+            FROM Purchases pu
+            JOIN Products pr ON pu.pid = pr.id
+            JOIN Users u ON pu.sid = u.id
+            WHERE uid = :uid
+            ORDER BY time_purchased DESC
+            LIMIT :per_page OFFSET :offset
+            ''',
+            uid=uid,
+            per_page=per_page,
+            offset=offset
+        )
+        return rows

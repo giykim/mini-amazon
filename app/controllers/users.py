@@ -117,14 +117,32 @@ def created_products():
 
 @bp.route('/purchase-history', methods=['GET'])
 def purchase_history():
+    page = request.args.get('page', 1, type=int)
+    per_page = 3
+
     if current_user.is_authenticated:
-        # find the products current user has bought:
-        purchases = Purchase.get_all_by_uid_since(
-            current_user.id, datetime.datetime(1980, 9, 14, 0, 0, 0))
+        # Find the products current user has bought to display on current page
+        # purchases = Purchase.get_paginated(uid=current_user.id, page=page, per_page=per_page)
+
+        all_purchases = Purchase.get_all_by_uid(uid=current_user.id)
+        purchases_count = len(all_purchases)
+
+        offset = (page - 1) * per_page
+
+        purchases = all_purchases[offset:offset+per_page]
     else:
+        purchases_count = 0
         purchases = None
 
-    return render_template('purchase_history.html', purchase_history=purchases)
+    # Calculate total pages based on the count of available products
+    total_pages = (purchases_count + per_page - 1) // per_page  # Calculate the number of pages
+
+    return render_template(
+        'purchase_history.html',
+        purchase_history=purchases,
+        page=page,
+        total_pages=total_pages
+        )
 
 
 @bp.route('/review-history', methods=['GET'])

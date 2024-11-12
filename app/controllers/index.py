@@ -33,9 +33,6 @@ def index():
     # Get paginated products for the current page
     avail_products = Product.get_available_products_paginated(page=page, per_page=per_page)
 
-    # Find the most expensive products
-    expensive_products = Product.get_k_expensive(3)
-
     # Calculate total pages based on the count of available products
     total_products = Product.count_available()  # A new function to count available products
     total_pages = (total_products + per_page - 1) // per_page  # Calculate the number of pages
@@ -44,7 +41,6 @@ def index():
     return render_template(
         'index.html',
         avail_products=avail_products,
-        expensive_products=expensive_products,
         page=page,
         total_pages=total_pages
     )
