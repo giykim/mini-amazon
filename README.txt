@@ -1,4 +1,5 @@
 - Standard Project
+    - https://gitlab.oit.duke.edu/gk122/mini-amazon
 
 - Team Name
     - Temu from Wish
@@ -12,6 +13,10 @@
 - Other Help
     - Skeleton Code Provided by COMPSCI 316 Professor and TAs
     - Assistance for frontend aspects of website from ChatGPT
+
+MS4:
+
+Link to Video: 
 
 MS3:
 Giyoung Kim: Created API endpoints for Products and Social
