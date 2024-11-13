@@ -95,7 +95,7 @@
         <h3>Your Stocked Items</h3>
         {% endif %}
         <div class="row">
-            {% if stocked %}
+        {% if stocked %}
             {% for s in stocked %}
             <div class="col-md-4 mb-4">
                 <a href="{{ url_for('products.product_page', product_id=s.id) }}">
@@ -111,7 +111,7 @@
                                 {% if s.quantity is not none %}
                                 <strong>In Stock:</strong> {{ s.quantity }}<br>
                                 {% endif %}
-                                {% if s.price is not none %}
+                                {% if mine == False and s.price is not none %}
                                 <strong>Price:</strong> ${{ "%.2f"|format(s.price) }}
                                 {% endif %}
                             </p>
@@ -173,7 +173,53 @@
     {% endif %}
     {% endif %}
     {% if mine == True %}
-    <h1>Inventory Management</h1>
+    <head>
+        <meta charset="UTF-8">
+        <h1>Inventory Management</h1>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+            }
+            .container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+            .inventory-item {
+                flex: 1 1 calc(33.33% - 20px);
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                padding: 15px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+            .inventory-item h3 {
+                margin-top: 0;
+            }
+            .inventory-item form {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 10px;
+            }
+            .inventory-item form input[type="number"] {
+                width: 60px;
+                margin-right: 10px;
+            }
+            button {
+                padding: 5px 10px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            button:hover {
+                background-color: #45a049;
+            }
+        </style>
+    </head>
+    <body>
     {% for item in stocked %}
     <div class="inventory-item">
         <h3>{{ item.name }}</h3>
@@ -181,23 +227,15 @@
 
         <!-- Add Stock Form -->
         <form action="{{ url_for('inventories.update_stock') }}" method="POST">
-            <input type="hidden" name="action" value="add">
+            <input type="hidden" name="action" value="set">
             <input type="hidden" name="productID" value="{{ item.id }}">
-            <input type="number" name="quantity" min="1" value="1">
-            <button type="submit">Add Stock</button>
-        </form>
-
-        <!-- Remove Stock Form -->
-        <form action="{{ url_for('inventories.update_stock') }}" method="POST">
-            <input type="hidden" name="action" value="remove">
-            <input type="hidden" name="productID" value="{{ item.id }}">
-            <input type="number" name="quantity" min="1" value="1">
-            <button type="submit">Remove Stock</button>
+            <input type="number" name="quantity" min="0" value="1">
+            <button type="submit">Set Stock</button>
         </form>
     </div>
     <hr>
     {% endfor %}
-    {% endif %}
+    {% endif %} </body>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {

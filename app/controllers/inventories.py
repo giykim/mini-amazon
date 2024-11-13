@@ -17,6 +17,16 @@ bp = Blueprint('inventories', __name__)
 @bp.route('/stock', methods = ['GET'])
 def get_stock():
     sid = request.args.get('sid')
+    
+    seller = Seller.get(sid)
+    if seller is None:
+        is_seller = False
+    else:
+        is_seller = True
+
+    if current_user.is_authenticated and str(sid) == str(current_user.id) and is_seller: 
+        return redirect(url_for('inventories.get_s_info'))
+    
     # for reviews
     page = request.args.get('page', 1, type=int)
     per_page = 3
@@ -25,11 +35,7 @@ def get_stock():
     product_page = request.args.get('product_page', 1, type=int)
     product_per_page = 9
 
-    seller = Seller.get(sid)
-    if seller is None:
-        is_seller = False
-    else:
-        is_seller = True
+    
     
     user_info = User.get(sid) if is_seller else None
 
@@ -44,13 +50,7 @@ def get_stock():
     stocked = None
 
     if is_seller: 
-        if current_user.is_authenticated and str(sid) == str(current_user.id):
-            # Display the seller's full inventory if `sid` matches current user ID
-            # stocked = Inventory.get_inventory_details(sid) Retrieves full inventory
-            stocked = Inventory.get_sold_by_details_paginated(sid, product_page, product_per_page)
-        else:
-            # Display only products actively sold by the seller if `sid` is different
-            stocked = Inventory.get_sold_by_details_paginated(sid, product_page, product_per_page)  # Retrieves only items from `SoldBy` table
+        stocked = Inventory.get_sold_by_details_paginated(sid, product_page, product_per_page)
     
     # pids = Inventory.get_inventory(sid)
     # stocked = []
@@ -137,11 +137,7 @@ def get_s_info():
     if is_seller: 
         if current_user.is_authenticated and str(sid) == str(current_user.id):
             # Display the seller's full inventory if `sid` matches current user ID
-            # stocked = Inventory.get_inventory_details(sid)  # Retrieves full inventory
-            stocked = Inventory.get_sold_by_details_paginated(sid, product_page, product_per_page)
-        else:
-            # Display only products actively sold by the seller if `sid` is different
-            stocked = Inventory.get_sold_by_details_paginated(sid, product_page, product_per_page)  # Retrieves only items from `SoldBy` table
+            stocked = Inventory.get_inventory_details(sid)
     
     # pids = Inventory.get_inventory(sid)
     # stocked = []
@@ -161,19 +157,10 @@ def get_s_info():
 
 @bp.route('/update_stock', methods=['GET', 'POST'])
 def update_stock():
-    product_id = request.form['productID']
+    product_id = int(request.form['productID'])
     action = request.form['action']
     quantity = int(request.form['quantity'])
-
-    valid = Product.get(product_id)
-
-    if valid != None:
-        if action == 'add':
-            q = Inventory.get_product_detail(product_id,current_user.id)[0][3]+quantity
-            Inventory.set_quantity(product_id,current_user.id,q)
-        elif action == 'remove':
-            q = max(0,Inventory.get_product_detail(product_id,current_user.id)[3]-quantity)
-            Inventory.set_quantity(product_id,current_user.id,q)
+    Inventory.set_quantity(product_id,current_user.id,quantity)
     return redirect(url_for('inventories.get_s_info'))
 
 
