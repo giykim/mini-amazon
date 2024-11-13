@@ -177,15 +177,6 @@
         <meta charset="UTF-8">
         <h1>Inventory Management</h1>
         <style>
-            body {
-                font-family: Arial, sans-serif;
-                margin: 20px;
-            }
-            .container {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 20px;
-            }
             .inventory-item {
                 flex: 1 1 calc(33.33% - 20px);
                 border: 1px solid #ddd;
@@ -230,7 +221,7 @@
             <input type="hidden" name="action" value="set">
             <input type="hidden" name="productID" value="{{ item.id }}">
             <input type="number" name="quantity" min="0" value= "{{ item.quantity}}" >
-            <button type="submit">Set Stock</button>
+            <button type="submit">Set Stock</button> 
         </form>
     </div>
     <hr>
