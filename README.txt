@@ -15,8 +15,8 @@
     - Assistance for frontend aspects of website from ChatGPT
 
 MS4:
-
 Link to Video: 
+Location of code to populate database: db/generated/gen.py
 
 MS3:
 Giyoung Kim: Created API endpoints for Products and Social
