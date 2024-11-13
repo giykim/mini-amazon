@@ -4,7 +4,7 @@
 {% if mine == False %}
 <h2 class="mt-4">Seller Search</h2>
 <div>
-    <h3>Seller: {{ user_info.firstname }} {{ user_info.lastname }} ({{ user_info.email }})</h3>
+    <h3>Seller: {{ user_info.firstname }} {{ user_info.lastname }} ({{ user_info.email }}) ID {{user_info.id}}</h3>
 {% endif %}
 {% if is_seller %}
     <!-- Display Seller Reviews -->
