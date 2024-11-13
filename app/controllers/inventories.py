@@ -160,7 +160,8 @@ def update_stock():
     product_id = int(request.form['productID'])
     action = request.form['action']
     quantity = int(request.form['quantity'])
-    Inventory.set_quantity(product_id,current_user.id,quantity)
+    sid = current_user.id
+    Inventory.set_quantity(sid,product_id,quantity)
     return redirect(url_for('inventories.get_s_info'))
 
 

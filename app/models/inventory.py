@@ -98,7 +98,7 @@ class Inventory:
             UPDATE Inventory
             SET quantity = :quantity 
             WHERE sid = :sid AND pid = :pid
-        ''', sid=sid, pid=pid, quantity = quantity)
+        ''', sid=sid, pid=pid, quantity=quantity)
         return rows
 
     
