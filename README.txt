@@ -15,7 +15,7 @@
     - Assistance for frontend aspects of website from ChatGPT
 
 MS4:
-Link to Video: 
+Link to Video: https://drive.google.com/file/d/1XDRh5EynVOx-bTJcS281CZ9uI3Y53SPc/view?usp=sharing
 Location of code to populate database: db/generated/gen.py
 
 MS3:
