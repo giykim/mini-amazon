@@ -90,7 +90,7 @@ class User(UserMixin):
         return User(*(rows[0])) if rows else None
     
     @staticmethod
-    def update_info(id, name, email, address, balance):
+    def update_info(id, firstname, lastname, email, address, balance):
         email_unavailable = app.db.execute("""
             SELECT 1 
             FROM Users
@@ -106,10 +106,17 @@ class User(UserMixin):
 
         rows = app.db.execute("""
             UPDATE Users 
-            SET address = :address, balance = :balance
+            SET firstname = :firstname,
+                lastname = :lastname,
+                email = :email,
+                address = :address,
+                balance = :balance
             WHERE id = :id
             """,
             id=id,
+            firstname=firstname,
+            lastname=lastname,
+            email=email,
             address=address,
             balance=balance
         )

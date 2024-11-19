@@ -73,7 +73,13 @@ def place_order():
             Purchase.order_product(current_user.id, item.id, item.sid)
 
         user = User.get(current_user.id)
-        User.update_info(user.id, user.address, user.balance - round(total * 1.075, 2))
+        User.update_info(user.id,
+                         user.firstname,
+                         user.lastname,
+                         user.email,
+                         user.address,
+                         user.balance - round(total * 1.075, 2)
+                         )
     else:
         user = None
         cart = []
