@@ -4,6 +4,7 @@ from flask import render_template, redirect, url_for, flash, request
 from werkzeug.urls import url_parse
 from flask_login import login_user, logout_user, current_user
 from flask_wtf import FlaskForm
+from werkzeug.security import generate_password_hash
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 
@@ -92,22 +93,38 @@ def profile():
 def user_info():
     if current_user.is_authenticated:
         firstname = request.form.get('firstname')
-        lastname = request.form.get('lastname')
-        email = request.form.get('email')
-        address = request.form.get('address')
-        balance = request.form.get('balance')
 
-        if address:
-            successful = User.update_info(current_user.id,
-                                          firstname,
-                                          lastname,
-                                          email,
-                                          address,
-                                          balance
-                                          )
+        if firstname:
+            lastname = request.form.get('lastname')
+            email = request.form.get('email')
+            address = request.form.get('address')
+            balance = request.form.get('balance')
+            oldpassword = request.form.get('oldpassword')
+            newpassword = request.form.get('newpassword')
 
-            if not successful:
-                flash("That email is already in use!", "warning")
+            if len(newpassword) > 0:
+                password = generate_password_hash(newpassword)
+            else:
+                password = generate_password_hash(oldpassword)
+
+            user = User.get_by_auth(email, oldpassword)
+
+            if user is None:
+                flash('Invalid password!', 'warning')
+            else:
+                successful = User.update_info(current_user.id,
+                                            password,
+                                            firstname,
+                                            lastname,
+                                            email,
+                                            address,
+                                            balance
+                                            )
+
+                if not successful:
+                    flash("That email is already in use!", "warning")
+                else:
+                    flash('Info successfully updated!')
             
         # get user info
         user = User.get(current_user.id)
