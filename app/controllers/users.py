@@ -91,11 +91,18 @@ def profile():
 @bp.route('/user-info', methods=['POST', 'GET'])
 def user_info():
     if current_user.is_authenticated:
+        name = request.form.get('name')
+        email = request.form.get('email')
         address = request.form.get('address')
         balance = request.form.get('balance')
 
         if address:
-            User.update_info(current_user.id, address, balance)
+            successful = User.update_info(current_user.id, name, email, address, balance)
+
+            print(successful)
+
+            if not successful:
+                flash("That email is already in use!", "warning")
             
         # get user info
         user = User.get(current_user.id)

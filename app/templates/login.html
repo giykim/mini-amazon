@@ -22,17 +22,6 @@
     <span style="color: red;">[{{ error }}]</span>
     {% endfor %}
   </p>
-  <p>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <ul>
-      {% for message in messages %}
-      <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %}
-    {% endwith %}
-  </p>
   {{ form.submit(class_="btn btn-black") }}
   <a class="btn btn-secondary" href="{{ url_for('users.register') }}" role="button">Register</a>
 </form>
