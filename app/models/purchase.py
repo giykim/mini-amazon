@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import current_app as app
 
 
@@ -34,6 +36,23 @@ class Purchase:
             JOIN Products pr ON pu.pid = pr.id
             JOIN Users u ON pu.sid = u.id
             WHERE uid = :uid
+            ORDER BY time_purchased DESC
+            ''',
+            uid=uid
+        )
+        return rows
+    
+
+    @staticmethod
+    def get_all_purchased_by_uid(uid):
+        rows = app.db.execute('''
+            SELECT pu.uid, pu.pid, pu.sid, pu.time_purchased, pu.quantity, pu.price, pu.fulfilled,
+                pr.name AS product_name, u.firstname AS seller_first, u.lastname AS seller_last
+            FROM Purchases pu
+            JOIN Products pr ON pu.pid = pr.id
+            JOIN Users u ON pu.sid = u.id
+            WHERE uid = :uid
+                AND time_purchased IS NOT NULL
             ORDER BY time_purchased DESC
             ''',
             uid=uid
@@ -109,8 +128,8 @@ class Purchase:
             )
         else:
             app.db.execute('''
-                INSERT INTO Purchases (uid, pid, sid, time_purchased, quantity, fulfilled)
-                VALUES (:uid, :pid, :sid, NULL, :quantity, FALSE)
+                INSERT INTO Purchases (uid, pid, sid, time_purchased, quantity, price, fulfilled)
+                VALUES (:uid, :pid, :sid, NULL, :quantity, 0, FALSE)
                 ''',
                 uid=uid,
                 pid=pid,
@@ -134,17 +153,26 @@ class Purchase:
 
     @staticmethod
     def order_product(uid, pid, sid):
+        time_purchased = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
         app.db.execute('''
-            UPDATE Purchases 
-            SET time_purchased = CURRENT_TIMESTAMP 
+            UPDATE Purchases
+            SET time_purchased = :time_purchased,
+                price = (
+                    SELECT s.price
+                    FROM SoldBy s
+                    WHERE s.sid = Purchases.sid
+                    AND s.pid = Purchases.pid
+                ) * 1.075
             WHERE uid = :uid
-                AND pid = :pid
-                AND sid = :sid
-                AND time_purchased IS NULL
+            AND pid = :pid
+            AND sid = :sid
+            AND time_purchased IS NULL
             ''',
             uid=uid,
             pid=pid,
-            sid=sid
+            sid=sid,
+            time_purchased=time_purchased
         )
 
         # Need sellers to fulfill order

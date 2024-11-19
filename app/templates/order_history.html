@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br>
+
+<h2 class="mt-4">Purchase History:</h2>
+
+{% if current_user.is_authenticated %}
+<div class="container mt-4">
+    {% if orders %}
+        
+        {% for order in orders %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Order placed on {{ order[0] }}</h5>
+            </div>
+        
+            <div class="card-body">
+                {% set ns = namespace(total_price=0) %}
+                {% for purchase in order[1] %}
+                    {% set ns.total_price = ns.total_price + (purchase.price * purchase.quantity) %}
+                    
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="row">
+                            <div class="col-12 col-md-8">
+                                <h5 class="card-title"><strong>{{ purchase.product_name }}</strong></h6>
+                                <p class="card-text"><strong>Seller:</strong> {{ purchase.seller_first }} {{ purchase.seller_last }}</p>
+                                <p class="card-text"><strong>Unit Price:</strong> ${{ purchase.price }}</p>
+                                <p class="card-text"><strong>Quantity:</strong> {{ purchase.quantity }}</p>
+                                <p class="card-text"><strong>Fulfilled:</strong> {{purchase.fulfilled }}</p>
+                            </div>
+                            <div class="col-12 col-md-4 text-right">
+                                <p class="font-weight-bold text-dark">${{ purchase.price * purchase.quantity }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        
+            <div class="card-footer bg-light text-right py-3">
+                <h5 class="card-text">
+                    <span class="text-muted">Total: </span>
+                    <span>${{ ns.total_price }}</span>
+                </h5>
+            </div>
+        </div>
+        
+        {% endfor %}
+
+        <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4">
+            <ul class="pagination">
+                {% if page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('users.order_history', page=page-1) }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% set start_page = page - 2 if page > 3 else 1 %}
+                {% set end_page = page + 2 if page < total_pages - 2 else total_pages %}
+                {% for page_num in range(start_page, end_page + 1) %}
+                    <li class="page-item {% if page_num == page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('users.order_history', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if page < total_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('users.order_history', page=page+1) }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+
+{% else %}
+<p><a href="{{ url_for('users.login') }}">Log in</a> to see your purchase history!</p>
+{% endif %}
+
+{% endblock %}

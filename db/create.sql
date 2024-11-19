@@ -50,6 +50,7 @@ CREATE TABLE Purchases (
     sid INT NOT NULL REFERENCES Sellers(id),
     time_purchased TIMESTAMP WITHOUT TIME ZONE,
     quantity INT NOT NULL CHECK (quantity >= 0),
+    price DECIMAL(12,2) NOT NULL CHECK (price >= 0),
     fulfilled BOOLEAN NOT NULL DEFAULT FALSE,
     UNIQUE (uid, pid, sid, time_purchased)
 );
