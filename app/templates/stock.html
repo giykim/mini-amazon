@@ -211,6 +211,7 @@
         </style>
     </head>
     <body>
+    {% if stocked %}
     {% for item in stocked %}
     <div class="inventory-item">
         <h3>{{ item.name }}</h3>
@@ -226,6 +227,7 @@
     </div>
     <hr>
     {% endfor %}
+    {% endif %}
     {% endif %} </body>
 
     <script>

@@ -2,13 +2,10 @@
 
 {% block content %}
 
-<br>
-
 {% if current_user.is_authenticated %}
 
-<h2 class="mt-4">Hello {{ user.firstname }} {{ user.lastname }}!</h2>
-
-<div class="container mt-4">
+<div class="container mt-2">
+  <h2>Hello {{ user.firstname }} {{ user.lastname }}!</h2>
   <div class="card mb-3">
     <div class="card-body">
       <h5 class="card-title">Email</h5>

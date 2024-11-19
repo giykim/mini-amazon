@@ -2,13 +2,10 @@
 
 {% block content %}
 
-<br>
-
 {% if current_user.is_authenticated %}
 
-<h2 class="mt-4">My Profile:</h2>
-
-<div class="container mt-4">
+<div class="container mt-2">
+  <h2>My Profile:</h2>
   <div class="row">
     <div class="col-md-6 mb-3">
       <a href="{{ url_for('users.user_info') }}" class="card-link">
@@ -32,7 +29,7 @@
       <a href="{{ url_for('users.order_history') }}" class="card-link">
         <div class="card mb-3 text-center">
           <div class="card-body">
-            <h2 style="color: black;">Purchase History</h2>
+            <h2 style="color: black;">Order History</h2>
           </div>
         </div>
       </a>

@@ -2,13 +2,10 @@
 
 {% block content %}
 
-<br>
-
-<h2 class="mt-4">Review History:</h2>
-
 {% if current_user.is_authenticated %}
 
-<div class="container mt-4">
+<div class="container mt-2">
+  <h2>Review History:</h2>
   {% if reviews %}
     {% for review in reviews %}
       <div class="card mb-3">
