@@ -154,13 +154,27 @@ class Inventory:
             )
         else:
             app.db.execute("""
-                UPDATE Inventory
+                UPDATE SoldBy
                 SET quantity = :quantity, price = :price
                 WHERE sid = :sid AND pid = :pid
             """, 
                 sid=sid,
                 pid=pid, 
-                quantity=quantity
+                quantity=quantity,
+                price=price
+            )
+
+        # If quantity is 0, then want to remove from SoldBy relation
+        if int(quantity) == 0:
+            app.db.execute("""
+                DELETE FROM SoldBy
+                WHERE sid=:sid
+                    AND pid=:pid
+                """, 
+                sid=sid,
+                pid=pid, 
+                quantity=quantity,
+                price=price
             )
 
 

@@ -152,7 +152,7 @@
                                     {% if s.quantity is not none %}
                                     <strong>In Stock:</strong> {{ s.quantity }}<br>
                                     {% endif %}
-                                    {% if mine == False and s.price is not none %}
+                                    {% if s.price is not none %}
                                     <strong>Price:</strong> ${{ "%.2f"|format(s.price) }}
                                     {% endif %}
                                 </p>
