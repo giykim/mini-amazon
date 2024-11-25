@@ -96,6 +96,18 @@ class Product:
         return rows
     
     @staticmethod
+    def get_creator_info(pid):
+        rows = app.db.execute("""
+            SELECT c.uid, u.firstname, u.lastname
+            FROM CreatedProduct c
+            JOIN Users u ON c.uid = u.id
+            WHERE c.pid = :pid
+            """,
+            pid = pid
+        )
+        return rows
+    
+    @staticmethod
     def get_review_by_id(review_id):
         rows = app.db.execute('''
             SELECT * FROM Reviews

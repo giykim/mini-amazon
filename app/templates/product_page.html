@@ -27,7 +27,8 @@
 
 <div class="container mt-5">
     <h1 class="mb-4">{{ product_info[0].name }}</h1>
-    <p>{{ product_info[0].description }}</p>
+    <p>Description: {{ product_info[0].description }}</p>
+    <p>Created By: {{ creator_info[0].firstname }} {{ creator_info[0].lastname }}</p>
     
     <div class="row mt-4">
         <div class="col-md-6">
@@ -46,7 +47,7 @@
                 <!-- Seller Display, styled to match Price display -->
                 <form action="{{ url_for('inventories.get_stock') }}">
                     <input type="hidden" class="selected-seller-id" name="sid" value="{{ seller_info[0].id }}">
-                    <h2 class="text-success">Sold By:
+                    <h2>Sold By:
                         <button type="submit" class="seller-link">
                             <span id="current-seller-name">{{ seller_info[0].sellerfirst }} {{ seller_info[0].sellerlast }}</span>
                         </button>

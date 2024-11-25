@@ -44,6 +44,7 @@ def product_page(product_id):
 
     product_info = Product.get_product_info(product_id)
     seller_info = Product.get_seller_info(product_id)
+    creator_info = Product.get_creator_info(product_id)
     review_info = Product.get_reviews_paginated(product_id, page, per_page)
     total_reviews = Product.count_reviews(product_id)
 
@@ -56,9 +57,13 @@ def product_page(product_id):
         has_bought = False
         user_votes = None
 
+    if not creator_info:
+        creator_info = [{'uid': -1, 'firstname': 'No', 'lastname': 'Creator'}]
+
     return render_template('product_page.html',
         product_info=product_info,
         seller_info=seller_info,
+        creator_info=creator_info,
         review_info=review_info,
         total_pages=total_pages,
         current_page=page,
