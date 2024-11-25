@@ -1,8 +1,5 @@
 from flask import render_template, request, jsonify, redirect, url_for, flash
 from flask_login import current_user
-from app import db
-import json
-import datetime
 
 from app.models.inventory import Inventory
 from app.models.seller import Seller
@@ -14,59 +11,67 @@ from app.models.reviews import Review
 from flask import Blueprint
 bp = Blueprint('inventories', __name__)
 
-@bp.route('/stock', methods = ['GET'])
-def get_stock():
-    sid = request.args.get('sid')
+
+@bp.route('/user', methods = ['GET'])
+def get_user():
+    # Get user id to display public page of
+    uid = request.args.get('uid')
+    if uid is None:
+        if current_user.is_authenticated:
+            # If no user id is passed, then show current user's profile page
+            uid = current_user.id
+        else:
+            # If user is not logged in, send to invalid page
+            uid = -1
     
-    seller = Seller.get(sid)
+    # Check if user is a seller
+    seller = Seller.get(uid)
     if seller is None:
         is_seller = False
     else:
         is_seller = True
 
-    if current_user.is_authenticated and str(sid) == str(current_user.id) and is_seller: 
-        return redirect(url_for('inventories.get_s_info'))
+    # Get info for all types of users
+    user_info = User.get(uid) if is_seller else None
     
-    # for reviews
+    # Review pagination parameters
     page = request.args.get('page', 1, type=int)
     per_page = 3
 
-    # for products sold by
+    # Products sold pagination parameters
     product_page = request.args.get('product_page', 1, type=int)
     product_per_page = 9
 
-    
-    
-    user_info = User.get(sid) if is_seller else None
+    # Get stock if seller
+    if is_seller:
+        stock = Inventory.get_sold_by_details_paginated(uid, product_page, product_per_page)
+    else:
+        stock = None
 
-    # retrieving paginated reviews
-    total_reviews = Review.count_seller_reviews(sid) if is_seller else 0
+    # Retrieve paginated reviews
+    total_reviews = Review.count_seller_reviews(uid) if is_seller else 0
     total_pages = (total_reviews + per_page - 1) // per_page
-    seller_reviews = Review.get_seller_reviews_paginated(sid, page, per_page) if is_seller else None
+    seller_reviews = Review.get_seller_reviews_paginated(uid, page, per_page) if is_seller else None
 
-    # retrieving paginated products
-    total_products = Inventory.count_sold_products(sid) if is_seller else 0
+    # Retrieve paginated products
+    total_products = Inventory.count_sold_products(uid) if is_seller else 0
     product_total_pages = (total_products + product_per_page - 1) // product_per_page
-    stocked = None
-
-    if is_seller: 
-        stocked = Inventory.get_sold_by_details_paginated(sid, product_page, product_per_page)
     
-    # pids = Inventory.get_inventory(sid)
-    # stocked = []
-    # for p in pids:
-    #     stocked.append(Inventory.get_product_detail(p[0],sid))
-    return render_template('stock.html', 
-                           sid=sid, 
+    # Check if user is looking at their own profile
+    mine = (current_user.id == uid)
+
+    return render_template('user.html', 
+                           uid=uid, 
                            is_seller=is_seller, 
                            user_info=user_info, 
                            seller_reviews=seller_reviews, 
-                           stocked=stocked,
+                           stock=stock,
                            current_page=page,
                            current_product_page=product_page,
                            total_pages=total_pages,
                            product_total_pages=product_total_pages,
-                           mine = False)
+                           mine = mine)
+
 
 @bp.route('/vote-seller-review', methods=['POST'])
 def vote_seller_review():
@@ -105,55 +110,6 @@ def vote_seller_review():
         user_vote = 0
     return jsonify({'success': True, 'new_helpfulness': helpfulness, 'user_vote': user_vote})
 
-@bp.route('/my_inventory', methods = ['GET','POST'])
-def get_s_info():
-    sid = current_user.id
-    # for reviews
-    page = request.args.get('page', 1, type=int)
-    per_page = 3
-
-    # for products sold by
-    product_page = request.args.get('product_page', 1, type=int)
-    product_per_page = 9
-
-    seller = Seller.get(sid)
-    if seller is None:
-        is_seller = False
-    else:
-        is_seller = True
-    
-    user_info = User.get(sid) if is_seller else None
-
-    # retrieving paginated reviews
-    total_reviews = Review.count_seller_reviews(sid) if is_seller else 0
-    total_pages = (total_reviews + per_page - 1) // per_page
-    seller_reviews = Review.get_seller_reviews_paginated(sid, page, per_page) if is_seller else None
-
-    # retrieving paginated products
-    total_products = Inventory.count_sold_products(sid) if is_seller else 0
-    product_total_pages = (total_products + product_per_page - 1) // product_per_page
-    stocked = None
-
-    if is_seller: 
-        if current_user.is_authenticated and str(sid) == str(current_user.id):
-            # Display the seller's full inventory if `sid` matches current user ID
-            stocked = Inventory.get_inventory_details(sid)
-    
-    # pids = Inventory.get_inventory(sid)
-    # stocked = []
-    # for p in pids:
-    #     stocked.append(Inventory.get_product_detail(p[0],sid))
-    return render_template('stock.html', 
-                           sid=sid, 
-                           is_seller=is_seller, 
-                           user_info=user_info, 
-                           seller_reviews=seller_reviews, 
-                           stocked=stocked,
-                           current_page=page,
-                           current_product_page=product_page,
-                           total_pages=total_pages,
-                           product_total_pages=product_total_pages,
-                           mine = True)
 
 @bp.route('/update_stock', methods=['GET', 'POST'])
 def update_stock():
@@ -162,7 +118,7 @@ def update_stock():
     quantity = int(request.form['quantity'])
     sid = current_user.id
     Inventory.set_quantity(sid,product_id,quantity)
-    return redirect(url_for('inventories.get_s_info'))
+    return redirect(url_for('inventories.user'))
 
 
 

@@ -45,8 +45,8 @@
                 <h2 class="text-success">Price: $<span id="display-price">{{ "{:.2f}".format(seller_info[0].price) }}</span></h2>
                 
                 <!-- Seller Display, styled to match Price display -->
-                <form action="{{ url_for('inventories.get_stock') }}">
-                    <input type="hidden" class="selected-seller-id" name="sid" value="{{ seller_info[0].id }}">
+                <form action="{{ url_for('inventories.get_user') }}">
+                    <input type="hidden" class="selected-seller-id" name="uid" value="{{ seller_info[0].id }}">
                     <h2>Sold By:
                         <button type="submit" class="seller-link">
                             <span id="current-seller-name">{{ seller_info[0].sellerfirst }} {{ seller_info[0].sellerlast }}</span>
