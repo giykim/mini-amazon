@@ -44,8 +44,10 @@ def get_user():
 
     # Get stock if seller
     if is_seller:
-        stock = Inventory.get_sold_by_details_paginated(uid, product_page, product_per_page)
+        selling = Inventory.get_sold_by_details_paginated(uid, product_page, product_per_page)
+        stock = Inventory.get_inventory_details(uid)
     else:
+        selling = None
         stock = None
 
     # Retrieve paginated reviews
@@ -58,7 +60,7 @@ def get_user():
     product_total_pages = (total_products + product_per_page - 1) // product_per_page
     
     # Check if user is looking at their own profile
-    mine = (current_user.id == uid)
+    mine = (current_user.id == int(uid))
 
     return render_template('user.html', 
                            uid=uid, 
@@ -111,17 +113,14 @@ def vote_seller_review():
     return jsonify({'success': True, 'new_helpfulness': helpfulness, 'user_vote': user_vote})
 
 
-@bp.route('/update_stock', methods=['GET', 'POST'])
+@bp.route('/update-stock', methods=['POST'])
 def update_stock():
-    product_id = int(request.form['productID'])
-    action = request.form['action']
-    quantity = int(request.form['quantity'])
-    sid = current_user.id
-    Inventory.set_quantity(sid,product_id,quantity)
-    return redirect(url_for('inventories.user'))
+    # Get parameters from method call
+    id = current_user.id
+    pid = request.form.get('product_id')
+    quantity = request.form.get('quantity')
 
+    # Update row associated with seller and product by adding quantity
+    Inventory.update_stock(id, pid, quantity)
 
-
-
-
-
+    return redirect(url_for('inventories.get_user', uid=current_user.id, page=1))

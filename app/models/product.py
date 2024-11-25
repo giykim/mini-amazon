@@ -224,6 +224,7 @@ class Product:
             name=name, 
             description=description
         )
+        
     
     @staticmethod
     def get_user_votes_for_product(pid, user_id):

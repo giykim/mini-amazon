@@ -1,12 +1,9 @@
 from flask import render_template, request, jsonify, redirect, url_for, flash
 from flask_login import current_user
-from app import db
-import json
-import datetime
 
+from app.models.inventory import Inventory
 from app.models.product import Product
-from app.models.purchase import Purchase
-from app.models.reviews import Review
+from app.models.seller import Seller
 
 from flask import Blueprint
 bp = Blueprint('products', __name__)
@@ -39,17 +36,31 @@ def search():
 
 @bp.route('/product-page/<int:product_id>', methods=['GET'])
 def product_page(product_id):
+    # Reviews pagination parameters
     page = request.args.get('page', 1, type=int)
-    per_page = 3  # Set reviews per page
+    per_page = 3
 
+    # Get info to display on product page
     product_info = Product.get_product_info(product_id)
     seller_info = Product.get_seller_info(product_id)
     creator_info = Product.get_creator_info(product_id)
     review_info = Product.get_reviews_paginated(product_id, page, per_page)
     total_reviews = Product.count_reviews(product_id)
-
     total_pages = (total_reviews + per_page - 1) // per_page
 
+    # Check if the user is a seller (to allow them to stock this product)
+    if current_user.is_authenticated:
+        id = current_user.id
+    else:
+        id = -1
+
+    seller = Seller.get(id)
+    if seller is None:
+        is_seller = False
+    else:
+        is_seller = True
+
+    # Check if the user has bought the product
     if current_user.is_authenticated:
         has_bought = Product.has_bought(current_user.id, product_id)
         user_votes = Product.get_user_votes_for_product(product_id, current_user.id)
@@ -57,6 +68,7 @@ def product_page(product_id):
         has_bought = False
         user_votes = None
 
+    # If there is no creator associated with product
     if not creator_info:
         creator_info = [{'uid': -1, 'firstname': 'No', 'lastname': 'Creator'}]
 
@@ -67,8 +79,9 @@ def product_page(product_id):
         review_info=review_info,
         total_pages=total_pages,
         current_page=page,
-        user_votes=json.dumps(user_votes),
-        has_bought=has_bought
+        user_votes=user_votes,
+        has_bought=has_bought,
+        is_seller=is_seller
     )
 
 
@@ -115,6 +128,14 @@ def edit_product():
 @bp.route('/create-product', methods=['GET'])
 def create_product():
     return render_template('create_product.html')
+
+
+@bp.route('/stock-product', methods=['GET'])
+def stock_product():
+    pid = request.args.get('product_id')
+    product = Product.get_product_info(pid)[0]
+    print(product.id)
+    return render_template('stock_product.html', product=product)
 
 
 @bp.route('/vote', methods=['POST'])

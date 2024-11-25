@@ -92,14 +92,40 @@ class Inventory:
         ''', sid=sid)
         return rows[0][0] if rows else 0
     
+
     @staticmethod
-    def set_quantity(sid, pid, quantity):
-        rows = app.db.execute('''
-            UPDATE Inventory
-            SET quantity = :quantity 
+    def update_stock(sid, pid, quantity):
+        # Check if a row corresponding to the seller and product exists
+        row = app.db.execute("""
+            SELECT 1 
+            FROM Inventory 
             WHERE sid = :sid AND pid = :pid
-        ''', sid=sid, pid=pid, quantity=quantity)
-        return rows
+        """, 
+            sid=sid,
+            pid=pid
+        )
+
+        # If it doesn't, insert it into the relation
+        if not row:
+            app.db.execute("""
+                INSERT INTO Inventory (sid, pid, quantity)
+                VALUES (:sid, :pid, :quantity)
+            """, 
+                sid=sid,
+                pid=pid, 
+                quantity=quantity
+            )
+        else:
+            app.db.execute("""
+                UPDATE Inventory
+                SET quantity = quantity + :quantity
+                WHERE sid = :sid AND pid = :pid
+            """, 
+                sid=sid,
+                pid=pid, 
+                quantity=quantity
+            )
+
 
     
 

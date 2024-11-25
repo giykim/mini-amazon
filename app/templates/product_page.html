@@ -116,9 +116,17 @@
         </div>
       </div>
     </div>
+
+    <!-- If the current user is a seller, let them stock item -->
+    <div class="mt-4">
+        <form action="{{ url_for('products.stock_product') }}">
+            <input type="hidden" name="product_id" value="{{ product_info[0].id }}">
+            <button type="submit" class="btn btn-warning">Stock Product</button>
+        </form>
+    </div>
     
     <!-- Customer Reviews Section -->
-<div class="mt-5">
+<div class="mt-4">
     <h3>Customer Reviews</h3>
     {% if has_bought %}
         <div class="mb-4">

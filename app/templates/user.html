@@ -92,7 +92,7 @@
         {% if mine == False %}
         <h3>Products Available</h3>
         {% else %}
-        <h3>Your Stocked Items</h3>
+        <h3>Items For Sale</h3>
         {% endif %}
         <div class="row">
         {% if stocked %}
@@ -176,8 +176,7 @@
     {% endif %}
     {% if mine == True %}
     <head>
-        <meta charset="UTF-8">
-        <h1>Inventory Management</h1>
+        <h3>Inventory Management</h3>
         <style>
             .inventory-item {
                 flex: 1 1 calc(33.33% - 20px);
@@ -222,9 +221,12 @@
         <!-- Add Stock Form -->
         <form action="{{ url_for('inventories.update_stock') }}" method="POST">
             <input type="hidden" name="action" value="set">
-            <input type="hidden" name="productID" value="{{ item.id }}">
-            <input type="number" name="quantity" min="0" value= "{{ item.quantity}}" >
-            <button type="submit">Set Stock</button> 
+            <input type="hidden" name="product_id" value="{{ item.id }}">
+            <div class="form-group">
+                <label">Add Stock: </label>
+                <input type="number" name="quantity" min=0 value=0>
+            </div>
+            <button type="submit" class="btn btn-warning">Add</button>
         </form>
     </div>
     <hr>
