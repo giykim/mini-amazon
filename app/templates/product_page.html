@@ -252,6 +252,8 @@
 </div>
 
 <script>
+    const votes = {{ user_votes | tojson }};
+
     document.addEventListener('DOMContentLoaded', () => {
         const activeColor = '#FFC107'; // Active color for selected buttons
         const defaultColor = '#f8f9fa'; // Default color for unselected buttons
@@ -262,18 +264,21 @@
             const reviewId = helpfulnessElement.getAttribute('data-review-id');
             const upvoteButton = document.querySelector(`.upvote-button[data-review-id="${reviewId}"]`);
             const downvoteButton = document.querySelector(`.downvote-button[data-review-id="${reviewId}"]`);
+            const helpfulnessFromDict = votes[reviewId];
 
-            // Set button colors based on helpfulness value
-            if (helpfulness > 0) {
-                upvoteButton.style.backgroundColor = activeColor;
-                downvoteButton.style.backgroundColor = defaultColor;
-            } else if (helpfulness < 0) {
-                downvoteButton.style.backgroundColor = activeColor;
-                upvoteButton.style.backgroundColor = defaultColor;
-            } else {
-                // Neutral color if helpfulness is 0
-                upvoteButton.style.backgroundColor = defaultColor;
-                downvoteButton.style.backgroundColor = defaultColor;
+            if (helpfulnessFromDict) {
+                // Set button colors based on helpfulness value
+                if (helpfulnessFromDict == 1) {
+                    upvoteButton.style.backgroundColor = activeColor;
+                    downvoteButton.style.backgroundColor = defaultColor;
+                } else if (helpfulnessFromDict == -1) {
+                    downvoteButton.style.backgroundColor = activeColor;
+                    upvoteButton.style.backgroundColor = defaultColor;
+                } else {
+                    // Neutral color if helpfulness is 0
+                    upvoteButton.style.backgroundColor = defaultColor;
+                    downvoteButton.style.backgroundColor = defaultColor;
+                }
             }
         });
 
