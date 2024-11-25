@@ -134,7 +134,6 @@ def create_product():
 def stock_product():
     pid = request.args.get('product_id')
     product = Product.get_product_info(pid)[0]
-    print(product.id)
     return render_template('stock_product.html', product=product)
 
 

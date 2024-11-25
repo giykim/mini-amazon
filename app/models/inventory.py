@@ -63,24 +63,27 @@ class Inventory:
     def get_inventory_details(sid):
         # Retrieves the full inventory for a seller
         rows = app.db.execute('''
-            SELECT p.id, p.name, p.description, i.quantity
+            SELECT p.id, p.name, p.description,
+                i.quantity as stock_quantity, s.quantity as sell_quantity, s.price
             FROM Products p
             JOIN Inventory i ON p.id = i.pid
+            LEFT JOIN SoldBy s ON p.id = s.pid
+                AND s.sid = :sid
             WHERE i.sid = :sid
         ''', sid=sid)
         return rows
 
     @staticmethod
-    def get_sold_by_details_paginated(sid, page, per_page=12):
-        offset = (page - 1) * per_page
+    def get_selling(sid):
         rows = app.db.execute('''
             SELECT p.id, p.name, p.description, s.quantity, s.price
             FROM Products p
             JOIN SoldBy s ON p.id = s.pid
             WHERE s.sid = :sid
             ORDER BY s.price ASC
-            LIMIT :per_page OFFSET :offset
-        ''', sid=sid, per_page=per_page, offset=offset)
+        ''',
+        sid=sid)
+
         return rows
 
     @staticmethod
@@ -119,6 +122,40 @@ class Inventory:
             app.db.execute("""
                 UPDATE Inventory
                 SET quantity = quantity + :quantity
+                WHERE sid = :sid AND pid = :pid
+            """, 
+                sid=sid,
+                pid=pid, 
+                quantity=quantity
+            )
+    
+    @staticmethod
+    def update_sold_by(sid, pid, quantity, price):
+        # Check if a row corresponding to the seller and product exists
+        row = app.db.execute("""
+            SELECT 1 
+            FROM SoldBy 
+            WHERE sid = :sid AND pid = :pid
+        """, 
+            sid=sid,
+            pid=pid
+        )
+
+        # If it doesn't, insert it into the relation
+        if not row:
+            app.db.execute("""
+                INSERT INTO SoldBy (sid, pid, quantity, price)
+                VALUES (:sid, :pid, :quantity, :price)
+            """, 
+                sid=sid,
+                pid=pid, 
+                quantity=quantity,
+                price=price
+            )
+        else:
+            app.db.execute("""
+                UPDATE Inventory
+                SET quantity = :quantity, price = :price
                 WHERE sid = :sid AND pid = :pid
             """, 
                 sid=sid,

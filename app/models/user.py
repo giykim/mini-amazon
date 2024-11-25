@@ -124,3 +124,14 @@ class User(UserMixin):
         )
 
         return True
+
+    @staticmethod
+    def update_balance(id, balance):
+        rows = app.db.execute("""
+            UPDATE Users 
+            SET balance = :balance
+            WHERE id = :id
+            """,
+            id=id,
+            balance=balance
+        )

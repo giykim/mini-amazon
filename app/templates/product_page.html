@@ -25,7 +25,15 @@
 <div class="container mt-2">
     <h2 class="mb-4">{{ product_info[0].name }}</h2>
     <p>Description: {{ product_info[0].description }}</p>
-    <p>Created By: {{ creator_info[0].firstname }} {{ creator_info[0].lastname }}</p>
+    <form action="{{ url_for('inventories.get_user') }}">
+        <input type="hidden" class="selected-seller-id" name="uid" value="{{ creator_info[0].uid }}">
+        <p>
+            Created By: 
+            <button type="submit" class="seller-link">
+                {{ creator_info[0].firstname }} {{ creator_info[0].lastname }}
+            </button>
+        </p>
+    </form>
     
     <div class="row mt-4">
         <div class="col-md-6">
@@ -39,7 +47,7 @@
         <div class="col-md-6 d-flex flex-column align-items-start">
             <!-- Display Price, updates when selecting different sellers -->
             {% if seller_info %}
-                <h2 class="text-success">Price: $<span id="display-price">{{ "{:.2f}".format(seller_info[0].price) }}</span></h2>
+                <h2>Price: $<span id="display-price">{{ "{:.2f}".format(seller_info[0].price) }}</span></h2>
                 
                 <!-- Seller Display, styled to match Price display -->
                 <form action="{{ url_for('inventories.get_user') }}">

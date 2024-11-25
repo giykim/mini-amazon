@@ -1,3 +1,5 @@
+import copy
+
 from flask import render_template, request, jsonify, redirect, url_for, flash
 from flask_login import current_user
 
@@ -42,9 +44,11 @@ def get_user():
     product_page = request.args.get('product_page', 1, type=int)
     product_per_page = 9
 
-    # Get stock if seller
+    # Get product info corresponding to seller
     if is_seller:
-        selling = Inventory.get_sold_by_details_paginated(uid, product_page, product_per_page)
+        # Get products that are up for sale
+        selling = Inventory.get_selling(uid)
+        # Get products that are in inventory (even if they may not be on sale)
         stock = Inventory.get_inventory_details(uid)
     else:
         selling = None
@@ -67,12 +71,13 @@ def get_user():
                            is_seller=is_seller, 
                            user_info=user_info, 
                            seller_reviews=seller_reviews, 
+                           selling=selling,
                            stock=stock,
                            current_page=page,
                            current_product_page=product_page,
                            total_pages=total_pages,
                            product_total_pages=product_total_pages,
-                           mine = mine)
+                           mine=mine)
 
 
 @bp.route('/vote-seller-review', methods=['POST'])
@@ -122,5 +127,19 @@ def update_stock():
 
     # Update row associated with seller and product by adding quantity
     Inventory.update_stock(id, pid, quantity)
+
+    return redirect(url_for('inventories.get_user', uid=current_user.id, page=1))
+
+
+@bp.route('/update-sold-by', methods=['POST'])
+def update_sold_by():
+    # Get parameters from method call
+    id = current_user.id
+    pid = request.form.get('product_id')
+    quantity = request.form.get('quantity')
+    price = request.form.get('price')
+
+    # Update row associated with seller and product by adding quantity
+    Inventory.update_sold_by(id, pid, quantity, price)
 
     return redirect(url_for('inventories.get_user', uid=current_user.id, page=1))
