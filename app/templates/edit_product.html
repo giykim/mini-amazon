@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<body>
+    <div class="container mt-2">
+        <h2>Edit Product Info</h2>
+        <form action="{{ url_for('products.update_product') }}" method="post">
+            <div class="form-group">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" class="form-control" placeholder="Product Name" name="name" value="{{ product.name }}" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" class="form-control" placeholder="Product Description" name="description" value="{{ product.description }}" required>
+                </div>
+                <input type="hidden" name="pid" value="{{ product.id }}" required>
+            </div>
+            <button type="submit" class="btn btn-warning">Edit Product</button>
+        </form>
+    </div>
+</body>
+
+{% endblock %}

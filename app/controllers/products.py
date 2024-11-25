@@ -86,6 +86,30 @@ def new_product():
 
     else:
         return redirect(url_for('index.index'))
+    
+
+@bp.route('/update-product', methods=['POST'])
+def update_product():
+    if current_user.is_authenticated:
+        pid = request.form.get('pid')
+        name = request.form.get('name')
+        description = request.form.get('description')
+
+        Product.update_product(pid=pid, name=name, description=description)
+
+        flash("Successfully updated product info.", "error")
+
+        return redirect(url_for('products.product_page', product_id=pid))
+
+    else:
+        return redirect(url_for('index.index'))
+
+
+@bp.route('/edit-product', methods=['GET'])
+def edit_product():
+    pid = request.args.get('pid')
+    product = Product.get_product_info(pid)[0]
+    return render_template('edit_product.html', product=product)
 
 
 @bp.route('/create-product', methods=['GET'])

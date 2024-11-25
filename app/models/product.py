@@ -214,6 +214,18 @@ class Product:
         return pid, True
     
     @staticmethod
+    def update_product(pid, name, description):
+        app.db.execute("""
+            UPDATE Products
+            SET name = :name, description = :description
+            WHERE id = :pid
+        """, 
+            pid=pid, 
+            name=name, 
+            description=description
+        )
+    
+    @staticmethod
     def get_user_votes_for_product(pid, user_id):
         rows = app.db.execute("""
             SELECT h.rid AS review_id, h.value AS vote_value

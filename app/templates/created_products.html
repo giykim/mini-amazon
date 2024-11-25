@@ -13,7 +13,7 @@
       <div class="row">
         {% for product in products %}
           <div class="col-md-4 mb-4">
-            <a href="{{ url_for('products.product_page', product_id=product.id) }}">
+            <a href="{{ url_for('products.edit_product', pid=product.id) }}">
               <div class="card">
                 <div class="card-img-top"
                   style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
