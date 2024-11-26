@@ -172,10 +172,104 @@ class Inventory:
                     AND pid=:pid
                 """, 
                 sid=sid,
-                pid=pid, 
-                quantity=quantity,
+                pid=pid,
+            )
+
+    @staticmethod
+    def fulfill_order(pid, sid, uid, time_purchased, price):
+        # Check if seller has enough of product in stock
+        inventory_quantity = app.db.execute("""
+            SELECT quantity
+            FROM Inventory
+            WHERE sid = :sid AND pid = :pid
+        """, 
+            sid=sid,
+            pid=pid
+        )[0].quantity
+
+        # Update fulfilled column of purchased
+        order_quantity = app.db.execute("""
+            SELECT quantity
+            FROM Purchases
+            WHERE pid = :pid AND sid = :sid AND uid = :uid AND time_purchased = :time_purchased
+        """, 
+            pid=pid,
+            sid=sid,
+            uid=uid,
+            time_purchased=time_purchased
+        )[0].quantity
+
+        if inventory_quantity < order_quantity:
+            # If not enough, display an error
+            return False
+        else:
+            # Update fulfilled column of purchased if enough quantity
+            app.db.execute("""
+                UPDATE Purchases
+                SET fulfilled = TRUE
+                WHERE pid = :pid AND sid = :sid AND uid = :uid AND time_purchased = :time_purchased
+            """, 
+                pid=pid,
+                sid=sid,
+                uid=uid,
+                time_purchased=time_purchased
+            )
+
+            # Update balance of seller
+            app.db.execute("""
+                UPDATE Users
+                SET balance = balance + :price
+                WHERE id = :id
+            """, 
+                id=sid,
                 price=price
             )
+
+            # Update inventory quantity
+            app.db.execute("""
+                UPDATE Inventory
+                SET quantity = :quantity
+                WHERE pid = :pid AND sid = :sid
+            """, 
+                pid=pid,
+                sid=sid,
+                quantity=(inventory_quantity-order_quantity)
+            )
+
+            # Check if sold by quantity is more than in stock now
+            sale_quantity = app.db.execute("""
+                SELECT quantity
+                FROM SoldBy
+                WHERE sid = :sid AND pid = :pid
+            """, 
+                sid=sid,
+                pid=pid
+            )[0].quantity
+
+            if inventory_quantity - order_quantity < sale_quantity:
+                # If less inventory in stock than sale, clamp sale quantity
+                app.db.execute("""
+                    UPDATE SoldBy
+                    SET quantity = quantity
+                    WHERE pid = :pid AND sid = :sid
+                """, 
+                    pid=pid,
+                    sid=sid,
+                    quantity=(inventory_quantity-order_quantity)
+                )
+
+                # If quantity is 0, then want to remove from SoldBy relation
+                if inventory_quantity - order_quantity == 0:
+                    app.db.execute("""
+                        DELETE FROM SoldBy
+                        WHERE sid=:sid
+                            AND pid=:pid
+                        """, 
+                        sid=sid,
+                        pid=pid,
+                    )
+
+        return True
 
 
     

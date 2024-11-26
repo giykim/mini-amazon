@@ -197,3 +197,19 @@ class Purchase:
             offset=offset
         )
         return rows
+    
+    @staticmethod
+    def get_incoming_purchases(sid):
+        rows = app.db.execute('''
+            SELECT pu.uid, pu.pid, pu.sid, pu.time_purchased, pu.quantity, pu.price, pu.fulfilled,
+                pr.name AS product_name, u.firstname AS seller_first, u.lastname AS seller_last
+            FROM Purchases pu
+            JOIN Products pr ON pu.pid = pr.id
+            JOIN Users u ON pu.sid = u.id
+            WHERE pu.sid = :sid
+                AND pu.fulfilled = FALSE
+            ORDER BY time_purchased DESC
+            ''',
+            sid=sid
+        )
+        return rows

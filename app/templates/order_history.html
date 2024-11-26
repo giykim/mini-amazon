@@ -9,40 +9,40 @@
     {% if orders %}
         
         {% for order in orders %}
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Order placed on {{ order[0] }}</h5>
-            </div>
-        
-            <div class="card-body">
-                {% set ns = namespace(total_price=0) %}
-                {% for purchase in order[1] %}
-                    {% set ns.total_price = ns.total_price + (purchase.price * purchase.quantity) %}
-                    
-                    <div class="border-bottom pb-3 mb-3">
-                        <div class="row">
-                            <div class="col-12 col-md-8">
-                                <h5 class="card-title"><strong>{{ purchase.product_name }}</strong></h6>
-                                <p class="card-text"><strong>Seller:</strong> {{ purchase.seller_first }} {{ purchase.seller_last }}</p>
-                                <p class="card-text"><strong>Unit Price:</strong> ${{ purchase.price }}</p>
-                                <p class="card-text"><strong>Quantity:</strong> {{ purchase.quantity }}</p>
-                                <p class="card-text"><strong>Fulfilled:</strong> {{purchase.fulfilled }}</p>
-                            </div>
-                            <div class="col-12 col-md-4 text-right">
-                                <p class="font-weight-bold text-dark">${{ purchase.price * purchase.quantity }}</p>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Order placed on {{ order[0] }}</h5>
+                </div>
+            
+                <div class="card-body">
+                    {% set ns = namespace(total_price=0) %}
+                    {% for purchase in order[1] %}
+                        {% set ns.total_price = ns.total_price + (purchase.price * purchase.quantity) %}
+                        
+                        <div class="border-bottom pb-3 mb-3">
+                            <div class="row">
+                                <div class="col-12 col-md-8">
+                                    <h5 class="card-title"><strong>{{ purchase.product_name }}</strong></h6>
+                                    <p class="card-text"><strong>Seller:</strong> {{ purchase.seller_first }} {{ purchase.seller_last }}</p>
+                                    <p class="card-text"><strong>Unit Price:</strong> ${{ purchase.price }}</p>
+                                    <p class="card-text"><strong>Quantity:</strong> {{ purchase.quantity }}</p>
+                                    <p class="card-text"><strong>Fulfilled:</strong> {{purchase.fulfilled }}</p>
+                                </div>
+                                <div class="col-12 col-md-4 text-right">
+                                    <p class="font-weight-bold text-dark">${{ purchase.price * purchase.quantity }}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
+            
+                <div class="card-footer bg-light text-right py-3">
+                    <h5 class="card-text">
+                        <span class="text-muted">Total: </span>
+                        <span>${{ ns.total_price }}</span>
+                    </h5>
+                </div>
             </div>
-        
-            <div class="card-footer bg-light text-right py-3">
-                <h5 class="card-text">
-                    <span class="text-muted">Total: </span>
-                    <span>${{ ns.total_price }}</span>
-                </h5>
-            </div>
-        </div>
         
         {% endfor %}
 

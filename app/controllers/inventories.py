@@ -5,6 +5,7 @@ from flask_login import current_user
 
 from app.models.inventory import Inventory
 from app.models.seller import Seller
+from app.models.purchase import Purchase
 from app.models.product import Product
 from app.models.user import User
 from app.models.reviews import Review
@@ -50,9 +51,12 @@ def get_user():
         selling = Inventory.get_selling(uid)
         # Get products that are in inventory (even if they may not be on sale)
         stock = Inventory.get_inventory_details(uid)
+        # Get incoming orders
+        incoming_purchases = Purchase.get_incoming_purchases(uid)
     else:
         selling = None
         stock = None
+        incoming_purchases = None
 
     # Retrieve paginated reviews
     total_reviews = Review.count_seller_reviews(uid) if is_seller else 0
@@ -64,7 +68,9 @@ def get_user():
     product_total_pages = (total_products + product_per_page - 1) // product_per_page
     
     # Check if user is looking at their own profile
-    mine = (current_user.id == int(uid))
+    mine = False
+    if current_user.is_authenticated:
+        mine = (current_user.id == int(uid))
 
     return render_template('user.html', 
                            uid=uid, 
@@ -72,6 +78,7 @@ def get_user():
                            user_info=user_info, 
                            seller_reviews=seller_reviews, 
                            selling=selling,
+                           incoming_purchases=incoming_purchases,
                            stock=stock,
                            current_page=page,
                            current_product_page=product_page,
@@ -141,5 +148,26 @@ def update_sold_by():
 
     # Update row associated with seller and product by adding quantity
     Inventory.update_sold_by(id, pid, quantity, price)
+
+    return redirect(url_for('inventories.get_user', uid=current_user.id, page=1))
+
+
+@bp.route('/fulfill-order', methods=['POST'])
+def fulfill_order():
+    # Get parameters from method call
+    pid = request.form.get('product_id')
+    sid = request.form.get('seller_id')
+    uid = request.form.get('user_id')
+    price = request.form.get('price')
+    time_purchased = request.form.get('time_purchased')
+
+    # Update row fulfilled column for purchase
+    success = Inventory.fulfill_order(pid, sid, uid, time_purchased, price)
+
+    # If order could not be fulfilled because of lack of inventory quantity
+    if not success:
+        flash('Could not fulfill order due to not enough product in stock!', 'error')
+    else:
+        flash('Successfully fulfilled order!')
 
     return redirect(url_for('inventories.get_user', uid=current_user.id, page=1))

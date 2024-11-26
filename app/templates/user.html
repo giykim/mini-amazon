@@ -10,9 +10,6 @@
         padding: 15px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
-    .inventory-item h3 {
-        margin-top: 0;
-    }
     .inventory-item form {
         display: flex;
         justify-content: space-between;
@@ -36,317 +33,369 @@
     }
 </style>
 
-{% if mine == False %}
-<h2 class="mt-4">Seller Search</h2>
-<div>
-    <h3>Seller: {{ user_info.firstname }} {{ user_info.lastname }} ({{ user_info.email }}) ID {{user_info.id}}</h3>
-{% endif %}
+<div class="container mt-2">
+    {% if mine == False %}
+        <h2>Seller Search</h2>
+        <h3>Seller: {{ user_info.firstname }} {{ user_info.lastname }} ({{ user_info.email }}) ID {{user_info.id}}</h3>
+    {% else %}
+        <h2>My Page</h2>
+        <h3>Seller: {{ user_info.firstname }} {{ user_info.lastname }} ({{ user_info.email }}) ID {{user_info.id}}</h3>
+    {% endif %}
+</div>
+
 {% if is_seller %}
     <!-- Display Seller Reviews -->
-    <div class="container mt-5">
-        <h3>Reviews for {{ user_info.firstname}} {{user_info.lastname}} <h3>
+    <div class="container mt-2">
+        <h3>Reviews for {{ user_info.firstname}} {{user_info.lastname}}</h3>
         {% if seller_reviews %}
-        {% for review in seller_reviews %}
-        <div class="card mb-4" id="review-{{ review.id }}">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h5 class="card-title">{{ review.firstname }} {{ review.lastname }}</h5>
-                        <p class="card-text">{{ review.description }}</p>
-                        <p class="card-text"><small class="text-muted">Reviewed on {{ review.time_created.strftime('%B
-                                %d, %Y') }}</small></p>
-                    </div>
-                    <div class="rating"
-                        style="background-color: #FFC107; color: black; padding: 5px 10px; border-radius: 5px;">
-                        {{ review.rating }}/5
+            {% for review in seller_reviews %}
+                <div class="card mb-4" id="review-{{ review.id }}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="card-title">{{ review.firstname }} {{ review.lastname }}</h5>
+                                <p class="card-text">{{ review.description }}</p>
+                                <p class="card-text"><small class="text-muted">Reviewed on {{ review.time_created.strftime('%B
+                                        %d, %Y') }}</small></p>
+                            </div>
+                            <div class="rating"
+                                style="background-color: #FFC107; color: black; padding: 5px 10px; border-radius: 5px;">
+                                {{ review.rating }}/5
+                            </div>
+                        </div>
+
+                        <!-- Helpfulness Section with Voting Buttons -->
+                        <div class="d-flex justify-content-end align-items-center" style="margin-top: -30px;">
+                            <!-- Adjusted alignment -->
+                            <!-- Helpfulness Count -->
+                            <small class="text-muted me-2">Helpfulness: <span class="helpfulness-count"
+                                    data-review-id="{{ review.id }}">{{ review.helpfulness }}</span></small>
+
+                            <!-- Voting Buttons with Gray Box Styling -->
+                            <button class="vote-button upvote-button me-1" data-review-id="{{ review.id }}" data-vote="1"
+                                aria-label="Upvote"
+                                style="border: 1px solid #ccc; background-color: #f8f9fa; padding: 5px; border-radius: 5px;">
+                                <i class="fas fa-thumbs-up text-success" style="font-size: 1.2em;"></i>
+                            </button>
+
+                            <button class="vote-button downvote-button" data-review-id="{{ review.id }}" data-vote="-1"
+                                aria-label="Downvote"
+                                style="border: 1px solid #ccc; background-color: #f8f9fa; padding: 5px; border-radius: 5px;">
+                                <i class="fas fa-thumbs-down text-danger" style="font-size: 1.2em;"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Helpfulness Section with Voting Buttons -->
-                <div class="d-flex justify-content-end align-items-center" style="margin-top: -30px;">
-                    <!-- Adjusted alignment -->
-                    <!-- Helpfulness Count -->
-                    <small class="text-muted me-2">Helpfulness: <span class="helpfulness-count"
-                            data-review-id="{{ review.id }}">{{ review.helpfulness }}</span></small>
-
-                    <!-- Voting Buttons with Gray Box Styling -->
-                    <button class="vote-button upvote-button me-1" data-review-id="{{ review.id }}" data-vote="1"
-                        aria-label="Upvote"
-                        style="border: 1px solid #ccc; background-color: #f8f9fa; padding: 5px; border-radius: 5px;">
-                        <i class="fas fa-thumbs-up text-success" style="font-size: 1.2em;"></i>
-                    </button>
-
-                    <button class="vote-button downvote-button" data-review-id="{{ review.id }}" data-vote="-1"
-                        aria-label="Downvote"
-                        style="border: 1px solid #ccc; background-color: #f8f9fa; padding: 5px; border-radius: 5px;">
-                        <i class="fas fa-thumbs-down text-danger" style="font-size: 1.2em;"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-
+            {% endfor %}
         {% else %}
-        <h5>No reviews available for this seller.</h5>
+            <div class="alert alert-warning mt-2" role="alert">
+                This seller does not have any reviews.
+            </div>
         {% endif %}
 
         {% if seller_reviews %}
+            <!-- Pagination Controls -->
+            <nav aria-label="Review pagination" class="mt-2">
+                <ul class="pagination justify-content-center">
+                    {% if current_page > 1 %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('inventories.get_user', uid=uid, page=current_page-1) }}"
+                                aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
 
-        <!-- Pagination Controls -->
-        <nav aria-label="Review pagination" class="mt-4">
-            <ul class="pagination justify-content-center">
-                {% if current_page > 1 %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ url_for('inventories.get_user', uid=uid, page=current_page-1) }}"
-                        aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                {% endif %}
-
-                {% set start_page = current_page - 2 if current_page > 3 else 1 %}
-                {% set end_page = current_page + 2 if current_page < total_pages - 2 else total_pages %} {% for page_num
-                    in range(start_page, end_page + 1) %} <li
-                    class="page-item {% if page_num == current_page %}active{% endif %}">
-                    <a class="page-link" href="{{ url_for('inventories.get_user', uid=uid, page=page_num) }}">{{
-                        page_num }}</a>
-                    </li>
+                    {% set start_page = current_page - 2 if current_page > 3 else 1 %}
+                    {% set end_page = current_page + 2 if current_page < total_pages - 2 else total_pages %}
+                    {% for page_num in range(start_page, end_page + 1) %}
+                        <li class="page-item {% if page_num == current_page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('inventories.get_user', uid=uid, page=page_num) }}">{{
+                                page_num }}</a>
+                        </li>
                     {% endfor %}
 
-                    {% if current_page < total_pages %} <li class="page-item">
-                        <a class="page-link" href="{{ url_for('inventories.get_user', uid=uid, page=current_page+1) }}"
-                            aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
+                    {% if current_page < total_pages %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('inventories.get_user', uid=uid, page=current_page+1) }}"
+                                aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
                         </li>
-                        {% endif %}
-            </ul>
-        </nav>
+                    {% endif %}
+                </ul>
+            </nav>
         {% endif %}
     </div>
 
     <!-- Product List -->
-     
-    <div class="container mt-5">
+    <div class="container mt-2">
         {% if mine == False %}
-        <h3>Products Available</h3>
+            <h3>Products Available</h3>
         {% else %}
-        <h3>Products On Sale</h3>
+            <h3>Products On Sale</h3>
         {% endif %}
 
         <!-- If seller has any products, display them -->
         {% if selling %}
-        <div class="row">
-            {% for s in selling %}
-                <div class="col-md-4 mb-4">
-                    <a href="{{ url_for('products.product_page', product_id=s.id) }}">
-                        <div class="card">
-                            <div class="card-img-top"
-                                style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                                <span style="color: #ccc;">Product Image Placeholder</span>
+            <div class="row">
+                {% for s in selling %}
+                    <div class="col-md-4 mb-4">
+                        <a href="{{ url_for('products.product_page', product_id=s.id) }}">
+                            <div class="card">
+                                <div class="card-img-top"
+                                    style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                                    <span style="color: #ccc;">Product Image Placeholder</span>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ s.name }}</h5>
+                                    <p class="card-text">
+                                        <strong>Description:</strong> {{ s.description }}<br>
+                                        {% if s.quantity is not none %}
+                                        <strong>Quantity:</strong> {{ s.quantity }}<br>
+                                        {% endif %}
+                                        {% if s.price is not none %}
+                                        <strong>Price:</strong> ${{ "%.2f"|format(s.price) }}
+                                        {% endif %}
+                                    </p>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <h5 class="card-title">{{ s.name }}</h5>
-                                <p class="card-text">
-                                    <strong>Description:</strong> {{ s.description }}<br>
-                                    {% if s.quantity is not none %}
-                                    <strong>In Stock:</strong> {{ s.quantity }}<br>
-                                    {% endif %}
-                                    {% if s.price is not none %}
-                                    <strong>Price:</strong> ${{ "%.2f"|format(s.price) }}
-                                    {% endif %}
-                                </p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            {% endfor %}
-        </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
         {% else %}
-        <h5>This seller currently has no products listed.</h5>
+            <h5>This seller currently has no products listed.</h5>
         {% endif %}
 
         <!-- Pagination Controls for Products -->
         {% if stocked %}
-        <div class="row">
-            <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4">
-                <!-- Flex container for centering -->
-                <ul class="pagination">
-                    {% if current_product_page > 1 %}
-                    <li class="page-item">
-                        <a class="page-link"
-                            href="{{ url_for('inventories.get_user', uid=uid, page=current_page, product_page=current_product_page-1) }}"
-                            aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    {% endif %}
-
-                    {% set start_page = current_product_page - 2 if current_product_page > 3 else 1 %}
-                    {% set end_page = current_product_page + 2 if current_product_page < product_total_pages - 2 else
-                        product_total_pages %} {% for page_num in range(start_page, end_page + 1) %}
-                        <li
-                            class="page-item {% if page_num == current_product_page %}active{% endif %}">
-                            <a class="page-link"
-                                href="{{ url_for('inventories.get_user', uid=uid, page=current_page, product_page=page_num) }}">{{
-                                page_num }}</a>
-                        </li>
-                        {% endfor %}
-
-                        {% if current_product_page < product_total_pages %}
+            <div class="row">
+                <nav aria-label="Product pagination" class="d-flex justify-content-center mt-2">
+                    <!-- Flex container for centering -->
+                    <ul class="pagination">
+                        {% if current_product_page > 1 %}
                         <li class="page-item">
-                        <a class="page-link"
-                            href="{{ url_for('inventories.get_user', uid=uid, page=current_page, product_page=current_product_page+1) }}"
-                            aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
+                            <a class="page-link"
+                                href="{{ url_for('inventories.get_user', uid=uid, page=current_page, product_page=current_product_page-1) }}"
+                                aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
                         </li>
                         {% endif %}
-                </ul>
-            </nav>
+
+                        {% set start_page = current_product_page - 2 if current_product_page > 3 else 1 %}
+                        {% set end_page = current_product_page + 2 if current_product_page < product_total_pages - 2 else
+                            product_total_pages %} {% for page_num in range(start_page, end_page + 1) %}
+                            <li
+                                class="page-item {% if page_num == current_product_page %}active{% endif %}">
+                                <a class="page-link"
+                                    href="{{ url_for('inventories.get_user', uid=uid, page=current_page, product_page=page_num) }}">{{
+                                    page_num }}</a>
+                            </li>
+                            {% endfor %}
+
+                            {% if current_product_page < product_total_pages %}
+                            <li class="page-item">
+                            <a class="page-link"
+                                href="{{ url_for('inventories.get_user', uid=uid, page=current_page, product_page=current_product_page+1) }}"
+                                aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                            </li>
+                            {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        {% endif %}
+    </div>
+{% else %}
+    {% if mine == True %}
+        <div class="alert alert-warning mt-2" role="alert">
+            You are not currently registered as a seller.
         </div>
+    {% else %}
+        <!-- Display page for a non-seller -->
+        <!-- Created products -->
+        <div class="alert alert-warning mt-2" role="alert">
+            The user associated with this ID is not a seller!
+        </div>
+    {% endif %}
+{% endif %}
+
+{% if is_seller and mine %}
+    <div class="container mt-2">
+        <h3>Incoming Orders</h3>
+        {% if incoming_purchases %}
+            {% for purchase in incoming_purchases %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Order placed on {{ purchase.time_purchased }}</h5>
+                    </div>
+                
+                    <div class="card-body">
+                        <div class="border-bottom pb-3 mb-3">
+                            <div class="row">
+                                <div class="col-12 col-md-8">
+                                    <h5 class="card-title"><strong>{{ purchase.product_name }}</strong></h6>
+                                    <p class="card-text"><strong>User:</strong> {{ purchase.seller_first }} {{ purchase.seller_last }}</p>
+                                    <p class="card-text"><strong>Unit Price:</strong> ${{ purchase.price }}</p>
+                                    <p class="card-text"><strong>Quantity:</strong> {{ purchase.quantity }}</p>
+                                    <p class="card-text"><strong>Fulfilled:</strong> {{ purchase.fulfilled }}</p>
+                                </div>
+                                <div class="col-12 col-md-4 text-right">
+                                    <p class="font-weight-bold text-dark">${{ purchase.price * purchase.quantity }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <form action="{{ url_for('inventories.fulfill_order') }}" method="POST">
+                                <input type="hidden" name="product_id" value="{{ purchase.pid }}">
+                                <input type="hidden" name="seller_id" value="{{ purchase.sid }}">
+                                <input type="hidden" name="user_id" value="{{ purchase.uid }}">
+                                <input type="hidden" name="time_purchased" value="{{ purchase.time_purchased }}">
+                                <input type="hidden" name="price" value="{{ purchase.price * purchase.quantity }}">
+                                <button type="submit" class="btn btn-warning">Fulfill</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-warning mt-2" role="alert">
+                You do not have any orders to fulfill.
+            </div>
         {% endif %}
         
-    {% else %}
-    {% if mine == True %}
-    <div class="alert alert-warning mt-4" role="alert">
-        You are not currently registered as a seller.
-    </div>
-    {% else %}
-    <!-- Display page for a non-seller -->
-     <!-- Created products -->
-    <div class="alert alert-warning mt-4" role="alert">
-        The user associated with this ID is not a seller!
-    </div>
-    {% endif %}
-    {% endif %}
+        <h3>Inventory Management</h3>
+        {% if stock %}
+            <div class="row">
+                {% for product in stock %}
+                    <div class="col-mt-2 mr-4 mb-4">
+                        <div class="inventory-item">
+                            <a href="{{ url_for('products.product_page', product_id=product.id) }}">
+                                <h3>{{ product.name }}</h3>
+                            </a>
+                            <!-- Stock information -->
+                            <p>Stock Quantity: {{ product.stock_quantity}}</p>
+                            <!-- Add Stock Form -->
+                            <form action="{{ url_for('inventories.update_stock') }}" method="POST">
+                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                <div class="form-group">
+                                    <label">Add Stock: </label>
+                                    <input type="number" name="quantity" min=0 value=0 required>
+                                </div>
+                                <button type="submit" class="btn btn-warning">Add Stock</button>
+                            </form>
 
-    {% if mine == True %}
-    <h3>Inventory Management</h3>
-
-    {% if stock %}
-    <div class="row">
-        {% for product in stock %}
-            <div class="col-md-6 mb-6">
-                <div class="inventory-item">
-                    <a href="{{ url_for('products.product_page', product_id=product.id) }}">
-                        <h3>{{ product.name }}</h3>
-                    </a>
-                    <!-- Stock information -->
-                    <p>Stock Quantity: {{ product.stock_quantity}}</p>
-                    <!-- Add Stock Form -->
-                    <form action="{{ url_for('inventories.update_stock') }}" method="POST">
-                        <input type="hidden" name="product_id" value="{{ product.id }}">
-                        <div class="form-group">
-                            <label">Add Stock: </label>
-                            <input type="number" name="quantity" min=0 value=0 required>
+                            <!-- Sale information -->
+                            <p>Sale Quantity: {{ product.sell_quantity}}</p>
+                            <!-- Add Sale Form -->
+                            <form action="{{ url_for('inventories.update_sold_by') }}" method="POST">
+                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                <div class="form-group">
+                                    <label">Amount to Sell:</label>
+                                    <input type="number" placeholder="Add Sale" name="quantity" min=0 max={{ product.stock_quantity }} value=0 required>
+                                </div>
+                                <div class="form-group">
+                                    <label">Price: </label> 
+                                    <input type="number" id="price" name="price" placeholder="Price" value="{{ '0.00' if not product.price else product.price }}" oninput="validity.valid||(value='');" step="0.01" required>
+                                </div>
+                                <button type="submit" class="btn btn-warning">Update Sale</button>
+                            </form>
                         </div>
-                        <button type="submit" class="btn btn-warning">Add Stock</button>
-                    </form>
-
-                    <!-- Sale information -->
-                    <p>Sale Quantity: {{ product.sell_quantity}}</p>
-                    <!-- Add Sale Form -->
-                    <form action="{{ url_for('inventories.update_sold_by') }}" method="POST">
-                        <input type="hidden" name="product_id" value="{{ product.id }}">
-                        <div class="form-group">
-                            <label">Amount to Sell:</label>
-                            <input type="number" placeholder="Add Sale" name="quantity" min=0 max={{ product.stock_quantity }} value=0 required>
-                        </div>
-                        <div class="form-group">
-                            <label">Price: </label> 
-                            <input type="number" id="price" name="price" placeholder="Price" value="{{ '0.00' if not product.price else product.price }}" oninput="validity.valid||(value='');" step="0.01" required>
-                        </div>
-                        <button type="submit" class="btn btn-warning">Update Sale</button>
-                    </form>
-                </div>
+                    </div>
+                {% endfor %}
             </div>
-        {% endfor %}
+        {% else %}
+            <div class="alert alert-warning mt-2" role="alert">
+                You do not have any products in inventory.
+            </div>
+        {% endif %}
     </div>
-    {% endif %}
-    {% endif %}
+{% endif %}
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const activeColor = '#FFC107'; // Active color for selected buttons
-            const defaultColor = '#f8f9fa'; // Default color for unselected buttons
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const activeColor = '#FFC107'; // Active color for selected buttons
+        const defaultColor = '#f8f9fa'; // Default color for unselected buttons
 
-            // Loop through each helpfulness count and style the corresponding buttons
-            document.querySelectorAll('.helpfulness-count').forEach(helpfulnessElement => {
-                const helpfulness = parseInt(helpfulnessElement.textContent, 10);
-                const reviewId = helpfulnessElement.getAttribute('data-review-id');
-                const upvoteButton = document.querySelector(`.upvote-button[data-review-id="${reviewId}"]`);
-                const downvoteButton = document.querySelector(`.downvote-button[data-review-id="${reviewId}"]`);
+        // Loop through each helpfulness count and style the corresponding buttons
+        document.querySelectorAll('.helpfulness-count').forEach(helpfulnessElement => {
+            const helpfulness = parseInt(helpfulnessElement.textContent, 10);
+            const reviewId = helpfulnessElement.getAttribute('data-review-id');
+            const upvoteButton = document.querySelector(`.upvote-button[data-review-id="${reviewId}"]`);
+            const downvoteButton = document.querySelector(`.downvote-button[data-review-id="${reviewId}"]`);
 
-                // Set button colors based on helpfulness value
-                if (helpfulness > 0) {
-                    upvoteButton.style.backgroundColor = activeColor;
-                    downvoteButton.style.backgroundColor = defaultColor;
-                } else if (helpfulness < 0) {
-                    downvoteButton.style.backgroundColor = activeColor;
-                    upvoteButton.style.backgroundColor = defaultColor;
-                } else {
-                    // Neutral color if helpfulness is 0
-                    upvoteButton.style.backgroundColor = defaultColor;
-                    downvoteButton.style.backgroundColor = defaultColor;
-                }
-            });
-
-            const upvoteButtons = document.querySelectorAll('.upvote-button');
-            const downvoteButtons = document.querySelectorAll('.downvote-button');
-
-            upvoteButtons.forEach(button => {
-                button.addEventListener('click', () => handleVote(button, 1));
-            });
-
-            downvoteButtons.forEach(button => {
-                button.addEventListener('click', () => handleVote(button, -1));
-            });
-
-            function handleVote(button, voteValue) {
-                const reviewId = button.getAttribute('data-review-id');
-                const reviewCard = document.getElementById(`review-${reviewId}`);
-                const helpfulnessCount = reviewCard.querySelector('.helpfulness-count');
-                const upvoteButton = reviewCard.querySelector('.upvote-button');
-                const downvoteButton = reviewCard.querySelector('.downvote-button');
-
-                let currentVote = upvoteButton.classList.contains('active') ? 1 :
-                    downvoteButton.classList.contains('active') ? -1 : 0;
-
-                let newVote = (currentVote === voteValue) ? 0 : voteValue;
-
-                fetch('/vote', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ review_id: reviewId, vote: newVote })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            helpfulnessCount.textContent = data.new_helpfulness;
-
-                            if (data.user_vote === 1) {
-                                upvoteButton.classList.add('active');
-                                downvoteButton.classList.remove('active');
-                                upvoteButton.style.backgroundColor = activeColor;
-                                downvoteButton.style.backgroundColor = defaultColor;
-                            } else if (data.user_vote === -1) {
-                                downvoteButton.classList.add('active');
-                                upvoteButton.classList.remove('active');
-                                downvoteButton.style.backgroundColor = activeColor;
-                                upvoteButton.style.backgroundColor = defaultColor;
-                            } else {
-                                upvoteButton.classList.remove('active');
-                                downvoteButton.classList.remove('active');
-                                upvoteButton.style.backgroundColor = defaultColor;
-                                downvoteButton.style.backgroundColor = defaultColor;
-                            }
-                        } else {
-                            console.error("Error:", data.message);
-                        }
-                    })
-                    .catch(error => console.error("Fetch error:", error));
+            // Set button colors based on helpfulness value
+            if (helpfulness > 0) {
+                upvoteButton.style.backgroundColor = activeColor;
+                downvoteButton.style.backgroundColor = defaultColor;
+            } else if (helpfulness < 0) {
+                downvoteButton.style.backgroundColor = activeColor;
+                upvoteButton.style.backgroundColor = defaultColor;
+            } else {
+                // Neutral color if helpfulness is 0
+                upvoteButton.style.backgroundColor = defaultColor;
+                downvoteButton.style.backgroundColor = defaultColor;
             }
         });
-    </script>
-    {% endblock %}
+
+        const upvoteButtons = document.querySelectorAll('.upvote-button');
+        const downvoteButtons = document.querySelectorAll('.downvote-button');
+
+        upvoteButtons.forEach(button => {
+            button.addEventListener('click', () => handleVote(button, 1));
+        });
+
+        downvoteButtons.forEach(button => {
+            button.addEventListener('click', () => handleVote(button, -1));
+        });
+
+        function handleVote(button, voteValue) {
+            const reviewId = button.getAttribute('data-review-id');
+            const reviewCard = document.getElementById(`review-${reviewId}`);
+            const helpfulnessCount = reviewCard.querySelector('.helpfulness-count');
+            const upvoteButton = reviewCard.querySelector('.upvote-button');
+            const downvoteButton = reviewCard.querySelector('.downvote-button');
+
+            let currentVote = upvoteButton.classList.contains('active') ? 1 :
+                downvoteButton.classList.contains('active') ? -1 : 0;
+
+            let newVote = (currentVote === voteValue) ? 0 : voteValue;
+
+            fetch('/vote', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ review_id: reviewId, vote: newVote })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        helpfulnessCount.textContent = data.new_helpfulness;
+
+                        if (data.user_vote === 1) {
+                            upvoteButton.classList.add('active');
+                            downvoteButton.classList.remove('active');
+                            upvoteButton.style.backgroundColor = activeColor;
+                            downvoteButton.style.backgroundColor = defaultColor;
+                        } else if (data.user_vote === -1) {
+                            downvoteButton.classList.add('active');
+                            upvoteButton.classList.remove('active');
+                            downvoteButton.style.backgroundColor = activeColor;
+                            upvoteButton.style.backgroundColor = defaultColor;
+                        } else {
+                            upvoteButton.classList.remove('active');
+                            downvoteButton.classList.remove('active');
+                            upvoteButton.style.backgroundColor = defaultColor;
+                            downvoteButton.style.backgroundColor = defaultColor;
+                        }
+                    } else {
+                        console.error("Error:", data.message);
+                    }
+                })
+                .catch(error => console.error("Fetch error:", error));
+        }
+    });
+</script>
+{% endblock %}
