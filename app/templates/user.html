@@ -36,10 +36,12 @@
 <div class="container mt-2">
     {% if mine == False %}
         <h2>Seller Search</h2>
-        <h3>Seller: {{ user_info.firstname }} {{ user_info.lastname }} ({{ user_info.email }}) ID {{user_info.id}}</h3>
+        <h5>Seller: {{ user_info.firstname }} {{ user_info.lastname }} ({{ user_info.email }})</h5>
+        <h5>ID: {{user_info.id}}</h5>
     {% else %}
         <h2>My Page</h2>
-        <h3>Seller: {{ user_info.firstname }} {{ user_info.lastname }} ({{ user_info.email }}) ID {{user_info.id}}</h3>
+        <h5>User: {{ user_info.firstname }} {{ user_info.lastname }} ({{ user_info.email }})</h5>
+        <h5>ID: {{user_info.id}}</h5>
     {% endif %}
 </div>
 
@@ -165,7 +167,9 @@
                 {% endfor %}
             </div>
         {% else %}
-            <h5>This seller currently has no products listed.</h5>
+            <div class="alert alert-warning mt-2" role="alert">
+                The seller currently has no products listed.
+            </div>
         {% endif %}
 
         <!-- Pagination Controls for Products -->

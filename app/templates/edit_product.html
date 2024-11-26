@@ -17,10 +17,17 @@
                 </div>
                 <div class="form-group">
                     <label>Category</label>
-                    <select class="form-control" name="category" required>
+                    <select class="form-control" name="category">
                         <option value="" {% if not current_category %}selected{% endif %}>-- Select a category --</option>
                         {% for category in categories %}
-                            <option value="{{ category.id }}" {% if category.id == current_category[0].cid %}selected{% endif %}>{{ category.name[1:-1] }}</option>
+                            <option value="{{ category.id }}"
+                                {% if current_category %}
+                                    {% if category.id == current_category[0].cid %}
+                                        selected
+                                    {% endif %}
+                                {% endif %}>
+                                {{ category.name[1:-1] }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>

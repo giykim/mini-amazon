@@ -42,6 +42,7 @@ def product_page(product_id):
 
     # Get info to display on product page
     product_info = Product.get_product_info(product_id)
+    current_category = Product.get_category(product_id)
     seller_info = Product.get_seller_info(product_id)
     creator_info = Product.get_creator_info(product_id)
     review_info = Product.get_reviews_paginated(product_id, page, per_page)
@@ -74,6 +75,7 @@ def product_page(product_id):
 
     return render_template('product_page.html',
         product_info=product_info,
+        current_category=current_category,
         seller_info=seller_info,
         creator_info=creator_info,
         review_info=review_info,
@@ -132,6 +134,9 @@ def update_product():
         # If user selected a cateogry
         if cid:
             Product.set_category(pid=pid, cid=cid)
+        # If not, remove category
+        else:
+            Product.remove_category(pid=pid)
 
         # Show user their update was successful
         flash("Successfully updated product info.", "error")

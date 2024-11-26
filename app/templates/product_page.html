@@ -23,12 +23,11 @@
 </style>
 
 <div class="container mt-2">
-    <h2 class="mb-4">{{ product_info[0].name }}</h2>
-    <p>Description: {{ product_info[0].description }}</p>
+    <h2 class="mb-2">{{ product_info[0].name }}</h2>
     <form action="{{ url_for('inventories.get_user') }}">
         <input type="hidden" class="selected-seller-id" name="uid" value="{{ creator_info[0].uid }}">
         <p>
-            Created By: 
+            <strong>Created By:</strong>
             <button type="submit" class="seller-link">
                 {{ creator_info[0].firstname }} {{ creator_info[0].lastname }}
             </button>
@@ -81,7 +80,9 @@
                     </button>
                 </form>
             {% else %}
-            <h2>This product is not sold by any sellers</h2>
+                <div class="alert alert-warning mt-2" role="alert">
+                    This product does not have any sellers.
+                </div>
             {% endif %}
         </div>
     </div>
@@ -125,8 +126,20 @@
       </div>
     </div>
 
+    <div class="mt-2">
+        <p><strong>Description:</strong> {{ product_info[0].description }}</p>
+        <p><strong>Category:</strong>
+            {% if current_category %}
+                {{ current_category[0].name[1:-1] }}
+            {% else %}
+                N/A
+            {% endif %}
+        </p>
+    </div>
+
     <!-- If the current user is a seller, let them stock item -->
-    <div class="mt-4">
+    <div class="mt-2">
+        <p><strong>Add to Inventory:</strong></p>
         <form action="{{ url_for('products.stock_product') }}">
             <input type="hidden" name="product_id" value="{{ product_info[0].id }}">
             <button type="submit" class="btn btn-warning">Stock Product</button>
@@ -134,10 +147,10 @@
     </div>
     
     <!-- Customer Reviews Section -->
-<div class="mt-4">
+<div class="mt-2">
     <h3>Customer Reviews</h3>
     {% if has_bought %}
-        <div class="mb-4">
+        <div class="mb-2">
             <form action="{{ url_for('social.product_review') }}">
                 <input type="hidden" name="product_id" value="{{ product_info[0].id }}">
                 <button type="submit" class="btn btn-warning">Write Review</button>
@@ -149,7 +162,7 @@
     
     {% if review_info %}
         {% for review in review_info %}
-            <div class="card mb-4" id="review-{{ review.id }}">
+            <div class="card mb-2" id="review-{{ review.id }}">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
@@ -234,7 +247,7 @@
         <h3>Related Products</h3>
         <div class="row">
             {% for related_product in related_products %}
-                <div class="col-md-3 mb-4">
+                <div class="col-md-3 mb-2">
                     <div class="card h-100">
                         <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
                             <span style="color: #ccc;">Related Image</span>

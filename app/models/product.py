@@ -262,6 +262,19 @@ class Product:
                 pid=pid, 
                 cid=cid
             )
+
+    @staticmethod
+    def remove_category(pid):
+        """
+        Remove category of product
+        """
+        app.db.execute("""
+            DELETE FROM CategoryOf
+            WHERE pid = :pid
+
+        """, 
+            pid=pid
+        )
     
     @staticmethod
     def get_user_votes_for_product(pid, user_id):
@@ -361,9 +374,10 @@ class Product:
         Returns id of category of product
         '''
         rows = app.db.execute('''
-            SELECT cid
-            FROM CategoryOf c
-            WHERE pid = :pid
+            SELECT c1.cid, c2.name
+            FROM CategoryOf c1
+            JOIN Categories c2 ON c1.cid = c2.id
+            WHERE c1.pid = :pid
             ''',
             pid=pid
         )
