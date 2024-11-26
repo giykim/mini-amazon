@@ -58,8 +58,6 @@
   </style>
 </head>
 
-<br>
-
 {% if current_user.is_authenticated %}
 
 <div class="container">
@@ -157,11 +155,5 @@
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your cart!</p>
 
 {% endif %}
-
-<br>
-
-</body>
-
-</html>
 
 {% endblock %}

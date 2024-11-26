@@ -76,6 +76,7 @@ class Product:
             FROM Products p
             JOIN CreatedProduct c ON p.id = c.pid
             WHERE c.uid = :uid
+            ORDER BY p.name
             """,
             uid = uid
         )
@@ -215,6 +216,9 @@ class Product:
     
     @staticmethod
     def update_product(pid, name, description):
+        """
+        Update product info with new info
+        """
         app.db.execute("""
             UPDATE Products
             SET name = :name, description = :description
@@ -224,7 +228,40 @@ class Product:
             name=name, 
             description=description
         )
-        
+    
+    @staticmethod
+    def set_category(pid, cid):
+        """
+        Set category of product
+        """
+        # Check if row corresponding to current product id exists
+        row = app.db.execute("""
+            SELECT 1
+            FROM CategoryOf
+            WHERE pid=:pid
+        """, 
+            pid=pid,
+        )
+
+        # If there is a row that exists, just update existing row
+        if row:
+            app.db.execute("""
+                UPDATE CategoryOf
+                SET cid = :cid
+                WHERE pid = :pid
+            """, 
+                pid=pid, 
+                cid=cid
+            )
+        # If there is no row, insert a new row
+        else:
+            app.db.execute("""
+                INSERT INTO CategoryOf (pid, cid)
+                VALUES (:pid, :cid)
+            """, 
+                pid=pid, 
+                cid=cid
+            )
     
     @staticmethod
     def get_user_votes_for_product(pid, user_id):
@@ -317,16 +354,29 @@ class Product:
             pid=pid
         )
         return result[0][0] if result else 0
-
     
-    # @staticmethod
-    # def get_sellers_for_product(pid):
-    #     rows = app.db.execute("""
-    #         SELECT u.firstname AS firstname, u.lastname AS lastname, s.quantity AS quantity, s.price AS price
-    #         FROM SoldBy AS s
-    #         JOIN Users AS u ON s.sid = u.id
-    #         WHERE s.pid = :pid
-    #     """, 
-    #         pid=pid
-    #     )
-    #     return rows
+    @staticmethod
+    def get_category(pid):
+        '''
+        Returns id of category of product
+        '''
+        rows = app.db.execute('''
+            SELECT cid
+            FROM CategoryOf c
+            WHERE pid = :pid
+            ''',
+            pid=pid
+        )
+        return rows
+    
+    @staticmethod
+    def get_categories():
+        '''
+        Returns all rows of product categories
+        '''
+        rows = app.db.execute('''
+            SELECT id, name
+            FROM Categories AS r
+            '''
+        )
+        return rows

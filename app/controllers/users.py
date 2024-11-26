@@ -86,7 +86,7 @@ def logout():
 
 @bp.route('/profile', methods=['GET'])
 def profile():
-    return render_template('profile.html', id=current_user.id)
+    return render_template('profile.html')
 
 
 @bp.route('/user-info', methods=['POST', 'GET'])

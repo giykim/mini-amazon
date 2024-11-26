@@ -16,6 +16,15 @@
                     <label>Description</label>
                     <input type="text" class="form-control" placeholder="Product Description" name="description" required>
                 </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select class="form-control" name="category" required>
+                        <option value="">-- Select a category --</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name[1:-1] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <button type="submit" class="btn btn-warning">Create Product</button>
             </form>
         {% else %}

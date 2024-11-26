@@ -87,13 +87,29 @@ def product_page(product_id):
 
 @bp.route('/new-product', methods=['POST'])
 def new_product():
+    """
+    Route to create a new product
+    """
     if current_user.is_authenticated:
+        # Get values from form
         name = request.form.get('name')
         description = request.form.get('description')
-        pid, created = Product.new_product(name=name, description=description, uid=current_user.id)
+        cid = request.form.get('category')
 
+        # Attempt to insert a new product into Products relation
+        pid, created = Product.new_product(name=name,
+                                           description=description,
+                                           uid=current_user.id,
+                                           )
+        
+        # If the product name already exists, the insert will fail
         if not created:
             flash("Product already exists.", "error")
+        # If the product was successfully created, set the category
+        else:
+            # If user selected a cateogry
+            if cid:
+                Product.set_category(pid, cid)
 
         return redirect(url_for('products.product_page', product_id=pid))
 
@@ -104,12 +120,20 @@ def new_product():
 @bp.route('/update-product', methods=['POST'])
 def update_product():
     if current_user.is_authenticated:
+        # Get values from form
         pid = request.form.get('pid')
         name = request.form.get('name')
         description = request.form.get('description')
+        cid = request.form.get('category')
 
+        # Update product with new information
         Product.update_product(pid=pid, name=name, description=description)
 
+        # If user selected a cateogry
+        if cid:
+            Product.set_category(pid=pid, cid=cid)
+
+        # Show user their update was successful
         flash("Successfully updated product info.", "error")
 
         return redirect(url_for('products.product_page', product_id=pid))
@@ -120,14 +144,35 @@ def update_product():
 
 @bp.route('/edit-product', methods=['GET'])
 def edit_product():
+    # Get product id from previous page
     pid = request.args.get('pid')
+
+    # Get product information from id
     product = Product.get_product_info(pid)[0]
-    return render_template('edit_product.html', product=product)
+
+    # Get current product cateogry
+    current_category = Product.get_category(pid)
+
+    # Get all categories for selecting product category
+    categories = Product.get_categories()
+
+    return render_template('edit_product.html',
+                           product=product,
+                           current_category=current_category,
+                           categories=categories
+                           )
 
 
 @bp.route('/create-product', methods=['GET'])
 def create_product():
-    return render_template('create_product.html')
+    """
+    Route to form for creating a new product
+    """
+    categories = Product.get_categories()
+
+    return render_template('create_product.html',
+                           categories=categories,
+                           )
 
 
 @bp.route('/stock-product', methods=['GET'])
