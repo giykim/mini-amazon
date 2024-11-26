@@ -129,11 +129,16 @@
     <div class="mt-2">
         <p><strong>Description:</strong> {{ product_info[0].description }}</p>
         <p><strong>Category:</strong>
-            {% if current_category %}
-                {{ current_category[0].name[1:-1] }}
+            {% if category %}
+                {{ category[0].name[1:-1] }}
             {% else %}
                 N/A
             {% endif %}
+        </p>
+        <p><strong>Tags:</strong>
+            {% for tag in tags %}
+                <span class="tag">{{ tag.name }}</span>
+            {% endfor %}
         </p>
     </div>
 

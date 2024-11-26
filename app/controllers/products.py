@@ -42,7 +42,9 @@ def product_page(product_id):
 
     # Get info to display on product page
     product_info = Product.get_product_info(product_id)
-    current_category = Product.get_category(product_id)
+    category = Product.get_product_category(product_id)
+    print(product_id)
+    tags = Product.get_product_tags(product_id)
     seller_info = Product.get_seller_info(product_id)
     creator_info = Product.get_creator_info(product_id)
     review_info = Product.get_reviews_paginated(product_id, page, per_page)
@@ -75,7 +77,8 @@ def product_page(product_id):
 
     return render_template('product_page.html',
         product_info=product_info,
-        current_category=current_category,
+        category=category,
+        tags=tags,
         seller_info=seller_info,
         creator_info=creator_info,
         review_info=review_info,
@@ -97,6 +100,7 @@ def new_product():
         name = request.form.get('name')
         description = request.form.get('description')
         cid = request.form.get('category')
+        tags = request.form.get('tags')
 
         # Attempt to insert a new product into Products relation
         pid, created = Product.new_product(name=name,
@@ -113,6 +117,10 @@ def new_product():
             if cid:
                 Product.set_category(pid, cid)
 
+            # If user added any tags
+            for tag in tags.split(','):
+                Product.add_tag(pid=pid, tag=tag)
+
         return redirect(url_for('products.product_page', product_id=pid))
 
     else:
@@ -127,6 +135,7 @@ def update_product():
         name = request.form.get('name')
         description = request.form.get('description')
         cid = request.form.get('category')
+        tags = request.form.get('tags')
 
         # Update product with new information
         Product.update_product(pid=pid, name=name, description=description)
@@ -138,8 +147,15 @@ def update_product():
         else:
             Product.remove_category(pid=pid)
 
+        # Update tags
+        # Remove all current tags
+        Product.remove_all_tags(pid=pid)
+        # Add all new tags
+        for tag in tags.split(','):
+            Product.add_tag(pid=pid, tag=tag)
+
         # Show user their update was successful
-        flash("Successfully updated product info.", "error")
+        flash("Successfully updated product info.", category="success")
 
         return redirect(url_for('products.product_page', product_id=pid))
 
@@ -156,7 +172,10 @@ def edit_product():
     product = Product.get_product_info(pid)[0]
 
     # Get current product cateogry
-    current_category = Product.get_category(pid)
+    current_category = Product.get_product_category(pid)
+
+    # Get current product tags
+    current_tags = Product.get_product_tags(pid)
 
     # Get all categories for selecting product category
     categories = Product.get_categories()
@@ -164,6 +183,7 @@ def edit_product():
     return render_template('edit_product.html',
                            product=product,
                            current_category=current_category,
+                           current_tags=current_tags,
                            categories=categories
                            )
 

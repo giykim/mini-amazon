@@ -271,7 +271,6 @@ class Product:
         app.db.execute("""
             DELETE FROM CategoryOf
             WHERE pid = :pid
-
         """, 
             pid=pid
         )
@@ -369,7 +368,7 @@ class Product:
         return result[0][0] if result else 0
     
     @staticmethod
-    def get_category(pid):
+    def get_product_category(pid):
         '''
         Returns id of category of product
         '''
@@ -378,6 +377,20 @@ class Product:
             FROM CategoryOf c1
             JOIN Categories c2 ON c1.cid = c2.id
             WHERE c1.pid = :pid
+            ''',
+            pid=pid
+        )
+        return rows
+    
+    @staticmethod
+    def get_product_tags(pid):
+        '''
+        Returns tags of product
+        '''
+        rows = app.db.execute('''
+            SELECT name
+            FROM IsTagged
+            WHERE pid = :pid
             ''',
             pid=pid
         )
@@ -394,3 +407,48 @@ class Product:
             '''
         )
         return rows
+    
+    @staticmethod
+    def add_tag(pid, tag):
+        """
+        Assign a new tag to the product
+        """
+        # Check if the tag exists in relation
+        row = app.db.execute("""
+            SELECT 1
+            FROM Tags
+            WHERE name = :tag
+            """,
+            tag=tag
+        )
+
+        # If tag doesn't exist, insert
+        if not row:
+            app.db.execute("""
+                INSERT INTO Tags (name)
+                VALUES (:tag)
+                """,
+                tag=tag
+            )
+
+        # Assign new tag to product
+        app.db.execute("""
+            INSERT INTO IsTagged (pid, name)
+            VALUES (:pid, :tag)
+            """,
+            pid=pid,
+            tag=tag
+        )
+    
+    @staticmethod
+    def remove_all_tags(pid):
+        """
+        Delete all tags from a product
+        """
+        # Delete all rows in IsTagged corresponding with product
+        app.db.execute("""
+            DELETE FROM IsTagged
+            WHERE pid = :pid
+            """,
+            pid=pid
+        )

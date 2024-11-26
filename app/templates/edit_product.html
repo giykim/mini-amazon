@@ -5,37 +5,106 @@
 <body>
     <div class="container mt-2">
         <h2>Edit Product Info</h2>
-        <form action="{{ url_for('products.update_product') }}" method="post">
-            <div class="form-group">
+        {% if current_user.is_authenticated %}
+            <form action="{{ url_for('products.update_product') }}" method="post">
                 <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" class="form-control" placeholder="Product Name" name="name" value="{{ product.name }}" required>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" class="form-control" placeholder="Product Name" name="name" value="{{ product.name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" class="form-control" placeholder="Product Description" name="description" value="{{ product.description }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select class="form-control" name="category">
+                            <option value="" {% if not current_category %}selected{% endif %}>-- Select a category --</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}"
+                                    {% if current_category %}
+                                        {% if category.id == current_category[0].cid %}
+                                            selected
+                                        {% endif %}
+                                    {% endif %}>
+                                    {{ category.name[1:-1] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tags</label>
+                        <div id="tags-container" class="tags-input-container form-control">
+                            <!-- Add existings tags -->
+                            {% for tag in current_tags %}
+                                <span class="tag">{{ tag.name }}<span class="remove">×</span></span>
+                            {% endfor %}
+                            <input type="text" id="tags-input" placeholder="Product Tags" class="tags-input">
+                        </div>
+                        <input type="hidden" id="tags-hidden" name="tags">
+                    </div>
+                    <input type="hidden" name="pid" value="{{ product.id }}" required>
                 </div>
-                <div class="form-group">
-                    <label>Description</label>
-                    <input type="text" class="form-control" placeholder="Product Description" name="description" value="{{ product.description }}" required>
-                </div>
-                <div class="form-group">
-                    <label>Category</label>
-                    <select class="form-control" name="category">
-                        <option value="" {% if not current_category %}selected{% endif %}>-- Select a category --</option>
-                        {% for category in categories %}
-                            <option value="{{ category.id }}"
-                                {% if current_category %}
-                                    {% if category.id == current_category[0].cid %}
-                                        selected
-                                    {% endif %}
-                                {% endif %}>
-                                {{ category.name[1:-1] }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <input type="hidden" name="pid" value="{{ product.id }}" required>
-            </div>
-            <button type="submit" class="btn btn-warning">Edit Product</button>
-        </form>
+                <button type="submit" class="btn btn-warning">Edit Product</button>
+            </form>
+        {% else %}
+            <p><a href="{{ url_for('users.login') }}">Log in</a> to create products!</p>
+        {% endif %}
     </div>
 </body>
+
+<script>
+    // Wait for the DOM to be fully loaded before running the script
+    document.addEventListener("DOMContentLoaded", function() {
+        // Function to add a tag
+        function addTag(tagText) {
+            // Make sure the tag text is not empty and doesn't contain commas or unwanted symbols
+            if (tagText.trim() !== "") {
+                const tagContainer = document.getElementById("tags-container");
+                const tagElement = document.createElement("span");
+                tagElement.classList.add("tag");
+                tagElement.innerHTML = `${tagText}<span class="remove">×</span>`;
+                tagContainer.insertBefore(tagElement, document.getElementById("tags-input"));
+                updateHiddenInput(); // Update hidden input after adding a tag
+            }
+        }
+    
+        // Event listener for the 'Enter' key to add tags
+        document.getElementById("tags-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter" && this.value.trim() !== "") {
+                event.preventDefault(); // Prevent form submission
+                const tagValue = this.value.trim();
+                addTag(tagValue);  // Add tag to container
+                this.value = '';  // Clear the input field
+            }
+        });
+    
+        // Event listener for removing tags
+        document.getElementById("tags-container").addEventListener("click", function(event) {
+            if (event.target.classList.contains("remove")) {
+                event.target.closest(".tag").remove();  // Remove the tag
+                updateHiddenInput(); // Update hidden input after removing a tag
+            }
+        });
+    
+        // Update the hidden input with the comma-separated tags
+        function updateHiddenInput() {
+            const tags = [];
+            document.querySelectorAll(".tag").forEach(function(tagElement) {
+                tags.push(tagElement.textContent.replace("×", "").trim());  // Clean up '×' and add to array
+            });
+            const tagsString = tags.join(",");  // Create a comma-separated string
+            document.getElementById("tags-hidden").value = tagsString;  // Set the value of the hidden input
+    
+            // Print the value of the hidden input for debugging
+            console.log("Updated value of tags-hidden:", document.getElementById("tags-hidden").value);
+        }
+    
+        // Update the hidden input when the form is about to be submitted
+        document.querySelector("form").addEventListener("submit", function(event) {
+            updateHiddenInput(); // Update hidden input just before form submission
+        });
+    });
+</script>
 
 {% endblock %}
