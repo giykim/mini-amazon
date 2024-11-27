@@ -34,20 +34,103 @@
 </style>
 
 <div class="container mt-2">
-    {% if mine == False %}
-        <h2>Seller Search</h2>
-        <h5>Seller: {{ user_info.firstname }} {{ user_info.lastname }} ({{ user_info.email }})</h5>
-        <h5>ID: {{user_info.id}}</h5>
+    <h2>
+        {% if mine %}
+            My Page
+        {% else %}
+            User Page
+            {% if is_seller %}
+                (Seller)
+            {% else %}
+                (Customer)
+            {% endif %}
+        {% endif %}
+    </h2>
+    <h5>Seller: {{ user_info.firstname }} {{ user_info.lastname }} ({{ user_info.email }})</h5>
+    <h5>ID: {{user_info.id}}</h5>
+</div>
+
+<div class="container mt-2">
+    <h2>Created Products:</h2>
+    {% if created_products %}
+        <div class="row">
+            {% for product in created_products %}
+                <div class="col-md-4 mb-4">
+                    <a href="{{ url_for('products.product_page', product_id=product.id) }}">
+                        <div class="card">
+                            <div class="card-img-top"
+                            style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                                <span style="color: #ccc;">Product Image Placeholder</span>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text">
+                                    <strong>Product ID:</strong> {{ product.id }}<br>
+                                    <strong>Description:</strong> {{ product.description }}<br>
+                                    <strong>Price:</strong> {{ product.price }}
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+        <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4">
+            <ul class="pagination">
+                {% if created_products_page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="{{ url_for('inventories.get_user',
+                            uid=uid,
+                            created_products_page=created_products_page,
+                            reviews_page=reviews_page,
+                            selling_page=selling_page-1,
+                            ) }}"
+                            aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% set start_page = created_products_page - 2 if created_products_page > 3 else 1 %}
+                {% set end_page = created_products_page + 2 if created_products_page < created_products_total_pages - 2 else created_products_total_pages %}
+                {% for page_num in range(start_page, end_page + 1) %}
+                    <li class="page-item {% if page_num == created_products_page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('inventories.get_user',
+                            uid=uid,
+                            created_products_page=created_products_page,
+                            reviews_page=reviews_page,
+                            selling_page=page_num,
+                        ) }}">{{ page_num }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if created_products_page < created_products_total_pages %}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="{{ url_for('inventories.get_user',
+                            uid=uid,
+                            created_products_page=created_products_page,
+                            reviews_page=reviews_page,
+                            selling_page=selling_page+1,
+                            ) }}"
+                            aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
     {% else %}
-        <h2>My Page</h2>
-        <h5>User: {{ user_info.firstname }} {{ user_info.lastname }} ({{ user_info.email }})</h5>
-        <h5>ID: {{user_info.id}}</h5>
+        <div class="alert alert-warning mt-2" role="alert">
+          This user has not created any products.
+        </div>
     {% endif %}
 </div>
 
-{% if is_seller %}
-    <!-- Display Seller Reviews -->
-    <div class="container mt-2">
+<!-- Display Seller Reviews -->
+<div class="container mt-2">
+    {% if is_seller %}
         <h3>Reviews for {{ user_info.firstname}} {{user_info.lastname}}</h3>
 
         {% if has_bought %}
@@ -78,7 +161,7 @@
                     </label>
                 {% endfor %}
                 <div class="mr-2">
-                    <p>{{ mean_rating_rounded }}</p>
+                    <p>{{ mean_rating }}</p>
                 </div>
                 <p></p>
             </div>
@@ -134,28 +217,43 @@
             <!-- Pagination Controls -->
             <nav aria-label="Review pagination" class="mt-2">
                 <ul class="pagination justify-content-center">
-                    {% if current_page > 1 %}
+                    {% if reviews_page > 1 %}
                         <li class="page-item">
-                            <a class="page-link" href="{{ url_for('inventories.get_user', uid=uid, page=current_page-1) }}"
-                                aria-label="Previous">
+                            <a class="page-link"
+                                href="{{ url_for('inventories.get_user',
+                                uid=uid,
+                                created_products_page=created_products_page,
+                                reviews_page=reviews_page-1,
+                                selling_page=selling_page,
+                                ) }}"aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
                     {% endif %}
 
-                    {% set start_page = current_page - 2 if current_page > 3 else 1 %}
-                    {% set end_page = current_page + 2 if current_page < total_pages - 2 else total_pages %}
+                    {% set start_page = reviews_page - 2 if reviews_page > 3 else 1 %}
+                    {% set end_page = reviews_page + 2 if reviews_page < reviews_total_pages - 2 else reviews_total_pages %}
                     {% for page_num in range(start_page, end_page + 1) %}
-                        <li class="page-item {% if page_num == current_page %}active{% endif %}">
-                            <a class="page-link" href="{{ url_for('inventories.get_user', uid=uid, page=page_num) }}">{{
-                                page_num }}</a>
+                        <li class="page-item {% if page_num == reviews_page %}active{% endif %}">
+                            <a class="page-link"
+                                href="{{ url_for('inventories.get_user',
+                                uid=uid,
+                                created_products_page=created_products_page,
+                                reviews_page=page_num,
+                                selling_page=selling_page,
+                            ) }}">{{ page_num }}</a>
                         </li>
                     {% endfor %}
 
-                    {% if current_page < total_pages %}
+                    {% if reviews_page < reviews_total_pages %}
                         <li class="page-item">
-                            <a class="page-link" href="{{ url_for('inventories.get_user', uid=uid, page=current_page+1) }}"
-                                aria-label="Next">
+                            <a class="page-link"
+                                href="{{ url_for('inventories.get_user',
+                                uid=uid,
+                                created_products_page=created_products_page,
+                                reviews_page=reviews_page+1,
+                                selling_page=selling_page,
+                                ) }}"aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>
@@ -167,11 +265,7 @@
 
     <!-- Product List -->
     <div class="container mt-2">
-        {% if mine == False %}
-            <h3>Products Available</h3>
-        {% else %}
-            <h3>Products On Sale</h3>
-        {% endif %}
+        <h3>Products On Sale</h3>
 
         <!-- If seller has any products, display them -->
         {% if selling %}
@@ -201,66 +295,62 @@
                     </div>
                 {% endfor %}
             </div>
+            <nav aria-label="Product pagination" class="d-flex justify-content-center mt-2">
+                <!-- Flex container for centering -->
+                <ul class="pagination">
+                    {% if selling_page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="{{ url_for('inventories.get_user',
+                            uid=uid,
+                            created_products_page=created_products_page,
+                            reviews_page=reviews_page,
+                            selling_page=selling_page-1,
+                            ) }}"
+                            aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% set start_page = selling_page - 2 if selling_page > 3 else 1 %}
+                    {% set end_page = selling_page + 2 if selling_page < selling_total_pages - 2 else
+                        selling_total_pages %} {% for page_num in range(start_page, end_page + 1) %}
+                        <li
+                            class="page-item {% if page_num == selling_page %}active{% endif %}">
+                            <a class="page-link"
+                                href="{{ url_for('inventories.get_user',
+                                    uid=uid,
+                                    created_products_page=created_products_page,
+                                    reviews_page=reviews_page,
+                                    selling_page=page_num,
+                                ) }}">{{page_num }}</a>
+                        </li>
+                        {% endfor %}
+
+                        {% if selling_page < selling_total_pages %}
+                        <li class="page-item">
+                        <a class="page-link"
+                            href="{{ url_for('inventories.get_user',
+                            uid=uid,
+                            created_products_page=created_products_page,
+                            reviews_page=reviews_page,
+                            selling_page=selling_page+1,
+                            ) }}"
+                            aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                        </li>
+                        {% endif %}
+                </ul>
+            </nav>
         {% else %}
             <div class="alert alert-warning mt-2" role="alert">
                 The seller currently has no products listed.
             </div>
         {% endif %}
-
-        <!-- Pagination Controls for Products -->
-        {% if stocked %}
-            <div class="row">
-                <nav aria-label="Product pagination" class="d-flex justify-content-center mt-2">
-                    <!-- Flex container for centering -->
-                    <ul class="pagination">
-                        {% if current_product_page > 1 %}
-                        <li class="page-item">
-                            <a class="page-link"
-                                href="{{ url_for('inventories.get_user', uid=uid, page=current_page, product_page=current_product_page-1) }}"
-                                aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
-                        {% endif %}
-
-                        {% set start_page = current_product_page - 2 if current_product_page > 3 else 1 %}
-                        {% set end_page = current_product_page + 2 if current_product_page < product_total_pages - 2 else
-                            product_total_pages %} {% for page_num in range(start_page, end_page + 1) %}
-                            <li
-                                class="page-item {% if page_num == current_product_page %}active{% endif %}">
-                                <a class="page-link"
-                                    href="{{ url_for('inventories.get_user', uid=uid, page=current_page, product_page=page_num) }}">{{
-                                    page_num }}</a>
-                            </li>
-                            {% endfor %}
-
-                            {% if current_product_page < product_total_pages %}
-                            <li class="page-item">
-                            <a class="page-link"
-                                href="{{ url_for('inventories.get_user', uid=uid, page=current_page, product_page=current_product_page+1) }}"
-                                aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                            </li>
-                            {% endif %}
-                    </ul>
-                </nav>
-            </div>
-        {% endif %}
-    </div>
-{% else %}
-    {% if mine == True %}
-        <div class="alert alert-warning mt-2" role="alert">
-            You are not currently registered as a seller.
-        </div>
-    {% else %}
-        <!-- Display page for a non-seller -->
-        <!-- Created products -->
-        <div class="alert alert-warning mt-2" role="alert">
-            The user associated with this ID is not a seller!
-        </div>
     {% endif %}
-{% endif %}
+</div>
 
 {% if is_seller and mine %}
     <div class="container mt-2">

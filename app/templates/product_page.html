@@ -136,9 +136,13 @@
             {% endif %}
         </p>
         <p><strong>Tags:</strong>
-            {% for tag in tags %}
-                <span class="tag">{{ tag.name }}</span>
-            {% endfor %}
+            {% if tags %}
+                {% for tag in tags %}
+                    <span class="tag">{{ tag.name }}</span>
+                {% endfor %}
+            {% else %}
+                N/A
+            {% endif %}
         </p>
     </div>
 
@@ -182,7 +186,7 @@
                 </label>
             {% endfor %}
             <div class="mr-2">
-                <p>{{ mean_rating_rounded }}</p>
+                <p>{{ mean_rating }}</p>
             </div>
             <p></p>
         </div>

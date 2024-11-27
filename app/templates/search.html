@@ -3,58 +3,59 @@
 {% block content %}
 
 <div class="container mt-2">
-  <h2>{{ products_count }} Results for "{{ query }}"</h2>
-  <div class="row">
-    {% if products %}
-      {% for product in products %}
-        <div class="col-md-4 mb-4">
-          <a href="{{ url_for('products.product_page', product_id=product.id) }}">
-            <div class="card">
-              <div class="card-img-top"
-                style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                <span style="color: #ccc;">Product Image Placeholder</span>
-              </div>
-              <div class="card-body">
-                <h5 class="card-title">{{ product.name }}</h5>
-                <p class="card-text">
-                  <strong>Product ID:</strong> {{ product.id }}<br>
-                  <strong>Description:</strong> {{ product.description }}<br>
-                  <strong>Price:</strong> {{ product.price }}
-                </p>
-              </div>
-            </div>
-          </a>
-        </div>
-      {% endfor %}
+    <h2>{{ products_count }} Results for "{{ query }}"</h2>
+    <div class="row">
+        {% if products %}
+            {% for product in products %}
+                <div class="col-md-4 mb-4">
+                    <a href="{{ url_for('products.product_page', product_id=product.id) }}">
+                        <div class="card">
+                            <div class="card-img-top"
+                              style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                                <span style="color: #ccc;">Product Image Placeholder</span>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text">
+                                    <strong>Product ID:</strong> {{ product.id }}<br>
+                                    <strong>Description:</strong> {{ product.description }}<br>
+                                    <strong>Price:</strong> {{ product.price }}
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+          </div>
+          <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4">
+              <ul class="pagination">
+                  {% if page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('products.search', page=page-1, query=query) }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                  {% endif %}
+
+                  {% set start_page = page - 2 if page > 3 else 1 %}
+                  {% set end_page = page + 2 if page < total_pages - 2 else total_pages %}
+                  {% for page_num in range(start_page, end_page + 1) %}
+                      <li class="page-item {% if page_num == page %}active{% endif %}">
+                          <a class="page-link" href="{{ url_for('products.search', page=page_num, query=query) }}">{{ page_num }}</a>
+                      </li>
+                  {% endfor %}
+
+                  {% if page < total_pages %}
+                      <li class="page-item">
+                          <a class="page-link" href="{{ url_for('products.search', page=page+1, query=query) }}" aria-label="Next">
+                              <span aria-hidden="true">&raquo;</span>
+                          </a>
+                      </li>
+                  {% endif %}
+              </ul>
+          </nav>
+        {% endif %}
     </div>
-    <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4">
-      <ul class="pagination">
-        {% if page > 1 %}
-        <li class="page-item">
-          <a class="page-link" href="{{ url_for('products.search', page=page-1, query=query) }}" aria-label="Previous">
-            <span aria-hidden="true">&laquo;</span>
-          </a>
-        </li>
-        {% endif %}
-
-        {% set start_page = page - 2 if page > 3 else 1 %}
-        {% set end_page = page + 2 if page < total_pages - 2 else total_pages %}
-        {% for page_num in range(start_page, end_page + 1) %}
-          <li class="page-item {% if page_num == page %}active{% endif %}">
-            <a class="page-link" href="{{ url_for('products.search', page=page_num, query=query) }}">{{ page_num }}</a>
-          </li>
-        {% endfor %}
-
-        {% if page < total_pages %}
-          <li class="page-item">
-            <a class="page-link" href="{{ url_for('products.search', page=page+1, query=query) }}" aria-label="Next">
-              <span aria-hidden="true">&raquo;</span>
-            </a>
-          </li>
-        {% endif %}
-      </ul>
-    </nav>
-  {% endif %}
 </div>
 
 <br>

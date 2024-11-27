@@ -26,6 +26,9 @@ def get_user():
         else:
             # If user is not logged in, send to invalid page
             uid = -1
+
+    # Get info of user
+    user_info = User.get(uid)
     
     # Check if user is a seller
     seller = Seller.get(uid)
@@ -33,46 +36,62 @@ def get_user():
         is_seller = False
     else:
         is_seller = True
-
-    # Get info for all types of users
-    user_info = User.get(uid) if is_seller else None
     
     # Review pagination parameters
-    page = request.args.get('page', 1, type=int)
-    per_page = 3
+    reviews_page = request.args.get('reviews_page', 1, type=int)
+    reviews_per_page = 3
 
-    # Products sold pagination parameters
-    product_page = request.args.get('product_page', 1, type=int)
-    product_per_page = 9
+    # Retrieve paginated reviews
+    reviews_count = Review.count_seller_reviews(uid) if is_seller else 0
+    reviews_total_pages = (reviews_count + reviews_per_page - 1) // reviews_per_page
+    seller_reviews = Review.get_seller_reviews_paginated(uid, reviews_page, reviews_per_page) if is_seller else None
 
     # Get product info corresponding to seller
     if is_seller:
-        # Get products that are up for sale
-        selling = Inventory.get_selling(uid)
-        # Get products that are in inventory (even if they may not be on sale)
-        stock = Inventory.get_inventory_details(uid)
-        # Get incoming orders
-        incoming_purchases = Purchase.get_incoming_purchases(uid)
         # Check if current user has bought from this seller
         has_bought = Purchase.has_bought_from(uid=current_user.id, sid=uid)
+
         # Get ratings for seller
         ratings = Seller.get_seller_ratings(sid=uid)
+
+        # Get products that are up for sale
+        selling = Inventory.get_selling(uid)
+
+        # Get incoming orders
+        incoming_purchases = Purchase.get_incoming_purchases(uid)
+
+        # Get products that are in inventory (even if they may not be on sale)
+        stock = Inventory.get_inventory_details(uid)
     else:
-        selling = None
-        stock = None
-        incoming_purchases = None
         has_bought = False
         ratings = None
+        selling = None
+        incoming_purchases = None
+        stock = None
 
-    # Retrieve paginated reviews
-    total_reviews = Review.count_seller_reviews(uid) if is_seller else 0
-    total_pages = (total_reviews + per_page - 1) // per_page
-    seller_reviews = Review.get_seller_reviews_paginated(uid, page, per_page) if is_seller else None
-
-    # Retrieve paginated products
-    total_products = Inventory.count_sold_products(uid) if is_seller else 0
-    product_total_pages = (total_products + product_per_page - 1) // product_per_page
+    # Get products created by user
+    selling_page = request.args.get('selling_page', 1, type=int)
+    selling_per_page = 9
+    selling_offset = (selling_page - 1) * selling_per_page
     
+    selling_count = len(selling) if selling else 0
+    selling = selling[selling_offset:selling_offset+selling_per_page] if selling else 0
+
+    # Calculate total pages based on the count of created products
+    selling_total_pages = (selling_count + selling_per_page - 1) // selling_per_page  # Calculate the number of pages
+
+    # Get products created by user
+    created_products_page = request.args.get('created_products_page', 1, type=int)
+    created_products_per_page = 9
+    created_products_offset = (created_products_page - 1) * created_products_per_page
+
+    all_products = Product.get_user_products(uid)
+    created_products_products_count = len(all_products)
+    created_products = all_products[created_products_offset:created_products_offset+created_products_per_page]
+
+    # Calculate total pages based on the count of created products
+    created_products_total_pages = (created_products_products_count + created_products_per_page - 1) // created_products_per_page  # Calculate the number of pages
+
     # Check if user is looking at their own profile
     mine = False
     if current_user.is_authenticated:
@@ -82,17 +101,24 @@ def get_user():
                            uid=uid, 
                            is_seller=is_seller, 
                            user_info=user_info, 
-                           seller_reviews=seller_reviews, 
-                           selling=selling,
-                           incoming_purchases=incoming_purchases,
                            has_bought=has_bought,
-                           stock=stock,
-                           current_page=page,
-                           current_product_page=product_page,
-                           total_pages=total_pages,
-                           product_total_pages=product_total_pages,
                            mine=mine,
+
+                           created_products=created_products,
+                           created_products_page=created_products_page,
+                           created_products_total_pages=created_products_total_pages,
+
                            ratings=ratings,
+                           seller_reviews=seller_reviews, 
+                           reviews_page=reviews_page,
+                           reviews_total_pages=reviews_total_pages,
+
+                           selling=selling,
+                           selling_page=selling_page,
+                           selling_total_pages=selling_total_pages,
+                           
+                           incoming_purchases=incoming_purchases,
+                           stock=stock,
                            )
 
 
