@@ -43,13 +43,15 @@ def product_page(product_id):
     # Get info to display on product page
     product_info = Product.get_product_info(product_id)
     category = Product.get_product_category(product_id)
-    print(product_id)
     tags = Product.get_product_tags(product_id)
     seller_info = Product.get_seller_info(product_id)
     creator_info = Product.get_creator_info(product_id)
     review_info = Product.get_reviews_paginated(product_id, page, per_page)
     total_reviews = Product.count_reviews(product_id)
     total_pages = (total_reviews + per_page - 1) // per_page
+
+    # Get variables to display product rating
+    ratings = Product.get_product_ratings(product_id)
 
     # Check if the user is a seller (to allow them to stock this product)
     if current_user.is_authenticated:
@@ -86,7 +88,8 @@ def product_page(product_id):
         current_page=page,
         user_votes=user_votes,
         has_bought=has_bought,
-        is_seller=is_seller
+        is_seller=is_seller,
+        ratings=ratings,
     )
 
 

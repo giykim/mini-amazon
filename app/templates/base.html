@@ -261,6 +261,46 @@
             font-weight: bold;
         }
 
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse; /* Align stars from left to right in order */
+            align-items: center; /* Aligns items vertically within container */
+            justify-content: left;
+        }
+
+        .star-rating input[type="radio"] {
+            display: none; /* Hide the radio buttons */
+        }
+
+        .star-rating label {
+            font-size: 2rem;
+            color: #ddd;
+            cursor: pointer;
+        }
+
+        /* Highlight selected stars */
+        .star-rating input[type="radio"]:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: #ffc107;
+        }
+
+        .star-rating-display {
+            display: flex;
+            flex-direction: row-reverse; /* Align stars from left to right in order */
+            align-items: center; /* Aligns items vertically within container */
+            justify-content: left;
+        }
+
+        .star-rating-display label {
+            font-size: 2rem;
+            color: #ddd;
+            cursor: pointer;
+        }
+
+        .star-rating-display label.filled {
+            color: #FFD700; /* Gold color for filled stars */
+        }
     </style>
 </head>
 

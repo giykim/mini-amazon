@@ -2,34 +2,6 @@
 
 {% block content %}
 
-<head>
-    <style>
-        .star-rating {
-            display: flex;
-            flex-direction: row-reverse; /* Align stars from left to right in order */
-            align-items: center; /* Aligns items vertically within container */
-            justify-content: left;
-        }
-
-        .star-rating input[type="radio"] {
-            display: none; /* Hide the radio buttons */
-        }
-
-        .star-rating label {
-            font-size: 2rem;
-            color: #ddd;
-            cursor: pointer;
-        }
-
-        /* Highlight selected stars */
-        .star-rating input[type="radio"]:checked ~ label,
-        .star-rating label:hover,
-        .star-rating label:hover ~ label {
-            color: #ffc107;
-        }
-    </style>
-</head>
-
 <body>
     <div class="container mt-5">
         <h2>Review for Product {{ product.name }}</h2>

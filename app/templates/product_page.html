@@ -155,16 +155,39 @@
 <div class="mt-2">
     <h3>Customer Reviews</h3>
     {% if has_bought %}
-        <div class="mb-2">
-            <form action="{{ url_for('social.product_review') }}">
-                <input type="hidden" name="product_id" value="{{ product_info[0].id }}">
-                <button type="submit" class="btn btn-warning">Write Review</button>
-            </form>
-        </div>
+        <form action="{{ url_for('social.product_review') }}">
+            <input type="hidden" name="product_id" value="{{ product_info[0].id }}">
+            <button type="submit" class="btn btn-warning">Write Review</button>
+        </form>
     {% else %}
         You must purchase this product before writing a review!
     {% endif %}
     
+    <div class="mt-2">
+        <p><strong>Overall Rating:</strong></p>
+
+        {% set num_ratings = ratings|length %}
+        {% set mean_rating = (ratings|map(attribute='rating')|sum / num_ratings)|round(1) if num_ratings > 0 else 0 %}
+        {% set mean_rating_rounded = (mean_rating * 2)|round / 2 %}
+        <!-- Everything in star-rating is reversed -->
+        <div class="star-rating-display">
+            <div class="ml-2">
+                <p>{{ num_ratings }} ratings</p>
+            </div>
+            {% for i in range(5, 0, -1) %} <!-- Iterate from 5 down to 1 -->
+                {% set is_filled = i <= mean_rating_rounded %}
+                {% set is_half = i - 0.5 == mean_rating_rounded %}
+                <label class="{% if is_filled or is_half %}filled{% endif %}">
+                    &#9733;
+                </label>
+            {% endfor %}
+            <div class="mr-2">
+                <p>{{ mean_rating_rounded }}</p>
+            </div>
+            <p></p>
+        </div>
+    </div>
+
     {% if review_info %}
         {% for review in review_info %}
             <div class="card mb-2" id="review-{{ review.id }}">
@@ -184,7 +207,7 @@
                     <!-- Helpfulness Section with Voting Buttons -->
                     <div class="d-flex justify-content-end align-items-center" style="margin-top: -30px;"> <!-- Adjusted alignment -->
                         <!-- Helpfulness Count -->
-                        <small class="text-muted me-2">Helpfulness: <span class="helpfulness-count" data-review-id="{{ review.id }}">{{ review.helpfulness }}</span></small>
+                        <small class="text-muted me-2 mr-2">Helpfulness: <span class="helpfulness-count" data-review-id="{{ review.id }}">{{ review.helpfulness }}</span></small>
 
                         <!-- Voting Buttons with Gray Box Styling -->
                         <button 

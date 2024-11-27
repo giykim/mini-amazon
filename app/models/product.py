@@ -452,3 +452,18 @@ class Product:
             """,
             pid=pid
         )
+
+    @staticmethod
+    def get_product_ratings(pid):
+        '''
+        Returns ratings of product
+        '''
+        rows = app.db.execute('''
+            SELECT r.rating
+            FROM ProductReviews p
+            JOIN Reviews r ON r.id = p.id
+            WHERE p.pid = :pid
+            ''',
+            pid=pid
+        )
+        return rows
