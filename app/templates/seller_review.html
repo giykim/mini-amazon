@@ -4,11 +4,12 @@
 
 <body>
     <div class="container mt-5">
-        <h2>Review for Product: {{ product.name }}</h2>
+        <h2>Review for Seller: {{ seller.firstname }} {{ seller.lastname }}</h2>
+        {{ seller.name }}
 
         {% if current_user.is_authenticated %}
-            <form action="{{ url_for('social.new_product_review') }}" method="post">
-                <input type="hidden" name="product_id" value="{{ product.id }}">
+            <form action="{{ url_for('social.new_seller_review') }}" method="post">
+                <input type="hidden" name="seller_id" value="{{ seller.id }}">
                 <div class="form-group">
                     <label for="rating">Rating</label>
                     <div class="star-rating">
@@ -30,7 +31,7 @@
                 </div>
                 <div class="form-group">
                     <label>Description</label>
-                    <input type="text" class="form-control" placeholder="Product Description" name="description" required>
+                    <input type="text" class="form-control" placeholder="Seller Description" name="description" required>
                 </div>
                 <button type="submit" class="btn btn-warning">Create Review</button>
             </form>

@@ -49,9 +49,19 @@
     <!-- Display Seller Reviews -->
     <div class="container mt-2">
         <h3>Reviews for {{ user_info.firstname}} {{user_info.lastname}}</h3>
+
+        {% if has_bought %}
+            <form action="{{ url_for('social.seller_review') }}">
+                <input type="hidden" name="seller_id" value="{{ uid }}">
+                <button type="submit" class="btn btn-warning">Write Review</button>
+            </form>
+        {% else %}
+            You must purchase from this seller before writing a review!
+        {% endif %}
+
         {% if seller_reviews %}
             {% for review in seller_reviews %}
-                <div class="card mb-4" id="review-{{ review.id }}">
+                <div class="card mt-2" id="review-{{ review.id }}">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
@@ -70,7 +80,7 @@
                         <div class="d-flex justify-content-end align-items-center" style="margin-top: -30px;">
                             <!-- Adjusted alignment -->
                             <!-- Helpfulness Count -->
-                            <small class="text-muted me-2">Helpfulness: <span class="helpfulness-count"
+                            <small class="text-muted me-2 mr-2">Helpfulness: <span class="helpfulness-count"
                                     data-review-id="{{ review.id }}">{{ review.helpfulness }}</span></small>
 
                             <!-- Voting Buttons with Gray Box Styling -->

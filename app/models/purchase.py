@@ -213,3 +213,22 @@ class Purchase:
             sid=sid
         )
         return rows
+
+
+    @staticmethod
+    def has_bought_from(uid, sid):
+        """
+        Check if user (uid) has purchased a product from seller (sid)
+        """
+        # Check if a row corresponding to user and seller exists in relation
+        row = app.db.execute('''
+            SELECT 1
+            FROM Purchases
+            WHERE uid = :uid AND sid = :sid
+            ''',
+            uid=uid,
+            sid=sid
+        )
+        
+        # If row exists, return True
+        return row is not None

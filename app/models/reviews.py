@@ -88,6 +88,45 @@ class Review:
 
         return False
     
+
+    @staticmethod
+    def new_seller_review(uid, sid, rating, description):
+        already_exists = app.db.execute("""
+            SELECT 1
+            FROM SellerReviews
+            WHERE uid=:uid
+                AND sid=:sid
+        """, 
+            uid=uid,
+            sid=sid
+        )
+
+        if already_exists:
+            return True
+
+        result = app.db.execute("""
+            INSERT INTO Reviews (rating, description, time_created)
+            VALUES (:rating, :description, CURRENT_TIMESTAMP)
+            RETURNING id
+        """, 
+            rating=rating,
+            description=description
+        )
+
+        id = result[0][0]
+
+        app.db.execute("""
+            INSERT INTO SellerReviews (id, uid, sid)
+            VALUES (:id, :uid, :sid)
+        """, 
+            id=id,
+            uid=uid,
+            sid=sid
+        )
+
+        return False
+    
+
     # In reviews.py
     @staticmethod
     def get_seller_reviews_paginated(sid, page, per_page=5):

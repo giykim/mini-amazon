@@ -5,7 +5,7 @@ import json
 import datetime
 
 from app.models.product import Product
-from app.models.purchase import Purchase
+from app.models.user import User
 from app.models.reviews import Review
 
 from flask import Blueprint
@@ -34,3 +34,30 @@ def new_product_review():
             flash("You've already reviewed this product.", "error")
 
     return redirect(url_for('products.product_page', product_id=pid))
+
+
+@bp.route('/seller-review', methods=['GET'])
+def seller_review():
+    sid = request.args.get('seller_id')
+    print(sid)
+
+    seller = User.get(sid)
+
+    print(seller)
+
+    return render_template('seller_review.html', seller=seller)
+
+
+@bp.route('/new-seller-review', methods=['POST'])
+def new_seller_review():
+    sid = request.form.get('seller_id')
+    rating = request.form.get('rating')
+    description = request.form.get('description')
+
+    if current_user.is_authenticated:
+        already_exists = Review.new_seller_review(current_user.id, sid, rating, description)
+
+        if already_exists:
+            flash("You've already reviewed this seller.", "error")
+
+    return redirect(url_for('inventories.get_user', uid=sid))

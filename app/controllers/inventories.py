@@ -53,10 +53,13 @@ def get_user():
         stock = Inventory.get_inventory_details(uid)
         # Get incoming orders
         incoming_purchases = Purchase.get_incoming_purchases(uid)
+        # Check if current user has bought from this seller
+        has_bought = Purchase.has_bought_from(uid=current_user.id, sid=uid)
     else:
         selling = None
         stock = None
         incoming_purchases = None
+        has_bought = False
 
     # Retrieve paginated reviews
     total_reviews = Review.count_seller_reviews(uid) if is_seller else 0
@@ -79,12 +82,14 @@ def get_user():
                            seller_reviews=seller_reviews, 
                            selling=selling,
                            incoming_purchases=incoming_purchases,
+                           has_bought=has_bought,
                            stock=stock,
                            current_page=page,
                            current_product_page=product_page,
                            total_pages=total_pages,
                            product_total_pages=product_total_pages,
-                           mine=mine)
+                           mine=mine,
+                           )
 
 
 @bp.route('/vote-seller-review', methods=['POST'])
