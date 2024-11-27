@@ -467,3 +467,35 @@ class Product:
             pid=pid
         )
         return rows
+    
+    @staticmethod
+    def get_related_products(pid):
+        '''
+        Returns similar products based on category and tags
+        '''
+        rows = app.db.execute('''
+            SELECT p.id, p.name, p.description, MIN(s.price) as price
+            FROM Products p
+            JOIN CategoryOf c ON p.id = c.pid
+            LEFT JOIN SoldBy s ON p.id = s.pid
+            WHERE p.id <> :pid
+                AND (
+                    c.cid = (
+                        SELECT cid 
+                        FROM CategoryOf 
+                        WHERE pid = :pid
+                    )
+                    OR EXISTS (
+                        SELECT 1
+                        FROM IsTagged t1
+                        JOIN IsTagged t2 ON t1.name = t2.name
+                        WHERE t1.pid = p.id
+                            AND t2.pid = :pid
+                    )
+                )
+            GROUP BY p.id
+            LIMIT 4;
+            ''',
+            pid=pid
+        )
+        return rows

@@ -73,6 +73,9 @@ def product_page(product_id):
         has_bought = False
         user_votes = None
 
+    # Retrieve products related to current product
+    related_products = Product.get_related_products(product_id)
+
     # If there is no creator associated with product
     if not creator_info:
         creator_info = [{'uid': -1, 'firstname': 'No', 'lastname': 'Creator'}]
@@ -90,6 +93,7 @@ def product_page(product_id):
         has_bought=has_bought,
         is_seller=is_seller,
         ratings=ratings,
+        related_products=related_products,
     )
 
 

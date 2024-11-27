@@ -269,7 +269,9 @@
         </nav>
 
     {% else %}
-        <p>No reviews available for this product yet.</p>
+        <div class="alert alert-warning mt-2" role="alert">
+            No reviews available for this product yet.
+        </div>
     {% endif %}
 </div>
 
@@ -278,23 +280,38 @@
     <div class="mt-5">
         <h3>Related Products</h3>
         <div class="row">
-            {% for related_product in related_products %}
-                <div class="col-md-3 mb-2">
-                    <div class="card h-100">
-                        <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                            <span style="color: #ccc;">Related Image</span>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title">{{ related_product.name }}</h5>
-                            <p class="card-text">${{ "{:.2f}".format(related_product.price) }}</p>
-                            <a href="{{ url_for('products.product_page', product_id=related_product.id) }}" class="btn btn-primary">View Product</a>
+            {% if related_products %}
+                {% for related_product in related_products %}
+                    <div class="col-md-3 mb-2">
+                        <div class="card h-100">
+                            <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                                <span style="color: #ccc;">Related Image</span>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ related_product.name }}</h5>
+                                <p class="card-text">
+                                    $
+                                    {% if related_product.price %}
+                                        {{ "{:.2f}".format(related_product.price) }}
+                                    {% else %}
+                                        0.00
+                                    {% endif %}
+                                </p>
+                                <a href="{{ url_for('products.product_page', product_id=related_product.id) }}" class="btn btn-primary">View Product</a>
+                            </div>
                         </div>
                     </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-warning mt-2" role="alert">
+                    This product has no related products.
                 </div>
-            {% endfor %}
+            {% endif %}
         </div>
     </div>
 </div>
+
+<br>
 
 <script>
     const votes = {{ user_votes | tojson }};
