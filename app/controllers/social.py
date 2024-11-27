@@ -39,11 +39,8 @@ def new_product_review():
 @bp.route('/seller-review', methods=['GET'])
 def seller_review():
     sid = request.args.get('seller_id')
-    print(sid)
 
     seller = User.get(sid)
-
-    print(seller)
 
     return render_template('seller_review.html', seller=seller)
 
@@ -61,6 +58,34 @@ def new_seller_review():
             flash("You've already reviewed this seller.", "error")
 
     return redirect(url_for('inventories.get_user', uid=sid))
+
+
+@bp.route('/edit-review', methods=['POST'])
+def edit_review():
+    """
+    Route to go to form to edit existing review
+    """
+    rid = request.form.get('review_id')
+
+    review_info = Review.get_review_info(rid)[0]
+
+    return render_template('edit_review.html', review_info=review_info)
+
+
+@bp.route('/update-review', methods=['POST'])
+def update_review():
+    """
+    Route to update existing review with new values
+    """
+    rid = request.form.get('review_id')
+    rating = request.form.get('rating')
+    description = request.form.get('description')
+
+    Review.update_review(rid, rating, description)
+
+    flash("You've updated your review!", "error")
+
+    return redirect(url_for('users.review_history'))
 
 
 @bp.route('/delete-review', methods=['POST'])

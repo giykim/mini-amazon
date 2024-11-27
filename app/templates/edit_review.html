@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<body>
+    <div class="container mt-5">
+        <h2>Review for {{ review_info.review_type }}: {{ review_info.name }}</h2>
+        {% if current_user.is_authenticated %}
+            <form action="{{ url_for('social.update_review') }}" method="post">
+                <input type="hidden" name="review_id" value="{{ review_info.id }}">
+                <div class="form-group">
+                    <label for="rating">Rating</label>
+                    <div class="star-rating">
+                        <input type="radio" id="star5" name="rating" value="5" {% if review_info.rating == 5 %}checked{% endif %} required>
+                        <label for="star5" title="5 stars">&#9733;</label>
+                
+                        <input type="radio" id="star4" name="rating" value="4" {% if review_info.rating == 4 %}checked{% endif %} required>
+                        <label for="star4" title="4 stars">&#9733;</label>
+                
+                        <input type="radio" id="star3" name="rating" value="3" {% if review_info.rating == 3 %}checked{% endif %} required>
+                        <label for="star3" title="3 stars">&#9733;</label>
+                
+                        <input type="radio" id="star2" name="rating" value="2" {% if review_info.rating == 2 %}checked{% endif %} required>
+                        <label for="star2" title="2 stars">&#9733;</label>
+                
+                        <input type="radio" id="star1" name="rating" value="1" {% if review_info.rating == 1 %}checked{% endif %} required>
+                        <label for="star1" title="1 star">&#9733;</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" class="form-control" placeholder="Review Description" name="description" value="{{ review_info.description }}" required>
+                </div>
+                <button type="submit" class="btn btn-warning">Update Review</button>
+            </form>
+        {% else %}
+        {% endif %}
+    </div>
+</body>
+
+{% endblock %}

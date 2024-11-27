@@ -211,3 +211,46 @@ class Review:
             """, 
             rid=rid
         )
+
+    @staticmethod
+    def get_review_info(rid):
+        rows = app.db.execute("""
+            WITH HelpfulnessValue AS (
+                SELECT rid, COALESCE(SUM(value), 0) AS helpfulness
+                FROM Helpfulness
+                GROUP BY rid
+            )
+            SELECT 
+                r.id,
+                CASE
+                WHEN p.pid IS NULL THEN 'Seller'
+                ELSE 'Product'
+                END AS review_type,
+                CASE
+                WHEN p1.name IS NULL THEN u.firstname || ' ' || u.lastname
+                ELSE p1.name
+                END AS Name,
+                r.rating, r.description, r.time_created, COALESCE(h.helpfulness, 0) AS helpfulness
+            FROM Reviews r
+            LEFT JOIN SellerReviews s ON r.id = s.id
+            LEFT JOIN ProductReviews p ON r.id = p.id
+            LEFT JOIN Products AS p1 ON p1.id = p.pid
+            LEFT JOIN Users AS u ON u.id = s.sid
+            LEFT JOIN HelpfulnessValue h ON h.rid = r.id
+            WHERE r.id = :rid
+            """,
+            rid = rid
+        )
+        return rows
+    
+    @staticmethod
+    def update_review(rid, rating, description):
+        app.db.execute("""
+            UPDATE Reviews
+            SET rating=:rating, description=:description
+            WHERE id = :rid
+        """, 
+            rid=rid, 
+            rating=rating, 
+            description=description
+        )
