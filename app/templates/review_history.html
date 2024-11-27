@@ -14,8 +14,18 @@
                     <p class="card-text"><strong>Review Type:</strong> {{ review.review_type }}</p>
                     <p class="card-text"><strong>Rating:</strong> {{ review.rating }}</p>
                     <p class="card-text"><strong>Description:</strong> {{ review.description }}</p>
-                    <p class="card-text"><strong>Time Created:</strong> {{ review.time_created }}</p>
                     <p class="card-text"><strong>Helpfulness:</strong> {{ review.helpfulness }}</p>
+                    <p class="card-text"><strong>Time Created:</strong> {{ review.time_created }}</p>
+                    <div class="d-flex align-items-center">
+                        <form action="{{ url_for('inventories.fulfill_order') }}" method="POST" class="mr-2">
+                            <input type="hidden" name="review_id" value="{{ review.rid }}">
+                            <button type="submit" class="btn btn-warning">Edit</button>
+                        </form>
+                        <form action="{{ url_for('social.delete_review') }}" method="POST">
+                            <input type="hidden" name="review_id" value="{{ review.id }}">
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                    </div>                   
                 </div>
             </div>
         {% endfor %}

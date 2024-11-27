@@ -231,4 +231,4 @@ class Purchase:
         )
         
         # If row exists, return True
-        return row is not None
+        return len(row) > 0

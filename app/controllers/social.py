@@ -61,3 +61,14 @@ def new_seller_review():
             flash("You've already reviewed this seller.", "error")
 
     return redirect(url_for('inventories.get_user', uid=sid))
+
+
+@bp.route('/delete-review', methods=['POST'])
+def delete_review():
+    rid = request.form.get('review_id')
+
+    Review.delete_review(rid)
+
+    flash("Deleted review.", "error")
+
+    return redirect(url_for('users.review_history'))

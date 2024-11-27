@@ -27,6 +27,7 @@ class Review:
                 GROUP BY rid
             )
             SELECT 
+                r.id,
                 CASE
                  WHEN p.pid IS NULL THEN 'Seller'
                  ELSE 'Product'
@@ -176,4 +177,37 @@ class Review:
             review_id=review_id, 
             user_id=user_id, 
             value=value
+        )
+
+    @staticmethod
+    def delete_review(rid):
+        """
+        Delete review from Reviews, SellerReviews, ProductReviews relation with corresponding id
+        """
+        app.db.execute("""
+            DELETE FROM Helpfulness
+            WHERE rid=:rid
+            """, 
+            rid=rid
+        )
+
+        app.db.execute("""
+            DELETE FROM SellerReviews
+            WHERE id=:rid
+            """, 
+            rid=rid
+        )
+
+        app.db.execute("""
+            DELETE FROM ProductReviews
+            WHERE id=:rid
+            """, 
+            rid=rid
+        )
+        
+        app.db.execute("""
+            DELETE FROM Reviews
+            WHERE id=:rid
+            """, 
+            rid=rid
         )

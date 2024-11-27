@@ -73,8 +73,7 @@ CREATE TABLE SellerReviews (
     id INT NOT NULL REFERENCES Reviews(id),
     uid INT NOT NULL REFERENCES Users(id),
     sid INT NOT NULL REFERENCES Sellers(id),
-    PRIMARY KEY (uid, sid),
-    CHECK (sid != uid)
+    PRIMARY KEY (uid, sid)
 );
 
 CREATE TABLE Categories (
