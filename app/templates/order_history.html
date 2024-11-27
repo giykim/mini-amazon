@@ -7,7 +7,6 @@
 <div class="container mt-2">
     <h2>Order History:</h2>
     {% if orders %}
-        
         {% for order in orders %}
             <div class="card mb-4">
                 <div class="card-header">
@@ -73,6 +72,10 @@
                 {% endif %}
             </ul>
         </nav>
+    {% else %}
+        <div class="alert alert-warning mt-2" role="alert">
+            You have not placed any orders.
+        </div>
     {% endif %}
 </div>
 

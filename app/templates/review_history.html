@@ -5,51 +5,55 @@
 {% if current_user.is_authenticated %}
 
 <div class="container mt-2">
-  <h2>Review History:</h2>
-  {% if reviews %}
-    {% for review in reviews %}
-      <div class="card mb-3">
-        <div class="card-body">
-          <h5 class="card-title">Review Of: {{ review.name }}</h5>
-          <p class="card-text"><strong>Review Type:</strong> {{ review.review_type }}</p>
-          <p class="card-text"><strong>Rating:</strong> {{ review.rating }}</p>
-          <p class="card-text"><strong>Description:</strong> {{ review.description }}</p>
-          <p class="card-text"><strong>Time Created:</strong> {{ review.time_created }}</p>
-          <p class="card-text"><strong>Helpfulness:</strong> {{ review.helpfulness }}</p>
+    <h2>Review History:</h2>
+    {% if reviews %}
+        {% for review in reviews %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Review Of: {{ review.name }}</h5>
+                    <p class="card-text"><strong>Review Type:</strong> {{ review.review_type }}</p>
+                    <p class="card-text"><strong>Rating:</strong> {{ review.rating }}</p>
+                    <p class="card-text"><strong>Description:</strong> {{ review.description }}</p>
+                    <p class="card-text"><strong>Time Created:</strong> {{ review.time_created }}</p>
+                    <p class="card-text"><strong>Helpfulness:</strong> {{ review.helpfulness }}</p>
+                </div>
+            </div>
+        {% endfor %}
+        <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4">
+            <ul class="pagination">
+                {% if page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('users.review_history', page=page-1) }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% set start_page = page - 2 if page > 3 else 1 %}
+                {% set end_page = page + 2 if page < total_pages - 2 else total_pages %}
+                {% for page_num in range(start_page, end_page + 1) %}
+                    <li class="page-item {% if page_num == page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('users.review_history', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if page < total_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('users.review_history', page=page+1) }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% else %}
+        <div class="alert alert-warning mt-2" role="alert">
+            You have not written any reviews.
         </div>
-      </div>
-    {% endfor %}
-    <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4">
-      <ul class="pagination">
-          {% if page > 1 %}
-              <li class="page-item">
-                  <a class="page-link" href="{{ url_for('users.review_history', page=page-1) }}" aria-label="Previous">
-                      <span aria-hidden="true">&laquo;</span>
-                  </a>
-              </li>
-          {% endif %}
-
-          {% set start_page = page - 2 if page > 3 else 1 %}
-          {% set end_page = page + 2 if page < total_pages - 2 else total_pages %}
-          {% for page_num in range(start_page, end_page + 1) %}
-              <li class="page-item {% if page_num == page %}active{% endif %}">
-                  <a class="page-link" href="{{ url_for('users.review_history', page=page_num) }}">{{ page_num }}</a>
-              </li>
-          {% endfor %}
-
-          {% if page < total_pages %}
-              <li class="page-item">
-                  <a class="page-link" href="{{ url_for('users.review_history', page=page+1) }}" aria-label="Next">
-                      <span aria-hidden="true">&raquo;</span>
-                  </a>
-              </li>
-          {% endif %}
-      </ul>
-    </nav>
-  {% endif %}
+    {% endif %}
 </div>
 {% else %}
-<p><a href="{{ url_for('users.login') }}">Log in</a> to see your review history!</p>
+    <p><a href="{{ url_for('users.login') }}">Log in</a> to see your review history!</p>
 {% endif %}
 
 {% endblock %}

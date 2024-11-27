@@ -19,4 +19,19 @@ class Seller:
         )
         return Seller(*(rows[0])) if rows else None
     
+    @staticmethod
+    def get_seller_ratings(sid):
+        '''
+        Returns ratings of seller
+        '''
+        rows = app.db.execute('''
+            SELECT r.rating
+            FROM SellerReviews s
+            JOIN Reviews r ON r.id = s.id
+            WHERE s.sid = :sid
+            ''',
+            sid=sid
+        )
+        return rows
+    
     

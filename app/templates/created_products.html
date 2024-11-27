@@ -3,62 +3,66 @@
 {% block content %}
 
 <div class="container mt-2">
-  <h2>Edit My Products:</h2>
-  <div class="mb-4">
-    <form action="{{ url_for('products.create_product') }}">
-      <button type="submit" class="btn btn-warning">Create New Product</button>
-    </form>
-  </div>
+    <h2>Edit My Products:</h2>
+    <div class="mb-4">
+        <form action="{{ url_for('products.create_product') }}">
+            <button type="submit" class="btn btn-warning">Create New Product</button>
+        </form>
+    </div>
     {% if products %}
-      <div class="row">
-        {% for product in products %}
-          <div class="col-md-4 mb-4">
-            <a href="{{ url_for('products.edit_product', pid=product.id) }}">
-              <div class="card">
-                <div class="card-img-top"
-                  style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                  <span style="color: #ccc;">Product Image Placeholder</span>
+        <div class="row">
+            {% for product in products %}
+                <div class="col-md-4 mb-4">
+                    <a href="{{ url_for('products.edit_product', pid=product.id) }}">
+                        <div class="card">
+                            <div class="card-img-top"
+                              style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                                <span style="color: #ccc;">Product Image Placeholder</span>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text">
+                                    <strong>Product ID:</strong> {{ product.id }}<br>
+                                    <strong>Description:</strong> {{ product.description }}<br>
+                                </p>
+                            </div>
+                        </div>
+                    </a>
                 </div>
-                <div class="card-body">
-                  <h5 class="card-title">{{ product.name }}</h5>
-                  <p class="card-text">
-                    <strong>Product ID:</strong> {{ product.id }}<br>
-                    <strong>Description:</strong> {{ product.description }}<br>
-                  </p>
-                </div>
-              </div>
-            </a>
-          </div>
-        {% endfor %}
-      </div>
-      <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4">
-        <ul class="pagination">
-          {% if page > 1 %}
-            <li class="page-item">
-              <a class="page-link" href="{{ url_for('users.created_products', page=page-1) }}" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-              </a>
-            </li>
-          {% endif %}
+            {% endfor %}
+        </div>
+        <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4">
+            <ul class="pagination">
+                {% if page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('users.created_products', page=page-1) }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
 
-          {% set start_page = page - 2 if page > 3 else 1 %}
-          {% set end_page = page + 2 if page < total_pages - 2 else total_pages %}
-          {% for page_num in range(start_page, end_page + 1) %}
-            <li class="page-item {% if page_num == page %}active{% endif %}">
-              <a class="page-link" href="{{ url_for('users.created_products', page=page_num) }}">{{ page_num }}</a>
-            </li>
-          {% endfor %}
+                {% set start_page = page - 2 if page > 3 else 1 %}
+                {% set end_page = page + 2 if page < total_pages - 2 else total_pages %}
+                {% for page_num in range(start_page, end_page + 1) %}
+                    <li class="page-item {% if page_num == page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('users.created_products', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% endfor %}
 
-          {% if page < total_pages %}
-            <li class="page-item">
-              <a class="page-link" href="{{ url_for('users.created_products', page=page+1) }}" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-              </a>
-            </li>
-          {% endif %}
-        </ul>
-      </nav>
-  {% endif %}
+                {% if page < total_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('users.created_products', page=page+1) }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% else %}
+        <div class="alert alert-warning mt-2" role="alert">
+          You have not created any products.
+        </div>
+    {% endif %}
 </div>
 
 <br>

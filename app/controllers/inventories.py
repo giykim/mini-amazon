@@ -55,11 +55,14 @@ def get_user():
         incoming_purchases = Purchase.get_incoming_purchases(uid)
         # Check if current user has bought from this seller
         has_bought = Purchase.has_bought_from(uid=current_user.id, sid=uid)
+        # Get ratings for seller
+        ratings = Seller.get_seller_ratings(sid=uid)
     else:
         selling = None
         stock = None
         incoming_purchases = None
         has_bought = False
+        ratings = None
 
     # Retrieve paginated reviews
     total_reviews = Review.count_seller_reviews(uid) if is_seller else 0
@@ -89,6 +92,7 @@ def get_user():
                            total_pages=total_pages,
                            product_total_pages=product_total_pages,
                            mine=mine,
+                           ratings=ratings,
                            )
 
 

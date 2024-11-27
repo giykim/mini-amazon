@@ -155,7 +155,8 @@ def update_product():
         Product.remove_all_tags(pid=pid)
         # Add all new tags
         for tag in tags.split(','):
-            Product.add_tag(pid=pid, tag=tag)
+            if len(tag) > 0:
+                Product.add_tag(pid=pid, tag=tag)
 
         # Show user their update was successful
         flash("Successfully updated product info.", category="success")
