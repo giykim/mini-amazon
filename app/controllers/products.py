@@ -17,11 +17,38 @@ def search():
 
     query = request.args.get('query')
 
-    all_products = Product.search_products(query)
-    products_count = len(all_products)
-    products = all_products[offset:offset+per_page]
+    products = Product.search_products(query)
+
+    # Toggle filter / sort menu
+    toggle_filter = request.args.get('toggle_filter', False)
+
+    # Get filter parameters
+    max_price = request.args.get('max_price', float('inf'))
+    if type(max_price) is str and len(max_price) < 1:
+        max_price = float('inf')
+    max_price = float(max_price)
+    if max_price < float('inf'):
+        max_price = round(max_price, 2)
+        products = [product for product in products if product.price is not None and product.price <= max_price]
+
+    min_rating = int(float(request.args.get('min_rating', 0)))
+    products = [product for product in products if product.rating >= min_rating]
+
+    # Get search parameters
+    sort_by = request.args.get('sort_by')
+    arrow_direction = request.args.get('arrow_direction', 'down')
+    reverse = arrow_direction == 'down'
+    if sort_by is not None:
+        if sort_by == "name":
+            products = sorted(products, key=lambda product: product.name, reverse=(not reverse))
+        elif sort_by == "price":
+            products = sorted(products, key=lambda product: product.price, reverse=reverse)
+        elif sort_by == "rating":
+            products = sorted(products, key=lambda product: product.rating, reverse=reverse)
 
     # Calculate total pages based on the count of created products
+    products_count = len(products)
+    products = products[offset:offset+per_page]
     total_pages = (products_count + per_page - 1) // per_page  # Calculate the number of pages
 
     return render_template(
@@ -30,7 +57,12 @@ def search():
         products_count=products_count,
         products=products,
         page=page,
-        total_pages=total_pages
+        total_pages=total_pages,
+        max_price=f"{max_price:.2f}",
+        min_rating=min_rating,
+        sort_by=sort_by,
+        arrow_direction=arrow_direction,
+        toggle_filter=toggle_filter,
         )
 
 

@@ -47,9 +47,16 @@ class Product:
     @staticmethod
     def search_products(query):
         rows = app.db.execute("""
-            SELECT p.id, p.name, p.description, MIN(s.price) as price
+            WITH Rating AS (
+                SELECT p.pid, AVG(r.rating) AS rating
+                FROM ProductReviews p
+                JOIN Reviews r ON r.id = p.id
+                GROUP BY p.pid
+            )
+            SELECT p.id, p.name, p.description, MIN(s.price) as price, COALESCE(AVG(r.rating), 0) as rating
             FROM Products p
             LEFT JOIN SoldBy s ON p.id = s.pid
+            LEFT JOIN Rating r ON p.id = r.pid
             WHERE (LOWER(name) LIKE '%' || LOWER(:query) || '%'
                 OR  LOWER(description) LIKE '%' || LOWER(:query) || '%')
                 AND available IS TRUE

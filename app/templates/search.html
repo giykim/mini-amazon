@@ -3,7 +3,59 @@
 {% block content %}
 
 <div class="container mt-2">
-    <h2>{{ products_count }} Results for "{{ query }}"</h2>
+    <!-- Toggle Button -->
+    <button type="button" class="btn btn-warning" id="toggleButton" onclick="toggleMenu()">Toggle Filter/Sort</button>
+
+    <!-- Form -->
+    <div id="filterSortContainer" style="display: {% if not toggle_filter %}none{% else %}block{% endif %}">
+        <form action="{{ url_for('products.search') }}" id="filter-sort-form" method="get" style="display: block;" id="filterSortForm">
+            <input type="hidden" id="toggle_filter" name="toggle_filter" value="{{ toggle_filter }}" required>
+            <div class="menu">
+                <!-- Filter and Sort Section -->
+                <div class="menu-content">
+                    <!-- Filter Section -->
+                    <div class="filter-section">
+                        <h4>Filter By:</h4>
+                        <label for="filter-price">Price:</label>
+                        <input type="hidden" name="query" value="{{ query }}" required>
+                        <input type="number" id="filter-price" name="max_price" placeholder="Max Price" value="{{ max_price }}" onkeydown="checkEnter(event)">
+
+                        <label for="filter-rating">Rating:</label>
+                        <select id="filter-rating" name="min_rating" onchange="applyFilter()">
+                            <option {% if min_rating == 0 %}selected{% endif %}>Select Rating</option>
+                            <option value="1" {% if min_rating == 1 %}selected{% endif %}>1 Star</option>
+                            <option value="2" {% if min_rating == 2 %}selected{% endif %}>2 Stars</option>
+                            <option value="3" {% if min_rating == 3 %}selected{% endif %}>3 Stars</option>
+                            <option value="4" {% if min_rating == 4 %}selected{% endif %}>4 Stars</option>
+                            <option value="5" {% if min_rating == 5 %}selected{% endif %}>5 Stars</option>
+                        </select>
+                    </div>
+
+                    <!-- Sort Section -->
+                    <div class="sort-section">
+                        <h4>Sort By:</h4>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <select id="sort-by" name="sort_by" onchange="applyFilter()">
+                                <option>Select Sorting</option>
+                                <option value="name" {% if sort_by == "name" %}selected{% endif %}>Alphabetical</option>
+                                <option value="price" {% if sort_by == "price" %}selected{% endif %}>Price</option>
+                                <option value="rating" {% if sort_by == "rating" %}selected{% endif %}>Rating</option>
+                            </select>
+                            <input type="hidden" id="arrowInput" name="arrow_direction" value="{{ arrow_direction }}">
+                            <button type="button" id="arrowButton" class="arrow-button" onclick="toggleArrow()">
+                                <svg id="arrowIcon" width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path d="M12 17l-5-5h10l-5 5z" fill="currentColor"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <h2 class="mt-2">{{ products_count }} Results for "{{ query }}"</h2>
+
     <div class="row">
         {% if products %}
             {% for product in products %}
@@ -59,5 +111,68 @@
 </div>
 
 <br>
+
+<script>
+    function applyFilter() {
+        document.getElementById('filter-sort-form').submit();
+    }
+
+    function checkEnter(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevents the default behavior of Enter (e.g., form submission via Enter key if not handled)
+            document.getElementById('filter-sort-form').submit();
+        }
+    }
+
+    function toggleArrow() {
+        const arrowIcon = document.getElementById('arrowIcon');
+        const arrowInput = document.getElementById('arrowInput');
+
+        if (arrowInput.value === 'down') {
+            // Change the arrow direction to up
+            arrowIcon.innerHTML = '<path d="M12 7l-5 5h10l-5-5z" fill="currentColor"></path>';
+            arrowInput.value = 'up'; // Set input value to "up"
+        } else {
+            // Change the arrow direction to down
+            arrowIcon.innerHTML = '<path d="M12 17l-5-5h10l-5 5z" fill="currentColor"></path>';
+            arrowInput.value = 'down'; // Set input value to "down"
+        }
+
+        applyFilter()
+    }
+
+    function initialArrow() {
+        const arrowIcon = document.getElementById('arrowIcon');
+        const arrowInput = document.getElementById('arrowInput');
+
+        if (arrowInput.value === 'down') {
+            // Show the arrow direction to down
+            arrowIcon.innerHTML = '<path d="M12 17l-5-5h10l-5 5z" fill="currentColor"></path>';
+            arrowInput.value = 'down'; // Set input value to "down"
+        } else {
+            // Show the arrow direction to up
+            arrowIcon.innerHTML = '<path d="M12 7l-5 5h10l-5-5z" fill="currentColor"></path>';
+            arrowInput.value = 'up'; // Set input value to "up"
+        }
+    }
+
+    function toggleMenu() {
+        const container = document.getElementById('filterSortContainer');
+        const toggle_filter = document.getElementById('toggle_filter');
+
+        if (container.style.display === 'none' || container.style.display === '') {
+            container.style.display = 'block';
+            toggle_filter.value = true
+        } else {
+            container.style.display = 'none';
+            toggle_filter.value = false
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Call the function when the DOM is fully loaded
+        initialArrow();
+    });
+</script>
 
 {% endblock %}
