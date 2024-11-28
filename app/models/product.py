@@ -50,7 +50,8 @@ class Product:
             SELECT p.id, p.name, p.description, MIN(s.price) as price
             FROM Products p
             LEFT JOIN SoldBy s ON p.id = s.pid
-            WHERE LOWER(name) LIKE '%' || LOWER(:query) || '%'
+            WHERE (LOWER(name) LIKE '%' || LOWER(:query) || '%'
+                OR  LOWER(description) LIKE '%' || LOWER(:query) || '%')
                 AND available IS TRUE
             GROUP BY p.id
             """,
