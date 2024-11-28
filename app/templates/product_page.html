@@ -147,13 +147,15 @@
     </div>
 
     <!-- If the current user is a seller, let them stock item -->
-    <div class="mt-2">
-        <p><strong>Add to Inventory:</strong></p>
-        <form action="{{ url_for('products.stock_product') }}">
-            <input type="hidden" name="product_id" value="{{ product_info[0].id }}">
-            <button type="submit" class="btn btn-warning">Stock Product</button>
-        </form>
-    </div>
+     {% if is_seller %}
+        <div class="mt-2">
+            <p><strong>Add to Inventory:</strong></p>
+            <form action="{{ url_for('products.stock_product') }}">
+                <input type="hidden" name="product_id" value="{{ product_info[0].id }}">
+                <button type="submit" class="btn btn-warning">Stock Product</button>
+            </form>
+        </div>
+    {% endif %}
     
     <!-- Customer Reviews Section -->
 <div class="mt-2">
