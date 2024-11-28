@@ -36,8 +36,8 @@
                         <label>Tags</label>
                         <div id="tags-container" class="tags-input-container form-control">
                             <!-- Add existings tags -->
-                            {% for tag in current_tags %}
-                                <span class="tag">{{ tag.name }}<span class="remove">×</span></span>
+                             {% for tag in current_tags %}
+                                <span style="display: none" class="existing-tag">{{ tag.name }}</span>
                             {% endfor %}
                             <input type="text" id="tags-input" placeholder="Product Tags" class="tags-input">
                         </div>
@@ -68,6 +68,17 @@
                 updateHiddenInput(); // Update hidden input after adding a tag
             }
         }
+
+        // Get all existing tag elements inside the container
+        const tagElements = document.querySelectorAll('#tags-container .existing-tag');
+        
+        // Loop through each tag element and call addTag() with its text content
+        tagElements.forEach(tagElement => {
+            const tagText = tagElement.textContent.trim(); // Get the text content, removing any extra spaces
+            if (tagText) {
+                addTag(tagText);
+            }
+        });
     
         // Event listener for the 'Enter' key to add tags
         document.getElementById("tags-input").addEventListener("keypress", function(event) {

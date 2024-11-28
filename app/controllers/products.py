@@ -126,7 +126,8 @@ def new_product():
 
             # If user added any tags
             for tag in tags.split(','):
-                Product.add_tag(pid=pid, tag=tag)
+                if len(tag) > 0:
+                    Product.add_tag(pid=pid, tag=tag)
 
         return redirect(url_for('products.product_page', product_id=pid))
 
