@@ -85,6 +85,8 @@
                             created_products_page=created_products_page,
                             reviews_page=reviews_page,
                             selling_page=selling_page-1,
+                            incoming_page=incoming_page,
+                            stock_page=stock_page,
                             ) }}"
                             aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
@@ -101,6 +103,8 @@
                             created_products_page=created_products_page,
                             reviews_page=reviews_page,
                             selling_page=page_num,
+                            incoming_page=incoming_page,
+                            stock_page=stock_page,
                         ) }}">{{ page_num }}</a>
                     </li>
                 {% endfor %}
@@ -113,6 +117,8 @@
                             created_products_page=created_products_page,
                             reviews_page=reviews_page,
                             selling_page=selling_page+1,
+                            incoming_page=incoming_page,
+                            stock_page=stock_page,
                             ) }}"
                             aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
@@ -225,6 +231,8 @@
                                 created_products_page=created_products_page,
                                 reviews_page=reviews_page-1,
                                 selling_page=selling_page,
+                                incoming_page=incoming_page,
+                                stock_page=stock_page,
                                 ) }}"aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
@@ -241,6 +249,8 @@
                                 created_products_page=created_products_page,
                                 reviews_page=page_num,
                                 selling_page=selling_page,
+                                incoming_page=incoming_page,
+                                stock_page=stock_page,
                             ) }}">{{ page_num }}</a>
                         </li>
                     {% endfor %}
@@ -253,6 +263,8 @@
                                 created_products_page=created_products_page,
                                 reviews_page=reviews_page+1,
                                 selling_page=selling_page,
+                                incoming_page=incoming_page,
+                                stock_page=stock_page,
                                 ) }}"aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
@@ -306,6 +318,8 @@
                             created_products_page=created_products_page,
                             reviews_page=reviews_page,
                             selling_page=selling_page-1,
+                            incoming_page=incoming_page,
+                            stock_page=stock_page,
                             ) }}"
                             aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
@@ -324,6 +338,8 @@
                                     created_products_page=created_products_page,
                                     reviews_page=reviews_page,
                                     selling_page=page_num,
+                                    incoming_page=incoming_page,
+                                    stock_page=stock_page,
                                 ) }}">{{page_num }}</a>
                         </li>
                         {% endfor %}
@@ -336,6 +352,8 @@
                             created_products_page=created_products_page,
                             reviews_page=reviews_page,
                             selling_page=selling_page+1,
+                            incoming_page=incoming_page,
+                            stock_page=stock_page,
                             ) }}"
                             aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
@@ -356,40 +374,99 @@
     <div class="container mt-2">
         <h3>Incoming Orders</h3>
         {% if incoming_purchases %}
-            {% for purchase in incoming_purchases %}
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Order placed on {{ purchase.time_purchased }}</h5>
-                    </div>
-                
-                    <div class="card-body">
-                        <div class="border-bottom pb-3 mb-3">
-                            <div class="row">
-                                <div class="col-12 col-md-8">
-                                    <h5 class="card-title"><strong>{{ purchase.product_name }}</strong></h6>
-                                    <p class="card-text"><strong>User:</strong> {{ purchase.seller_first }} {{ purchase.seller_last }}</p>
-                                    <p class="card-text"><strong>Unit Price:</strong> ${{ purchase.price }}</p>
-                                    <p class="card-text"><strong>Quantity:</strong> {{ purchase.quantity }}</p>
-                                    <p class="card-text"><strong>Fulfilled:</strong> {{ purchase.fulfilled }}</p>
+            <div class="row">
+                {% for purchase in incoming_purchases %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Order placed on {{ purchase.time_purchased }}</h5>
+                            </div>
+                        
+                            <div class="card-body">
+                                <div class="border-bottom pb-3 mb-3">
+                                    <div class="row">
+                                        <div class="col-12 col-md-8">
+                                            <h5 class="card-title"><strong>{{ purchase.product_name }}</strong></h6>
+                                            <p class="card-text"><strong>User:</strong> {{ purchase.seller_first }} {{ purchase.seller_last }}</p>
+                                            <p class="card-text"><strong>Unit Price:</strong> ${{ purchase.price }}</p>
+                                            <p class="card-text"><strong>Quantity:</strong> {{ purchase.quantity }}</p>
+                                            <p class="card-text"><strong>Fulfilled:</strong> {{ purchase.fulfilled }}</p>
+                                        </div>
+                                        <div class="col-12 col-md-4 text-right">
+                                            <p class="font-weight-bold text-dark">${{ purchase.price * purchase.quantity }}</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-12 col-md-4 text-right">
-                                    <p class="font-weight-bold text-dark">${{ purchase.price * purchase.quantity }}</p>
+                                <div>
+                                    <form action="{{ url_for('inventories.fulfill_order') }}" method="POST">
+                                        <input type="hidden" name="product_id" value="{{ purchase.pid }}">
+                                        <input type="hidden" name="seller_id" value="{{ purchase.sid }}">
+                                        <input type="hidden" name="user_id" value="{{ purchase.uid }}">
+                                        <input type="hidden" name="time_purchased" value="{{ purchase.time_purchased }}">
+                                        <input type="hidden" name="price" value="{{ purchase.price * purchase.quantity }}">
+                                        <button type="submit" class="btn btn-warning">Fulfill</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <form action="{{ url_for('inventories.fulfill_order') }}" method="POST">
-                                <input type="hidden" name="product_id" value="{{ purchase.pid }}">
-                                <input type="hidden" name="seller_id" value="{{ purchase.sid }}">
-                                <input type="hidden" name="user_id" value="{{ purchase.uid }}">
-                                <input type="hidden" name="time_purchased" value="{{ purchase.time_purchased }}">
-                                <input type="hidden" name="price" value="{{ purchase.price * purchase.quantity }}">
-                                <button type="submit" class="btn btn-warning">Fulfill</button>
-                            </form>
-                        </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
+            <nav aria-label="Product pagination" class="d-flex justify-content-center mt-2">
+                <!-- Flex container for centering -->
+                <ul class="pagination">
+                    {% if incoming_page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="{{ url_for('inventories.get_user',
+                            uid=uid,
+                            created_products_page=created_products_page,
+                            reviews_page=reviews_page,
+                            selling_page=selling_page,
+                            incoming_page=incoming_page-1,
+                            stock_page=stock_page,
+                            ) }}"
+                            aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% set start_page = incoming_page - 2 if incoming_page > 3 else 1 %}
+                    {% set end_page = incoming_page + 2 if incoming_page < incoming_total_pages - 2 else
+                        incoming_total_pages %} {% for page_num in range(start_page, end_page + 1) %}
+                        <li
+                            class="page-item {% if page_num == incoming_page %}active{% endif %}">
+                            <a class="page-link"
+                                href="{{ url_for('inventories.get_user',
+                                    uid=uid,
+                                    created_products_page=created_products_page,
+                                    reviews_page=reviews_page,
+                                    selling_page=selling_page,
+                                    incoming_page=page_num,
+                                    stock_page=stock_page,
+                                ) }}">{{page_num }}</a>
+                        </li>
+                        {% endfor %}
+
+                        {% if incoming_page < incoming_total_pages %}
+                        <li class="page-item">
+                        <a class="page-link"
+                            href="{{ url_for('inventories.get_user',
+                            uid=uid,
+                            created_products_page=created_products_page,
+                            reviews_page=reviews_page,
+                            selling_page=selling_page,
+                            incoming_page=incoming_page+1,
+                            stock_page=stock_page,
+                            ) }}"
+                            aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                        </li>
+                        {% endif %}
+                </ul>
+            </nav>
         {% else %}
             <div class="alert alert-warning mt-2" role="alert">
                 You do not have any orders to fulfill.
@@ -400,42 +477,100 @@
         {% if stock %}
             <div class="row">
                 {% for product in stock %}
-                    <div class="col-mt-2 mr-4 mb-4">
-                        <div class="inventory-item">
-                            <a href="{{ url_for('products.product_page', product_id=product.id) }}">
-                                <h3>{{ product.name }}</h3>
-                            </a>
-                            <!-- Stock information -->
-                            <p>Stock Quantity: {{ product.stock_quantity}}</p>
-                            <!-- Add Stock Form -->
-                            <form action="{{ url_for('inventories.update_stock') }}" method="POST">
-                                <input type="hidden" name="product_id" value="{{ product.id }}">
-                                <div class="form-group">
-                                    <label">Add Stock: </label>
-                                    <input type="number" name="quantity" min=0 value=0 required>
-                                </div>
-                                <button type="submit" class="btn btn-warning">Add Stock</button>
-                            </form>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="{{ url_for('products.product_page', product_id=product.id) }}">
+                                    <h3>{{ product.name }}</h3>
+                                </a>
 
-                            <!-- Sale information -->
-                            <p>Sale Quantity: {{ product.sell_quantity}}</p>
-                            <!-- Add Sale Form -->
-                            <form action="{{ url_for('inventories.update_sold_by') }}" method="POST">
-                                <input type="hidden" name="product_id" value="{{ product.id }}">
-                                <div class="form-group">
-                                    <label">Amount to Sell:</label>
-                                    <input type="number" placeholder="Add Sale" name="quantity" min=0 max={{ product.stock_quantity }} value="{{ 0 if not product.sell_quantity else product.sell_quantity }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label">Price: </label> 
-                                    <input type="number" id="price" name="price" placeholder="Price" min="0.01" value="{{ '0.01' if not product.price else product.price }}" oninput="validity.valid||(value='');" step="0.01" required>
-                                </div>
-                                <button type="submit" class="btn btn-warning">Update Sale</button>
-                            </form>
+                                <!-- Stock information -->
+                                <p>Stock Quantity: {{ product.stock_quantity}}</p>
+                                <!-- Add Stock Form -->
+                                <form action="{{ url_for('inventories.update_stock') }}" method="POST">
+                                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                                    <div class="form-group">
+                                        <label">Add Stock: </label>
+                                        <input type="number" name="quantity" min=0 value=0 required>
+                                    </div>
+                                    <button type="submit" class="btn btn-warning">Add Stock</button>
+                                </form>
+
+                                <!-- Sale information -->
+                                <p>Sale Quantity: {{ product.sell_quantity}}</p>
+                                <!-- Add Sale Form -->
+                                <form action="{{ url_for('inventories.update_sold_by') }}" method="POST">
+                                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                                    <div class="form-group">
+                                        <label">Amount to Sell:</label>
+                                        <input type="number" placeholder="Add Sale" name="quantity" min=0 max={{ product.stock_quantity }} value="{{ 0 if not product.sell_quantity else product.sell_quantity }}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label">Price: </label> 
+                                        <input type="number" id="price" name="price" placeholder="Price" min="0.01" value="{{ '0.01' if not product.price else product.price }}" oninput="validity.valid||(value='');" step="0.01" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-warning">Update Sale</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}
             </div>
+            <nav aria-label="Product pagination" class="d-flex justify-content-center mt-2">
+                <!-- Flex container for centering -->
+                <ul class="pagination">
+                    {% if stock_page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="{{ url_for('inventories.get_user',
+                            uid=uid,
+                            created_products_page=created_products_page,
+                            reviews_page=reviews_page,
+                            selling_page=selling_page,
+                            incoming_page=incoming_page,
+                            stock_page=stock_page-1,
+                            ) }}"
+                            aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% set start_page = stock_page - 2 if stock_page > 3 else 1 %}
+                    {% set end_page = stock_page + 2 if stock_page < stock_total_pages - 2 else
+                        stock_total_pages %} {% for page_num in range(start_page, end_page + 1) %}
+                        <li
+                            class="page-item {% if page_num == stock_page %}active{% endif %}">
+                            <a class="page-link"
+                                href="{{ url_for('inventories.get_user',
+                                    uid=uid,
+                                    created_products_page=created_products_page,
+                                    reviews_page=reviews_page,
+                                    selling_page=selling_page,
+                                    incoming_page=incoming_page,
+                                    stock_page=page_num,
+                                ) }}">{{page_num }}</a>
+                        </li>
+                        {% endfor %}
+
+                        {% if stock_page < stock_total_pages %}
+                        <li class="page-item">
+                        <a class="page-link"
+                            href="{{ url_for('inventories.get_user',
+                            uid=uid,
+                            created_products_page=created_products_page,
+                            reviews_page=reviews_page,
+                            selling_page=selling_page,
+                            incoming_page=incoming_page,
+                            stock_page=stock_page+1,
+                            ) }}"
+                            aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                        </li>
+                        {% endif %}
+                </ul>
+            </nav>
         {% else %}
             <div class="alert alert-warning mt-2" role="alert">
                 You do not have any products in inventory.

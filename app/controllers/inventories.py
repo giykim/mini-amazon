@@ -49,7 +49,10 @@ def get_user():
     # Get product info corresponding to seller
     if is_seller:
         # Check if current user has bought from this seller
-        has_bought = Purchase.has_bought_from(uid=current_user.id, sid=uid)
+        if current_user.is_authenticated:
+            has_bought = Purchase.has_bought_from(uid=current_user.id, sid=uid)
+        else:
+            has_bought = False
 
         # Get ratings for seller
         ratings = Seller.get_seller_ratings(sid=uid)
@@ -70,19 +73,8 @@ def get_user():
         stock = None
 
     # Get products created by user
-    selling_page = request.args.get('selling_page', 1, type=int)
-    selling_per_page = 9
-    selling_offset = (selling_page - 1) * selling_per_page
-    
-    selling_count = len(selling) if selling else 0
-    selling = selling[selling_offset:selling_offset+selling_per_page] if selling else 0
-
-    # Calculate total pages based on the count of created products
-    selling_total_pages = (selling_count + selling_per_page - 1) // selling_per_page  # Calculate the number of pages
-
-    # Get products created by user
     created_products_page = request.args.get('created_products_page', 1, type=int)
-    created_products_per_page = 9
+    created_products_per_page = 6
     created_products_offset = (created_products_page - 1) * created_products_per_page
 
     all_products = Product.get_user_products(uid)
@@ -91,6 +83,39 @@ def get_user():
 
     # Calculate total pages based on the count of created products
     created_products_total_pages = (created_products_products_count + created_products_per_page - 1) // created_products_per_page  # Calculate the number of pages
+
+    # Get selling pagination parameters
+    selling_page = request.args.get('selling_page', 1, type=int)
+    selling_per_page = 6
+    selling_offset = (selling_page - 1) * selling_per_page
+    
+    selling_count = len(selling) if selling else 0
+    selling = selling[selling_offset:selling_offset+selling_per_page] if selling else 0
+
+    # Calculate total pages based on the count of created products
+    selling_total_pages = (selling_count + selling_per_page - 1) // selling_per_page  # Calculate the number of pages
+
+    # Get selling pagination parameters
+    incoming_page = request.args.get('incoming_page', 1, type=int)
+    incoming_per_page = 3
+    incoming_offset = (incoming_page - 1) * incoming_per_page
+    
+    incoming_count = len(incoming_purchases) if incoming_purchases else 0
+    incoming_purchases = incoming_purchases[incoming_offset:incoming_offset+incoming_per_page] if incoming_purchases else 0
+
+    # Calculate total pages based on the count of incoming orders
+    incoming_total_pages = (incoming_count + incoming_per_page - 1) // incoming_per_page  # Calculate the number of pages
+
+    # Get stock pagination parameters
+    stock_page = request.args.get('stock_page', 1, type=int)
+    stock_per_page = 6
+    stock_offset = (stock_page - 1) * stock_per_page
+    
+    stock_count = len(stock) if stock else 0
+    stock = stock[stock_offset:stock_offset+stock_per_page] if stock else 0
+
+    # Calculate total pages based on the count of inventory products
+    stock_total_pages = (stock_count + stock_per_page - 1) // stock_per_page  # Calculate the number of pages
 
     # Check if user is looking at their own profile
     mine = False
@@ -118,7 +143,12 @@ def get_user():
                            selling_total_pages=selling_total_pages,
                            
                            incoming_purchases=incoming_purchases,
+                           incoming_page=incoming_page,
+                           incoming_total_pages=incoming_total_pages,
+
                            stock=stock,
+                           stock_page=stock_page,
+                           stock_total_pages=stock_total_pages,
                            )
 
 

@@ -70,6 +70,7 @@ class Inventory:
             LEFT JOIN SoldBy s ON p.id = s.pid
                 AND s.sid = :sid
             WHERE i.sid = :sid
+            ORDER BY p.name
         ''', sid=sid)
         return rows
 
