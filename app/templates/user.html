@@ -424,11 +424,11 @@
                                 <input type="hidden" name="product_id" value="{{ product.id }}">
                                 <div class="form-group">
                                     <label">Amount to Sell:</label>
-                                    <input type="number" placeholder="Add Sale" name="quantity" min=0 max={{ product.stock_quantity }} value=0 required>
+                                    <input type="number" placeholder="Add Sale" name="quantity" min=0 max={{ product.stock_quantity }} value="{{ 0 if not product.sell_quantity else product.sell_quantity }}" required>
                                 </div>
                                 <div class="form-group">
                                     <label">Price: </label> 
-                                    <input type="number" id="price" name="price" placeholder="Price" value="{{ '0.00' if not product.price else product.price }}" oninput="validity.valid||(value='');" step="0.01" required>
+                                    <input type="number" id="price" name="price" placeholder="Price" min="0.01" value="{{ '0.01' if not product.price else product.price }}" oninput="validity.valid||(value='');" step="0.01" required>
                                 </div>
                                 <button type="submit" class="btn btn-warning">Update Sale</button>
                             </form>
