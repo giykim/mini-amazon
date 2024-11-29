@@ -4,9 +4,69 @@
 
 <div class="container mt-2">
     <h2>Products for Sale</h2>
+
+    <!-- Toggle Button -->
+    <button type="button" class="btn btn-warning" id="toggleButton" onclick="toggleMenu()">Toggle Filter/Sort</button>
+
+    <!-- Form -->
+    <div id="filterSortContainer" style="display: {% if not toggle_filter %}none{% else %}block{% endif %}">
+        <form action="{{ url_for('products.search') }}" id="filter-sort-form" method="get" style="display: block;" id="filterSortForm">
+            <input type="hidden" id="toggle_filter" name="toggle_filter" value="{{ toggle_filter }}" required>
+            <div class="menu">
+                <!-- Filter and Sort Section -->
+                <div class="menu-content">
+                    <!-- Filter Section -->
+                    <div class="filter-section">
+                        <h4>Filter By:</h4>
+                        <label for="filter-price">Price:</label>
+                        <input type="hidden" name="query" value="{{ query }}" required>
+                        <input type="number" id="filter-price" name="max_price" placeholder="Max Price" value="{{ max_price }}" onkeydown="checkEnter(event)">
+
+                        <label for="filter-rating">Rating:</label>
+                        <select id="filter-rating" name="min_rating" onchange="applyFilter()">
+                            <option value="0" {% if min_rating == 0 %}selected{% endif %}>Select Rating</option>
+                            <option value="1" {% if min_rating == 1 %}selected{% endif %}>1 Star</option>
+                            <option value="2" {% if min_rating == 2 %}selected{% endif %}>2 Stars</option>
+                            <option value="3" {% if min_rating == 3 %}selected{% endif %}>3 Stars</option>
+                            <option value="4" {% if min_rating == 4 %}selected{% endif %}>4 Stars</option>
+                            <option value="5" {% if min_rating == 5 %}selected{% endif %}>5 Stars</option>
+                        </select>
+
+                        <label for="filter-category">Category:</label>
+                        <select id="filter-category" name="category" onchange="applyFilter()">
+                            <option value="" {% if min_rating == 0 %}selected{% endif %}>Select Category</option>
+                            {% for c in categories %}
+                                <option value="{{ c.name }}" {% if category and c.name == category %}selected{% endif %}>{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Sort Section -->
+                    <div class="sort-section">
+                        <h4>Sort By:</h4>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <select id="sort-by" name="sort_by" onchange="applyFilter()">
+                                <option>Select Sorting</option>
+                                <option value="name" {% if sort_by == "name" %}selected{% endif %}>Alphabetical</option>
+                                <option value="price" {% if sort_by == "price" %}selected{% endif %}>Price</option>
+                                <option value="rating" {% if sort_by == "rating" %}selected{% endif %}>Rating</option>
+                            </select>
+                            <input type="hidden" id="arrowInput" name="arrow_direction" value="{{ arrow_direction }}">
+                            <button type="button" id="arrowButton" class="arrow-button" onclick="toggleArrow()">
+                                <svg id="arrowIcon" width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path d="M12 17l-5-5h10l-5 5z" fill="currentColor"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
     <div class="row">
         {% for product in avail_products %}
-            <div class="col-md-4 mb-4">
+            <div class="col-md-4 mb-4 mt-2">
                 <div class="product-card">
                     <div class="product-card-img-top" style="height: 150px; background-color: #f0f0f0;">
                       <img src="{{ product.image if product.image else url_for('static', filename='images/image_' + product.id|string + '.jpg') if product.id }}"
@@ -47,86 +107,178 @@
     </div>
 </div>
 
-<div class="container mt-4 text-center">
-  <form action="{{ url_for('index.index') }}" method="get" onsubmit="return validatePageInput();">
-    <label for="page-input">Go to page:</label>
-    <input 
-      type="number" 
-      id="page-input" 
-      name="page" 
-      min="1" 
-      max="{{ total_pages }}" 
-      value="{{ page }}" 
-      required
-      style="width: 60px; text-align: center; margin-right: 5px;"
-    >
-    <button type="submit" class="btn btn-primary">Go</button>
-  </form>
-</div>
-
 <!-- Pagination Controls -->
 <div class="container mt-4">
-  <nav aria-label="Product pagination">
-    <ul class="pagination justify-content-center">
-      <!-- Previous Button -->
-      {% if page > 1 %}
-      <li class="page-item">
-        <a class="page-link" href="{{ url_for('index.index', page=page-1) }}" aria-label="Previous">
-          <span aria-hidden="true">&laquo; Previous</span>
-        </a>
-      </li>
-      {% endif %}
+    <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4">
+        <ul class="pagination">
+            <!-- Hide previous button if on page 1 -->
+            {% if page > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('products.search',
+                        page=page-1,
+                        query=query,
+                        max_price=max_price,
+                        min_rating=min_rating,
+                        sort_by=sort_by,
+                        arrow_direction=arrow_direction,
+                        toggle_filter=toggle_filter,
+                        category=category,
+                        ) }}" 
+                        aria-label="Previous">
+                        <span aria-hidden="true">&laquo; Previous</span>
+                    </a>
+                </li>
+            {% endif %}
 
-      <!-- First Page and Leading Ellipsis -->
-      {% if page > 3 %}
-      <li class="page-item">
-        <a class="page-link" href="{{ url_for('index.index', page=1) }}">1</a>
-      </li>
-      <li class="page-item disabled"><span class="page-link">...</span></li>
-      {% endif %}
+            <!-- First Page -->
+            {% if page > 2 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('products.search',
+                        page=1,
+                        query=query,
+                        max_price=max_price,
+                        min_rating=min_rating,
+                        sort_by=sort_by,
+                        arrow_direction=arrow_direction,
+                        toggle_filter=toggle_filter,
+                        category=category,
+                        ) }}">
+                        {{ 1 }}
+                    </a>
+                </li>
+            {% endif %}
 
-      <!-- Centered Page Numbers -->
-      {% set start_page = 1 %}
-      {% set end_page = total_pages %}
+            <!-- Front Trailing Ellipsis -->
+            {% if page > 3 %}
+                <li class="page-item">
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                </li>
+            {% endif %}
 
-      {% if page <= 3 %}
-        {% set start_page = 1 %}
-        {% set end_page = 5 if total_pages >= 5 else total_pages %}
-      {% elif page >= total_pages - 2 %}
-        {% set start_page = total_pages - 4 if total_pages > 5 else 1 %}
-        {% set end_page = total_pages %}
-      {% else %}
-        {% set start_page = page - 2 %}
-        {% set end_page = page + 2 %}
-      {% endif %}
+            {% set start_page = page - 1 if page > 2 else 1 %}
+            {% set end_page = page + 1 if page < total_pages - 1 else total_pages %}
+            {% for page_num in range(start_page, end_page + 1) %}
+                <li class="page-item {% if page_num == page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('products.search',
+                        page=page_num,
+                        query=query,
+                        max_price=max_price,
+                        min_rating=min_rating,
+                        sort_by=sort_by,
+                        arrow_direction=arrow_direction,
+                        toggle_filter=toggle_filter,
+                        category=category,
+                        ) }}">{{ page_num }}
+                    </a>
+                </li>
+            {% endfor %}
 
-      {% for p in range(start_page, end_page + 1) %}
-      <li class="page-item {% if p == page %}active{% endif %}">
-        <a class="page-link" href="{{ url_for('index.index', page=p) }}">{{ p }}</a>
-      </li>
-      {% endfor %}
+            <!-- Back Trailing Ellipsis -->
+            {% if page < total_pages - 2 %}
+                <li class="page-item">
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                </li>
+            {% endif %}
 
-      <!-- Trailing Ellipsis and Last Page -->
-      {% if page < total_pages - 2 %}
-      <li class="page-item disabled"><span class="page-link">...</span></li>
-      <li class="page-item">
-        <a class="page-link" href="{{ url_for('index.index', page=total_pages) }}">{{ total_pages }}</a>
-      </li>
-      {% endif %}
+            <!-- Last Page -->
+            {% if page < total_pages - 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('products.search',
+                        page=total_pages,
+                        query=query,
+                        max_price=max_price,
+                        min_rating=min_rating,
+                        sort_by=sort_by,
+                        arrow_direction=arrow_direction,
+                        toggle_filter=toggle_filter,
+                        category=category,
+                        ) }}">
+                        {{ total_pages }}
+                    </a>
+                </li>
+            {% endif %}
 
-      <!-- Next Button -->
-      {% if page < total_pages %}
-      <li class="page-item">
-        <a class="page-link" href="{{ url_for('index.index', page=page+1) }}" aria-label="Next">
-          <span aria-hidden="true">Next &raquo;</span>
-        </a>
-      </li>
-      {% endif %}
-    </ul>
-  </nav>
+            {% if page < total_pages %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('products.search',
+                        page=page+1,
+                        query=query,
+                        max_price=max_price,
+                        min_rating=min_rating,
+                        sort_by=sort_by,
+                        arrow_direction=arrow_direction,
+                        toggle_filter=toggle_filter,
+                        category=category,
+                        ) }}" aria-label="Next">
+                        <span aria-hidden="true">Next &raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
 </div>
 
+<script>
+    function applyFilter() {
+        document.getElementById('filter-sort-form').submit();
+    }
 
+    function checkEnter(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevents the default behavior of Enter (e.g., form submission via Enter key if not handled)
+            document.getElementById('filter-sort-form').submit();
+        }
+    }
 
+    function toggleArrow() {
+        const arrowIcon = document.getElementById('arrowIcon');
+        const arrowInput = document.getElementById('arrowInput');
+
+        if (arrowInput.value === 'down') {
+            // Change the arrow direction to up
+            arrowIcon.innerHTML = '<path d="M12 7l-5 5h10l-5-5z" fill="currentColor"></path>';
+            arrowInput.value = 'up'; // Set input value to "up"
+        } else {
+            // Change the arrow direction to down
+            arrowIcon.innerHTML = '<path d="M12 17l-5-5h10l-5 5z" fill="currentColor"></path>';
+            arrowInput.value = 'down'; // Set input value to "down"
+        }
+
+        applyFilter()
+    }
+
+    function initialArrow() {
+        const arrowIcon = document.getElementById('arrowIcon');
+        const arrowInput = document.getElementById('arrowInput');
+
+        if (arrowInput.value === 'up') {
+            // Show the arrow direction to up
+            arrowIcon.innerHTML = '<path d="M12 7l-5 5h10l-5-5z" fill="currentColor"></path>';
+            arrowInput.value = 'up'; // Set input value to "up"
+        } else {
+            // Show the arrow direction to down
+            arrowIcon.innerHTML = '<path d="M12 17l-5-5h10l-5 5z" fill="currentColor"></path>';
+            arrowInput.value = 'down'; // Set input value to "down"
+        }
+    }
+
+    function toggleMenu() {
+        const container = document.getElementById('filterSortContainer');
+        const toggle_filter = document.getElementById('toggle_filter');
+
+        if (container.style.display === 'none' || container.style.display === '') {
+            container.style.display = 'block';
+            toggle_filter.value = true
+        } else {
+            container.style.display = 'none';
+            toggle_filter.value = false
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Call the function when the DOM is fully loaded
+        initialArrow();
+    });
+</script>
 
 {% endblock %}

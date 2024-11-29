@@ -46,7 +46,10 @@ def search():
         max_price = round(max_price, 2)
         products = [product for product in products if product.price is not None and product.price <= max_price]
 
-    min_rating = int(float(request.args.get('min_rating', 0)))
+    min_rating = request.args.get('min_rating', 0)
+    if type(min_rating) is str and len(min_rating) < 1:
+        min_rating = 0
+    min_rating = int(float(min_rating))
     products = [product for product in products if product.rating >= min_rating]
 
     category = request.args.get('category', '')

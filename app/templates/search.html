@@ -3,6 +3,8 @@
 {% block content %}
 
 <div class="container mt-2">
+    <h2>{{ products_count }} Results for "{{ query }}"</h2>
+
     <!-- Toggle Button -->
     <button type="button" class="btn btn-warning" id="toggleButton" onclick="toggleMenu()">Toggle Filter/Sort</button>
 
@@ -62,12 +64,10 @@
         </form>
     </div>
 
-    <h2 class="mt-2">{{ products_count }} Results for "{{ query }}"</h2>
-
-    <div class="row">
-        {% if products %}
+    {% if products %}
+        <div class="row">
             {% for product in products %}
-                <div class="col-md-4 mb-4">
+                <div class="col-md-4 mb-4 mt-2">
                     <div class="product-card">
                         <div class="product-card-img-top" style="height: 150px; background-color: #f0f0f0;">
                             <img src="{{ product.image if product.image else url_for('static', filename='images/image_' + product.id|string + '.jpg') if product.id }}"
@@ -105,36 +105,115 @@
                     </div>
                 </div>
             {% endfor %}
-          </div>
-          <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4">
-              <ul class="pagination">
-                  {% if page > 1 %}
+        </div>
+        <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4">
+            <ul class="pagination">
+                <!-- Hide previous button if on page 1 -->
+                {% if page > 1 %}
                     <li class="page-item">
-                        <a class="page-link" href="{{ url_for('products.search', page=page-1, query=query) }}" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
+                        <a class="page-link" href="{{ url_for('products.search',
+                            page=page-1,
+                            query=query,
+                            max_price=max_price,
+                            min_rating=min_rating,
+                            sort_by=sort_by,
+                            arrow_direction=arrow_direction,
+                            toggle_filter=toggle_filter,
+                            category=category,
+                            ) }}" 
+                            aria-label="Previous">
+                            <span aria-hidden="true">&laquo; Previous</span>
                         </a>
                     </li>
-                  {% endif %}
+                {% endif %}
 
-                  {% set start_page = page - 2 if page > 3 else 1 %}
-                  {% set end_page = page + 2 if page < total_pages - 2 else total_pages %}
-                  {% for page_num in range(start_page, end_page + 1) %}
-                      <li class="page-item {% if page_num == page %}active{% endif %}">
-                          <a class="page-link" href="{{ url_for('products.search', page=page_num, query=query) }}">{{ page_num }}</a>
-                      </li>
-                  {% endfor %}
+                <!-- First Page -->
+                {% if page > 2 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('products.search',
+                            page=1,
+                            query=query,
+                            max_price=max_price,
+                            min_rating=min_rating,
+                            sort_by=sort_by,
+                            arrow_direction=arrow_direction,
+                            toggle_filter=toggle_filter,
+                            category=category,
+                            ) }}">
+                            {{ 1 }}
+                        </a>
+                    </li>
+                {% endif %}
 
-                  {% if page < total_pages %}
-                      <li class="page-item">
-                          <a class="page-link" href="{{ url_for('products.search', page=page+1, query=query) }}" aria-label="Next">
-                              <span aria-hidden="true">&raquo;</span>
-                          </a>
-                      </li>
-                  {% endif %}
-              </ul>
-          </nav>
-        {% endif %}
-    </div>
+                <!-- Front Trailing Ellipsis -->
+                {% if page > 3 %}
+                    <li class="page-item">
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    </li>
+                {% endif %}
+
+                {% set start_page = page - 1 if page > 2 else 1 %}
+                {% set end_page = page + 1 if page < total_pages - 1 else total_pages %}
+                {% for page_num in range(start_page, end_page + 1) %}
+                    <li class="page-item {% if page_num == page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('products.search',
+                            page=page_num,
+                            query=query,
+                            max_price=max_price,
+                            min_rating=min_rating,
+                            sort_by=sort_by,
+                            arrow_direction=arrow_direction,
+                            toggle_filter=toggle_filter,
+                            category=category,
+                            ) }}">{{ page_num }}
+                        </a>
+                    </li>
+                {% endfor %}
+
+                <!-- Back Trailing Ellipsis -->
+                {% if page < total_pages - 2 %}
+                    <li class="page-item">
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    </li>
+                {% endif %}
+
+                <!-- Last Page -->
+                {% if page < total_pages - 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('products.search',
+                            page=total_pages,
+                            query=query,
+                            max_price=max_price,
+                            min_rating=min_rating,
+                            sort_by=sort_by,
+                            arrow_direction=arrow_direction,
+                            toggle_filter=toggle_filter,
+                            category=category,
+                            ) }}">
+                            {{ total_pages }}
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% if page < total_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('products.search',
+                            page=page+1,
+                            query=query,
+                            max_price=max_price,
+                            min_rating=min_rating,
+                            sort_by=sort_by,
+                            arrow_direction=arrow_direction,
+                            toggle_filter=toggle_filter,
+                            category=category,
+                            ) }}" aria-label="Next">
+                            <span aria-hidden="true">Next &raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
 </div>
 
 <br>
@@ -172,14 +251,14 @@
         const arrowIcon = document.getElementById('arrowIcon');
         const arrowInput = document.getElementById('arrowInput');
 
-        if (arrowInput.value === 'down') {
-            // Show the arrow direction to down
-            arrowIcon.innerHTML = '<path d="M12 17l-5-5h10l-5 5z" fill="currentColor"></path>';
-            arrowInput.value = 'down'; // Set input value to "down"
-        } else {
+        if (arrowInput.value === 'up') {
             // Show the arrow direction to up
             arrowIcon.innerHTML = '<path d="M12 7l-5 5h10l-5-5z" fill="currentColor"></path>';
             arrowInput.value = 'up'; // Set input value to "up"
+        } else {
+            // Show the arrow direction to down
+            arrowIcon.innerHTML = '<path d="M12 17l-5-5h10l-5 5z" fill="currentColor"></path>';
+            arrowInput.value = 'down'; // Set input value to "down"
         }
     }
 
