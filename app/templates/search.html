@@ -3,7 +3,11 @@
 {% block content %}
 
 <div class="container mt-2">
-    <h2>{{ products_count }} Results for "{{ query }}"</h2>
+    {% if query|length > 0 %}
+        <h2>{{ products_count }} Results for "{{ query }}"</h2>
+    {% else %}
+        <h2>Products for Sale</h2>
+    {% endif %}
 
     <!-- Toggle Button -->
     <button type="button" class="btn btn-warning" id="toggleButton" onclick="toggleMenu()">Toggle Filter/Sort</button>
