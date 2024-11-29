@@ -140,7 +140,7 @@ class Review:
                 LEFT JOIN Helpfulness AS h ON h.rid = r.id
                 WHERE s.sid = :sid
                 GROUP BY r.id, u.firstname, u.lastname, r.rating, r.description, r.time_created
-                ORDER BY SUM(h.value)
+                ORDER BY COALESCE(SUM(h.value), 0) DESC, r.time_created DESC
                 LIMIT :per_page OFFSET :offset
             """,
             sid=sid, per_page=per_page, offset=offset

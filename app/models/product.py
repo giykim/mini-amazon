@@ -388,7 +388,7 @@ class Product:
             LEFT JOIN Helpfulness AS h ON h.rid = r.id
             WHERE p.id = :pid
             GROUP BY r1.id, u1.firstname, u1.lastname, r1.rating, r1.description, r1.time_created
-            ORDER BY SUM(h.value), r1.time_created DESC
+            ORDER BY COALESCE(SUM(h.value), 0) DESC, r1.time_created DESC
             LIMIT :per_page OFFSET :offset
             ''',
             pid=pid, per_page=per_page, offset=offset
