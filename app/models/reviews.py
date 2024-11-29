@@ -19,7 +19,7 @@ class Review:
         return Review(*(rows[0])) if rows is not None else None
     
     @staticmethod
-    def get_recent_reviews(reviewerid):
+    def get_user_reviews(reviewerid):
         rows = app.db.execute("""
             WITH HelpfulnessValue AS (
                 SELECT rid, COALESCE(SUM(value), 0) AS helpfulness
@@ -29,13 +29,17 @@ class Review:
             SELECT 
                 r.id,
                 CASE
-                 WHEN p.pid IS NULL THEN 'Seller'
-                 ELSE 'Product'
+                    WHEN p.pid IS NULL THEN 'Seller'
+                    ELSE 'Product'
                 END AS review_type,
                 CASE
-                 WHEN p1.name IS NULL THEN u.firstname || ' ' || u.lastname
-                 ELSE p1.name
+                    WHEN p1.name IS NULL THEN u.firstname || ' ' || u.lastname
+                    ELSE p1.name
                 END AS Name,
+                CASE
+                    WHEN p.pid IS NULL THEN s.sid
+                    ELSE p.pid
+                END AS tid,
                 r.rating, r.description, r.time_created, COALESCE(h.helpfulness, 0) AS helpfulness
             FROM Reviews r
             LEFT JOIN SellerReviews s ON r.id = s.id

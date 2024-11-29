@@ -30,15 +30,15 @@
                                 <div class="mr-2">
                                     <p>{{ product.rating|round(1) }}</p>
                                 </div>
-                          </div>
-                          <strong>
-                              {% if product.price %}
-                                  ${{ "%.2f"|format(product.price) }}
-                              {% else %}
-                                  No sellers
-                              {% endif %}
-                          </strong>
-                          {{ product.description[:100] }}...
+                            </div>
+                            <strong>
+                                {% if product.price %}
+                                    ${{ "%.2f"|format(product.price) }}
+                                {% else %}
+                                    No sellers
+                                {% endif %}
+                            </strong>
+                            {{ product.description[:100] }}...
                         </p>
                     </div>
                 </div>

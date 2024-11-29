@@ -203,8 +203,12 @@
                             <p class="card-text"><small class="text-muted">Reviewed on {{ review.time_created.strftime('%B %d, %Y') }}</small></p>
                         </div>
                         <!-- Rating badge styled similar to seller reviews -->
-                        <div class="rating" style="background-color: #FFC107; color: black; padding: 5px 10px; border-radius: 5px;">
-                            {{ review.rating }}/5
+                        <div class="star-rating-display">
+                            {% for i in range(5, 0, -1) %} <!-- Iterate from 5 down to 1 -->
+                                <label class="{% if i - 0.5 <= review.rating %}filled{% endif %}">
+                                    &#9733;
+                                </label>
+                            {% endfor %}
                         </div>
                     </div>
 

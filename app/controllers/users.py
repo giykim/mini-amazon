@@ -205,7 +205,7 @@ def review_history():
 
     if current_user.is_authenticated:
         # get most recent reviews
-        all_reviews = Review.get_recent_reviews(current_user.id)
+        all_reviews = Review.get_user_reviews(current_user.id)
 
         reviews_count = len(all_reviews)
         reviews = all_reviews[offset:offset+per_page]

@@ -8,15 +8,46 @@
     <h2>Review History</h2>
     {% if reviews %}
         {% for review in reviews %}
-            <div class="card mb-3">
+            <div class="card mt-2" id="review-{{ review.id }}">
                 <div class="card-body">
-                    <h5 class="card-title">Review Of: {{ review.name }}</h5>
-                    <p class="card-text"><strong>Review Type:</strong> {{ review.review_type }}</p>
-                    <p class="card-text"><strong>Rating:</strong> {{ review.rating }}</p>
-                    <p class="card-text"><strong>Description:</strong> {{ review.description }}</p>
-                    <p class="card-text"><strong>Helpfulness:</strong> {{ review.helpfulness }}</p>
-                    <p class="card-text"><strong>Time Created:</strong> {{ review.time_created }}</p>
-                    <div class="d-flex align-items-center">
+
+                    <h5 class="card-title"><strong>
+                        {% if review.review_type == "Seller" %}
+                            <a href="{{ url_for('inventories.get_user',
+                                uid=review.tid,
+                                ) }}">{{ review.name }}
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('products.product_page',
+                                product_id=review.tid
+                                )}}">{{ review.name }}
+                            </a>
+                        {% endif %}
+                    </strong> ({{ review.review_type }})</h5>
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="card-text">{{ review.description }}</p>
+                            <p class="card-text"><small class="text-muted">Reviewed on {{ review.time_created.strftime('%B
+                                    %d, %Y') }}</small></p>
+                        </div>
+                        <div class="star-rating-display">
+                            {% for i in range(5, 0, -1) %} <!-- Iterate from 5 down to 1 -->
+                                <label class="{% if i - 0.5 <= review.rating %}filled{% endif %}">
+                                    &#9733;
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Helpfulness Section with Voting Buttons -->
+                    <div class="d-flex justify-content-end align-items-center" style="margin-top: -30px;">
+                        <!-- Adjusted alignment -->
+                        <!-- Helpfulness Count -->
+                        <small class="text-muted me-2 mr-2">Helpfulness: <span class="helpfulness-count"
+                                data-review-id="{{ review.id }}">{{ review.helpfulness }}</span></small>
+                    </div>
+
+                    <div class="d-flex align-items-center mt-4">
                         <form action="{{ url_for('social.edit_review') }}" method="POST" class="mr-2">
                             <input type="hidden" name="review_id" value="{{ review.id }}">
                             <button type="submit" class="btn btn-warning">Edit</button>
@@ -25,7 +56,7 @@
                             <input type="hidden" name="review_id" value="{{ review.id }}">
                             <button type="submit" class="btn btn-danger">Remove</button>
                         </form>
-                    </div>                   
+                    </div>
                 </div>
             </div>
         {% endfor %}
