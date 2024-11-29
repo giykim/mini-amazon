@@ -386,30 +386,58 @@
             color: #FFD700; /* Gold color for filled stars */
         }
 
+        /* Menu container */
         .menu {
-            margin: 20px;
-            padding: 20px;
+            margin: 10px; /* Reduce margin */
+            padding: 15px; /* Reduce padding */
             border: 1px solid #ccc;
             border-radius: 8px;
+            display: flex;
+            flex-direction: column;  /* Stack elements vertically */
+            font-size: 14px; /* Make the font size smaller */
         }
 
-        .filter-section, .sort-section {
-            margin-bottom: 20px;
+        /* Filter and Sort Sections */
+        .menu-content {
+            display: flex;
+            flex-direction: column; /* Stack filter and sort sections */
+            gap: 15px; /* Reduce gap between sections */
         }
 
+        /* Filter section */
+        .filter-section h4, .sort-section h4 {
+            font-size: 16px; /* Smaller font size for headings */
+            margin-bottom: 8px; /* Reduced margin */
+        }
+
+        /* Styling for input and select fields */
+        .menu input[type="number"], 
+        .menu select {
+            width: 100%;
+            padding: 8px; /* Reduced padding */
+            font-size: 14px; /* Smaller font size */
+            border: 1px solid #ccc;
+            border-radius: 2px;
+            margin-bottom: 8px; /* Reduced margin between elements */
+        }
+
+        /* Adjust appearance of the arrow button */
         .arrow-button {
-            background: none; /* Remove background */
-            border: none; /* Remove border */
-            cursor: pointer; /* Show pointer on hover */
-            padding: 0; /* Remove default padding */
-            outline: none; /* Remove outline */
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            background: none;
+            border: none;
+            cursor: pointer;
         }
 
         .arrow-button svg {
-            display: block; /* Ensures there are no extra spaces around the SVG */
+            width: 20px; /* Smaller SVG icon */
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* Sort section: Adjust select width */
+        .menu .sort-section select {
+            width: 75%;  /* Reduced width for the select */
+            margin-bottom: 8px;  /* Reduced margin */
         }
     </style>
 </head>

@@ -62,7 +62,7 @@ def search():
     reverse = arrow_direction == 'down'
     if sort_by is not None:
         if sort_by == "name":
-            products = sorted(products, key=lambda product: product.name, reverse=(not reverse))
+            products = sorted(products, key=lambda product: product.name.lower(), reverse=(not reverse))
         elif sort_by == "price":
             products = sorted(
                 products, 
