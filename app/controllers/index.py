@@ -28,7 +28,7 @@ bp = Blueprint('index', __name__)
 def index():
     # Get the current page number from the query parameters, defaulting to 1
     page = request.args.get('page', 1, type=int)
-    per_page = 12  # Number of products per page
+    per_page = 9  # Number of products per page
 
     # Get paginated products for the current page
     avail_products = Product.get_available_products_paginated(page=page, per_page=per_page)

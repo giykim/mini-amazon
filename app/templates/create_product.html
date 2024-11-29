@@ -21,7 +21,7 @@
                     <select class="form-control" name="category">
                         <option value="">-- Select a category --</option>
                         {% for category in categories %}
-                            <option value="{{ category.id }}">{{ category.name[1:-1] }}</option>
+                            <option value="{{ category.id }}">{{ category.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
