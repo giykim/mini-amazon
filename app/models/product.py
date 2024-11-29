@@ -516,10 +516,18 @@ class Product:
         Returns similar products based on category and tags
         '''
         rows = app.db.execute('''
-            SELECT p.id, p.name, p.description, p.image, MIN(s.price) as price
+            WITH Rating AS (
+                SELECT p.pid, AVG(r.rating) AS rating, COUNT(r.rating) AS num_ratings
+                FROM ProductReviews p
+                JOIN Reviews r ON r.id = p.id
+                GROUP BY p.pid
+            )
+            SELECT p.id, p.name, p.description, p.image, MIN(s.price) as price,
+                COALESCE(r.rating, 0) AS rating, COALESCE(r.num_ratings, 0) as num_ratings
             FROM Products p
             JOIN CategoryOf c ON p.id = c.pid
             LEFT JOIN SoldBy s ON p.id = s.pid
+            LEFT JOIN Rating r ON p.id = r.pid
             WHERE p.id <> :pid
                 AND (
                     c.cid = (
@@ -535,8 +543,8 @@ class Product:
                             AND t2.pid = :pid
                     )
                 )
-            GROUP BY p.id
-            LIMIT 4;
+            GROUP BY p.id, r.rating, r.num_ratings
+            LIMIT 3;
             ''',
             pid=pid
         )
