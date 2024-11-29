@@ -52,15 +52,22 @@ class Product:
                 FROM ProductReviews p
                 JOIN Reviews r ON r.id = p.id
                 GROUP BY p.pid
+            ),
+            Category AS (
+                SELECT co.pid, c.id, c.name
+                FROM Categories c
+                JOIN CategoryOf co ON c.id = co.cid
             )
-            SELECT p.id, p.name, p.description, MIN(s.price) as price, COALESCE(AVG(r.rating), 0) as rating
+            SELECT p.id, p.name, p.description, MIN(s.price) as price,
+                COALESCE(AVG(r.rating), 0) as rating, c.name as category
             FROM Products p
             LEFT JOIN SoldBy s ON p.id = s.pid
             LEFT JOIN Rating r ON p.id = r.pid
-            WHERE (LOWER(name) LIKE '%' || LOWER(:query) || '%'
-                OR  LOWER(description) LIKE '%' || LOWER(:query) || '%')
-                AND available IS TRUE
-            GROUP BY p.id
+            LEFT JOIN Category c ON p.id = c.pid
+            WHERE (LOWER(p.name) LIKE '%' || LOWER(:query) || '%'
+                OR  LOWER(p.description) LIKE '%' || LOWER(:query) || '%')
+                AND p.available IS TRUE
+            GROUP BY p.id, c.name
             """,
             query = query
         )

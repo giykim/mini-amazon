@@ -19,6 +19,9 @@ def search():
 
     products = Product.search_products(query)
 
+    # Get categories to choose from for filtering
+    categories = Product.get_categories()
+
     # Toggle filter / sort menu
     toggle_filter = request.args.get('toggle_filter', False)
 
@@ -33,6 +36,11 @@ def search():
 
     min_rating = int(float(request.args.get('min_rating', 0)))
     products = [product for product in products if product.rating >= min_rating]
+
+    category = request.args.get('category', '')
+    if len(category) > 0:
+        products = [product for product in products if product.category is not None and product.category == category]
+    print('here',category)
 
     # Get search parameters
     sort_by = request.args.get('sort_by')
@@ -63,6 +71,8 @@ def search():
         sort_by=sort_by,
         arrow_direction=arrow_direction,
         toggle_filter=toggle_filter,
+        category=category,
+        categories=categories,
         )
 
 
