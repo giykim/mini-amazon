@@ -15,7 +15,7 @@
             <div class="card-body">
               <h5 class="card-title">{{ product.name }}</h5> 
               <p class="card-text">
-                <strong>Description:</strong> {{ product.description }}<br> 
+                <strong>Description:</strong> {{ product.description[:100] }}...<br>
                 <strong>Price:</strong> ${{ "%.2f"|format(product.price) }} 
               </p>
             </div>

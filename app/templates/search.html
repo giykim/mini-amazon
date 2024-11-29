@@ -78,7 +78,7 @@
                                 <h5 class="card-title">{{ product.name }}</h5>
                                 <p class="card-text">
                                     <strong>Product ID:</strong> {{ product.id }}<br>
-                                    <strong>Description:</strong> {{ product.description }}<br>
+                                    <strong>Description:</strong> {{ product.description[:100] }}...<br>
                                     <strong>Price:</strong> {{ product.price }}
                                 </p>
                             </div>
