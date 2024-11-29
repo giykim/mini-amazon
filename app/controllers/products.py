@@ -215,6 +215,16 @@ def update_product():
         cid = request.form.get('category')
         tags = request.form.get('tags')
 
+        image = request.files.get('image')
+        if image:
+            if not allowed_file(image.filename):
+                flash('Invalid file format uploaded.')
+                return redirect(url_for('products.update_product', pid=pid))
+            else:
+                # Get uploaded image file
+                filename = f"image_{pid}.jpg"
+                image.save(os.path.join(UPLOAD_FOLDER, filename))
+
         # Update product with new information
         Product.update_product(pid=pid, name=name, description=description)
 

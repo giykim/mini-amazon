@@ -153,7 +153,7 @@ def created_products():
     total_pages = (products_count + per_page - 1) // per_page  # Calculate the number of pages
 
     return render_template(
-        'created_products.html',
+        'my_products.html',
         products=products,
         page=page,
         total_pages=total_pages

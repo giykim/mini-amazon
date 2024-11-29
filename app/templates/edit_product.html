@@ -9,11 +9,11 @@
             <form action="{{ url_for('products.update_product') }}" method="post">
                 <div class="form-group">
                     <div class="form-group">
-                        <label>Name</label>
+                        <label>Name *</label>
                         <input type="text" class="form-control" placeholder="Product Name" name="name" value="{{ product.name }}" required>
                     </div>
                     <div class="form-group">
-                        <label>Description</label>
+                        <label>Description *</label>
                         <input type="text" class="form-control" placeholder="Product Description" name="description" value="{{ product.description }}" required>
                     </div>
                     <div class="form-group">
@@ -42,6 +42,12 @@
                             <input type="text" id="tags-input" placeholder="Product Tags" class="tags-input">
                         </div>
                         <input type="hidden" id="tags-hidden" name="tags">
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Image</label>
+                        <div>
+                            <input type="file" name="image" accept="image/*">
+                        </div>
                     </div>
                     <input type="hidden" name="pid" value="{{ product.id }}" required>
                 </div>

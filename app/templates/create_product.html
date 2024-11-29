@@ -9,11 +9,11 @@
         {% if current_user.is_authenticated %}
             <form action="{{ url_for('products.new_product') }}" method="post" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label">Name</label>
+                    <label">Name *</label>
                     <input type="text" class="form-control" placeholder="Product Name" name="name" required>
                 </div>
                 <div class="form-group">
-                    <label>Description</label>
+                    <label>Description *</label>
                     <input type="text" class="form-control" placeholder="Product Description" name="description" required>
                 </div>
                 <div class="form-group">
@@ -26,14 +26,14 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Press Enter to Add Tags</label>
+                    <label>Tags</label>
                     <div id="tags-container" class="tags-input-container form-control">
-                        <input type="text" id="tags-input" placeholder="Product Tags" class="tags-input">
+                        <input type="text" id="tags-input" placeholder="Press Enter to Add Tags" class="tags-input">
                     </div>
                     <input type="hidden" id="tags-hidden" name="tags">
                 </div>
                 <div class="form-group">
-                    <label>Upload Image</label>
+                    <label>Upload Image *</label>
                     <div>
                         <input type="file" name="image" accept="image/*" required>
                     </div>
