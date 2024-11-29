@@ -159,7 +159,7 @@ def new_product():
             # If user added any tags
             for tag in tags.split(','):
                 if len(tag) > 0:
-                    Product.add_tag(pid=pid, tag=tag[1:-1])
+                    Product.add_tag(pid=pid, tag=tag)
 
         return redirect(url_for('products.product_page', product_id=pid))
 
@@ -193,7 +193,7 @@ def update_product():
         # Add all new tags
         for tag in tags.split(','):
             if len(tag) > 0:
-                Product.add_tag(pid=pid, tag=tag[1:-1])
+                Product.add_tag(pid=pid, tag=tag)
 
         # Show user their update was successful
         flash("Successfully updated product info.", category="success")
