@@ -40,7 +40,6 @@ def search():
     category = request.args.get('category', '')
     if len(category) > 0:
         products = [product for product in products if product.category is not None and product.category == category]
-    print('here',category)
 
     # Get search parameters
     sort_by = request.args.get('sort_by')
