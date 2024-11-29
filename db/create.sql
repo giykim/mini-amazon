@@ -34,7 +34,8 @@ CREATE TABLE Tags (
 
 CREATE TABLE IsTagged (
     pid INT NOT NULL REFERENCES Products(id),
-    name VARCHAR(255) NOT NULL REFERENCES Tags(name)
+    name VARCHAR(255) NOT NULL REFERENCES Tags(name),
+    UNIQUE (pid, name)
 );
 
 CREATE TABLE SoldBy (
