@@ -46,6 +46,12 @@ def get_user():
     reviews_total_pages = (reviews_count + reviews_per_page - 1) // reviews_per_page
     seller_reviews = Review.get_seller_reviews_paginated(uid, reviews_page, reviews_per_page) if is_seller else None
 
+    # Get users votes for current seller reviews
+    if current_user.is_authenticated:
+        user_votes = Review.get_user_votes_for_seller(uid, current_user.id)
+    else:
+        user_votes = None
+
     # Get product info corresponding to seller
     if is_seller:
         # Check if current user has bought from this seller
@@ -134,7 +140,8 @@ def get_user():
                            created_products_total_pages=created_products_total_pages,
 
                            ratings=ratings,
-                           seller_reviews=seller_reviews, 
+                           seller_reviews=seller_reviews,
+                           user_votes=user_votes,
                            reviews_page=reviews_page,
                            reviews_total_pages=reviews_total_pages,
 

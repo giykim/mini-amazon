@@ -254,3 +254,18 @@ class Review:
             rating=rating, 
             description=description
         )
+
+    @staticmethod
+    def get_user_votes_for_seller(sid, uid):
+        rows = app.db.execute("""
+            SELECT h.rid AS review_id, h.value AS vote_value
+            FROM Helpfulness AS h
+            JOIN SellerReviews AS sr ON sr.id = h.rid
+            WHERE sr.sid = :sid AND h.uid = :uid
+        """, 
+            sid=sid, 
+            uid=uid
+        )
+
+        user_votes = {row[0]: row[1] for row in rows}
+        return user_votes
