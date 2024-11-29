@@ -38,3 +38,9 @@ SELECT pg_catalog.setval('public.categories_id_seq',
 \COPY CategoryOf FROM 'CategoryOf.csv' WITH DELIMITER ',' NULL '' CSV
 
 \COPY Inventory FROM 'Inventory.csv' WITH DELIMITER ',' NULL '' CSV
+
+\COPY Helpfulness FROM 'Helpfulness.csv' WITH DELIMITER ',' NULL '' CSV
+
+\COPY Tags FROM 'Tags.csv' WITH DELIMITER ',' NULL '' CSV
+
+\COPY IsTagged FROM 'IsTagged.csv' WITH DELIMITER ',' NULL '' CSV

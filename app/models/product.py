@@ -58,7 +58,7 @@ class Product:
                 FROM Categories c
                 JOIN CategoryOf co ON c.id = co.cid
             )
-            SELECT p.id, p.name, p.description, MIN(s.price) as price,
+            SELECT p.id, p.name, p.description, p.image, MIN(s.price) as price,
                 COALESCE(AVG(r.rating), 0) as rating, c.name as category
             FROM Products p
             LEFT JOIN SoldBy s ON p.id = s.pid
@@ -76,7 +76,7 @@ class Product:
     @staticmethod
     def get_product_info(pid):
         rows = app.db.execute("""
-            SELECT p.name, p.description, p.id
+            SELECT p.name, p.description, p.id, p.image
             FROM Products AS p
             WHERE p.id = :pid
             """,
@@ -87,7 +87,7 @@ class Product:
     @staticmethod
     def get_user_products(uid):
         rows = app.db.execute("""
-            SELECT p.id, p.name, p.description
+            SELECT p.id, p.name, p.description, p.image
             FROM Products p
             JOIN CreatedProduct c ON p.id = c.pid
             WHERE c.uid = :uid
@@ -328,7 +328,7 @@ class Product:
         offset = (page - 1) * per_page
         print(f"Fetching products for page {page} with OFFSET {offset} and LIMIT {per_page}")
         rows = app.db.execute('''
-            SELECT p.id, p.name, p.description, p.available, MIN(s.price) AS price
+            SELECT p.id, p.name, p.description, p.image, p.available, MIN(s.price) AS price
             FROM Products p
             JOIN SoldBy s ON p.id = s.pid
             WHERE p.available = :available
@@ -499,7 +499,7 @@ class Product:
         Returns similar products based on category and tags
         '''
         rows = app.db.execute('''
-            SELECT p.id, p.name, p.description, MIN(s.price) as price
+            SELECT p.id, p.name, p.description, p.image, MIN(s.price) as price
             FROM Products p
             JOIN CategoryOf c ON p.id = c.pid
             LEFT JOIN SoldBy s ON p.id = s.pid

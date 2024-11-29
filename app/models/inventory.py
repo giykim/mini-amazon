@@ -77,7 +77,7 @@ class Inventory:
     @staticmethod
     def get_selling(sid):
         rows = app.db.execute('''
-            SELECT p.id, p.name, p.description, s.quantity, s.price
+            SELECT p.id, p.name, p.description, p.image, s.quantity, s.price
             FROM Products p
             JOIN SoldBy s ON p.id = s.pid
             WHERE s.sid = :sid

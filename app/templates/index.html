@@ -9,8 +9,10 @@
       <div class="col-md-4 mb-4">
         <a href="{{ url_for('products.product_page', product_id=product[0]) }}">
           <div class="card">
-            <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-              <span style="color: #ccc;">Product Image Placeholder</span>
+            <div class="card-img-top" style="height: 150px; background-color: #f0f0f0;">
+              <img src="{{ product.image if product.image else '/static/images/placeholder.png' }}" 
+                  alt="{{ product.name }}" 
+                  style="height: 100%; width: 100%; object-fit: contain;">
             </div>
             <div class="card-body">
               <h5 class="card-title">{{ product.name }}</h5> 
@@ -21,7 +23,7 @@
             </div>
           </div>
         </a>
-      </div>
+      </div>    
     {% endfor %}
   </div>
 </div>

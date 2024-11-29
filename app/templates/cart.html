@@ -68,10 +68,15 @@
 
   {% for product in cart %}
     <div class="cart-item">
-      <img src="item1.jpg" alt="{{ product.name }}">
+          <!-- Product Image -->
+    <div style="flex-shrink: 0; width: 100px; height: 100px; margin-right: 15px;">
+      <img src="{{ product.image if product.image else '/static/images/placeholder.png' }}" 
+           alt="{{ product.name }}" 
+           style="width: 100%; height: 100%; object-fit: contain; border: 1px solid #ddd; border-radius: 5px;">
+    </div>
       <div class="item-details">
         <h3>{{ product.name }}</h3>
-        <p>{{ product.description }}</p>
+        <p>{{ product.description[:100] }}...</p>
         <p>Sold by: {{ product.seller_first }} {{ product.seller_last }}</p>
       </div>
       <div class="item-price">${{ product.price }}</div>
