@@ -62,6 +62,90 @@
           font-weight: bold;
         }
 
+        .product-card-container {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
+          gap: 20px; /* Space between cards */
+          max-width: 1200px; /* Optional: Limit the container's max width */
+          margin: 0 auto; /* Center the container */
+          padding: 10px; /* Space around the grid */
+          box-sizing: border-box;
+        }
+
+        .product-card {
+          width: 100%; /* Take full width of the grid cell */
+          max-width: 400px; /* Optional: Ensure cards don’t grow beyond this width */
+          height: 400px; /* Fixed height */
+          display: flex;
+          flex-direction: column; /* Stack content vertically */
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          transition: transform 0.2s;
+          background-color: white;
+          overflow: hidden; /* Prevent content from spilling outside */
+          margin: 0 auto; /* Center each card within its grid column */
+        }
+
+        .product-card:hover {
+          transform: scale(1.02);
+        }
+
+        .product-card-img-top {
+          height: 150px; /* Fixed height for image area */
+          background-color: #f0f0f0; /* Placeholder background */
+          display: flex;
+          align-items: center; /* Center image vertically */
+          justify-content: center; /* Center image horizontally */
+          overflow: hidden; /* Prevent large images from overflowing */
+        }
+
+        .product-card-img-top img {
+          max-height: 100%;
+          max-width: 100%;
+          object-fit: contain; /* Ensures image fits within the box */
+        }
+
+        .product-card-body {
+          flex-grow: 1; /* Ensures the body fills remaining space */
+          display: flex;
+          flex-direction: column; /* Stack content */
+          justify-content: space-between; /* Spread content evenly */
+          padding: 10px;
+        }
+
+        .product-card-title {
+          font-size: 20px;
+          font-weight: bold;
+          text-align: center; /* Center-align the title */
+          margin: 0 0 5px 0; /* Reduce the bottom margin to decrease space between title and text */
+          overflow: hidden; /* Prevent overflow */
+          text-overflow: ellipsis; /* Truncate long titles */
+          line-height: 1.4; /* Increase line-height for more space between lines */
+          max-height: 80px; /* Allow for two lines of text */
+          display: -webkit-box;
+          -webkit-line-clamp: 2; /* Limit title to 2 lines */
+          -webkit-box-orient: vertical; /* Allows multi-line text */
+        }
+
+        .product-card-text {
+          flex-grow: 1; /* Allows the text to grow but stay within bounds */
+          margin: 0; /* Remove extra margin between lines */
+          margin-top: 0; /* Reduce space between title and text */
+          line-height: 1.2; /* Tighten the spacing between lines of text */
+          overflow: hidden; /* Prevents text from overflowing */
+          text-overflow: ellipsis; /* Truncate long text */
+          display: -webkit-box;
+          -webkit-line-clamp: 3; /* Limit text to 3 lines */
+          -webkit-box-orient: vertical;
+        }
+
+        .product-card-price {
+          font-weight: bold;
+          margin-top: 10px;
+          text-align: center; /* Optional: Center-align price */
+        }
+
         .card {
           border: 1px solid #ddd;
           border-radius: 5px;

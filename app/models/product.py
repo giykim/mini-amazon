@@ -48,7 +48,7 @@ class Product:
     def search_products(query):
         rows = app.db.execute("""
             WITH Rating AS (
-                SELECT p.pid, AVG(r.rating) AS rating
+                SELECT p.pid, AVG(r.rating) AS rating, COUNT(r.rating) AS num_ratings
                 FROM ProductReviews p
                 JOIN Reviews r ON r.id = p.id
                 GROUP BY p.pid
@@ -59,7 +59,8 @@ class Product:
                 JOIN CategoryOf co ON c.id = co.cid
             )
             SELECT p.id, p.name, p.description, p.image, MIN(s.price) as price,
-                COALESCE(AVG(r.rating), 0) as rating, c.name as category
+                COALESCE(AVG(r.rating), 0) as rating, COUNT(r.rating) AS num_ratings,
+                c.name as category
             FROM Products p
             LEFT JOIN SoldBy s ON p.id = s.pid
             LEFT JOIN Rating r ON p.id = r.pid
@@ -87,9 +88,17 @@ class Product:
     @staticmethod
     def get_user_products(uid):
         rows = app.db.execute("""
-            SELECT p.id, p.name, p.description, p.image
+            WITH Rating AS (
+                SELECT p.pid, AVG(r.rating) AS rating, COUNT(r.rating) AS num_ratings
+                FROM ProductReviews p
+                JOIN Reviews r ON r.id = p.id
+                GROUP BY p.pid
+            )
+            SELECT p.id, p.name, p.description, p.image,
+                COALESCE(r.rating, 0) AS rating, COALESCE(r.num_ratings, 0) as num_ratings
             FROM Products p
             JOIN CreatedProduct c ON p.id = c.pid
+            LEFT JOIN Rating r ON p.id = r.pid
             WHERE c.uid = :uid
             ORDER BY p.name
             """,
@@ -328,11 +337,19 @@ class Product:
         offset = (page - 1) * per_page
         print(f"Fetching products for page {page} with OFFSET {offset} and LIMIT {per_page}")
         rows = app.db.execute('''
-            SELECT p.id, p.name, p.description, p.image, p.available, MIN(s.price) AS price
+            WITH Rating AS (
+                SELECT p.pid, AVG(r.rating) AS rating, COUNT(r.rating) AS num_ratings
+                FROM ProductReviews p
+                JOIN Reviews r ON r.id = p.id
+                GROUP BY p.pid
+            )
+            SELECT p.id, p.name, p.description, p.image, p.available,
+                MIN(s.price) AS price, COALESCE(r.rating, 0) AS rating, COALESCE(r.num_ratings, 0) as num_ratings
             FROM Products p
             JOIN SoldBy s ON p.id = s.pid
+            LEFT JOIN Rating r ON p.id = r.pid
             WHERE p.available = :available
-            GROUP BY p.id
+            GROUP BY p.id, r.rating, r.num_ratings
             ORDER BY p.id
             LIMIT :per_page OFFSET :offset
             ''',
@@ -499,10 +516,18 @@ class Product:
         Returns similar products based on category and tags
         '''
         rows = app.db.execute('''
-            SELECT p.id, p.name, p.description, p.image, MIN(s.price) as price
+            WITH Rating AS (
+                SELECT p.pid, AVG(r.rating) AS rating, COUNT(r.rating) AS num_ratings
+                FROM ProductReviews p
+                JOIN Reviews r ON r.id = p.id
+                GROUP BY p.pid
+            )
+            SELECT p.id, p.name, p.description, p.image, MIN(s.price) as price,
+                COALESCE(r.rating, 0) AS rating, COALESCE(r.num_ratings, 0) as num_ratings
             FROM Products p
             JOIN CategoryOf c ON p.id = c.pid
             LEFT JOIN SoldBy s ON p.id = s.pid
+            LEFT JOIN Rating r ON p.id = r.pid
             WHERE p.id <> :pid
                 AND (
                     c.cid = (
@@ -518,8 +543,8 @@ class Product:
                             AND t2.pid = :pid
                     )
                 )
-            GROUP BY p.id
-            LIMIT 4;
+            GROUP BY p.id, r.rating, r.num_ratings
+            LIMIT 3;
             ''',
             pid=pid
         )

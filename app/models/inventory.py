@@ -77,9 +77,17 @@ class Inventory:
     @staticmethod
     def get_selling(sid):
         rows = app.db.execute('''
-            SELECT p.id, p.name, p.description, p.image, s.quantity, s.price
+            WITH Rating AS (
+                SELECT p.pid, AVG(r.rating) AS rating, COUNT(r.rating) AS num_ratings
+                FROM ProductReviews p
+                JOIN Reviews r ON r.id = p.id
+                GROUP BY p.pid
+            )
+            SELECT p.id, p.name, p.description, p.image, s.quantity, s.price,
+                COALESCE(r.rating, 0) AS rating, COALESCE(r.num_ratings, 0) as num_ratings
             FROM Products p
             JOIN SoldBy s ON p.id = s.pid
+            LEFT JOIN Rating r ON p.id = r.pid
             WHERE s.sid = :sid
             ORDER BY s.price ASC
         ''',

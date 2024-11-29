@@ -285,25 +285,43 @@
         <h3>Related Products</h3>
         <div class="row">
             {% if related_products %}
-                {% for related_product in related_products %}
-                    <div class="col-md-3 mb-2">
-                        <div class="card h-100">
-                            <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                                <img src="{{ related_product.image if related_product.image else '/static/images/placeholder.png' }}" 
-                                alt="{{ related_product.name }}" 
-                                style="height: 100%; width: 100%; object-fit: contain;">
+                {% for product in related_products %}
+                    <div class="col-md-4 mb-4">
+                        <div class="product-card">
+                            <div class="product-card-img-top" style="height: 150px; background-color: #f0f0f0;">
+                                <img src="{{ product.image if product.image else '/static/images/placeholder.png' }}" 
+                                    alt="{{ product.name }}" 
+                                    style="height: 100%; width: 100%; object-fit: contain;">
                             </div>
-                            <div class="card-body">
-                                <h5 class="card-title">{{ related_product.name }}</h5>
-                                <p class="card-text">
-                                    $
-                                    {% if related_product.price %}
-                                        {{ "{:.2f}".format(related_product.price) }}
-                                    {% else %}
-                                        0.00
-                                    {% endif %}
+                            <div class="product-card-body">
+                                <a href="{{ url_for('products.product_page', product_id=product[0]) }}">
+                                    <h5 class="product-card-title">{{ product.name }}</h5>
+                                </a>
+                                <p class="product-card-text">
+                                    <div class="star-rating-display">
+                                        <div class="ml-2">
+                                            <p>{{ product.num_ratings }} ratings</p>
+                                        </div>
+                                        {% for i in range(5, 0, -1) %} <!-- Iterate from 5 down to 1 -->
+                                            {% set is_filled = i <= product.rating %}
+                                            {% set is_half = i - 0.5 == product.rating %}
+                                            <label class="{% if is_filled or is_half %}filled{% endif %}">
+                                                &#9733;
+                                            </label>
+                                        {% endfor %}
+                                        <div class="mr-2">
+                                            <p>{{ mean_rating }}</p>
+                                        </div>
+                                    </div>
+                                    <strong>
+                                        {% if product.price %}
+                                            ${{ "%.2f"|format(product.price) }}
+                                        {% else %}
+                                            No sellers
+                                        {% endif %}
+                                    </strong>
+                                    {{ product.description[:100] }}...
                                 </p>
-                                <a href="{{ url_for('products.product_page', product_id=related_product.id) }}" class="btn btn-primary">View Product</a>
                             </div>
                         </div>
                     </div>
