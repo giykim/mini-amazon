@@ -38,7 +38,9 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-img-top" style="height: 300px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                    <span style="color: #ccc;">Product Image Placeholder</span>
+                    <img src="{{ product_info[0].image if product_info[0].image else '/static/images/placeholder.png' }}" 
+                    alt="{{ product_info[0].name }}" 
+                    style="height: 100%; width: 100%; object-fit: contain;">
                 </div>
             </div>
         </div>
@@ -285,9 +287,11 @@
             {% if related_products %}
                 {% for related_product in related_products %}
                     <div class="col-md-3 mb-2">
-                        <div class="card h-100">
+                        <div class="card">
                             <div class="card-img-top" style="height: 150px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                                <span style="color: #ccc;">Related Image</span>
+                                <img src="{{ related_product.image if related_product.image else '/static/images/placeholder.png' }}" 
+                                alt="{{ related_product.name }}" 
+                                style="height: 100%; width: 100%; object-fit: contain;">
                             </div>
                             <div class="card-body">
                                 <h5 class="card-title">{{ related_product.name }}</h5>
