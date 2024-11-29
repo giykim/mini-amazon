@@ -77,8 +77,16 @@ class Product:
     @staticmethod
     def get_product_info(pid):
         rows = app.db.execute("""
-            SELECT p.name, p.description, p.id, p.image
+            WITH Rating AS (
+                SELECT p.pid, AVG(r.rating) AS rating, COUNT(r.rating) AS num_ratings
+                FROM ProductReviews p
+                JOIN Reviews r ON r.id = p.id
+                GROUP BY p.pid
+            )
+            SELECT p.name, p.description, p.id, p.image,
+                COALESCE(r.rating, 0) AS rating, COALESCE(r.num_ratings, 0) as num_ratings
             FROM Products AS p
+            LEFT JOIN Rating r ON p.id = r.pid
             WHERE p.id = :pid
             """,
             pid = pid
@@ -380,7 +388,7 @@ class Product:
             LEFT JOIN Helpfulness AS h ON h.rid = r.id
             WHERE p.id = :pid
             GROUP BY r1.id, u1.firstname, u1.lastname, r1.rating, r1.description, r1.time_created
-            ORDER BY r1.time_created DESC
+            ORDER BY SUM(h.value), r1.time_created DESC
             LIMIT :per_page OFFSET :offset
             ''',
             pid=pid, per_page=per_page, offset=offset

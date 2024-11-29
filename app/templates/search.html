@@ -84,14 +84,12 @@
                                         <p>{{ product.num_ratings }} ratings</p>
                                     </div>
                                     {% for i in range(5, 0, -1) %} <!-- Iterate from 5 down to 1 -->
-                                        {% set is_filled = i <= product.rating %}
-                                        {% set is_half = i - 0.5 == product.rating %}
-                                        <label class="{% if is_filled or is_half %}filled{% endif %}">
+                                        <label class="{% if i - 0.5 <= product.rating %}filled{% endif %}">
                                             &#9733;
                                         </label>
                                     {% endfor %}
                                     <div class="mr-2">
-                                        <p>{{ mean_rating }}</p>
+                                        <p>{{ product.rating|round(1) }}</p>
                                     </div>
                                 </div>
                                 <strong>
