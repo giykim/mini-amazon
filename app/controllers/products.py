@@ -1,3 +1,5 @@
+import os
+
 from flask import render_template, request, jsonify, redirect, url_for, flash
 from flask_login import current_user
 
@@ -7,6 +9,16 @@ from app.models.seller import Seller
 
 from flask import Blueprint
 bp = Blueprint('products', __name__)
+
+
+# Make sure folder for images exists
+UPLOAD_FOLDER = 'static/images'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+# Ensure the upload folder exists
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
 
 
 @bp.route('/search', methods=['GET'])
@@ -142,6 +154,10 @@ def product_page(product_id):
     )
 
 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 @bp.route('/new-product', methods=['POST'])
 def new_product():
     """
@@ -154,15 +170,20 @@ def new_product():
         cid = request.form.get('category')
         tags = request.form.get('tags')
 
+        image = request.files.get('image')
+        if not image or not allowed_file(image.filename):
+            flash('Invalid file format or no image uploaded.')
+            return redirect(url_for('products.create_product'))
+        
         # Attempt to insert a new product into Products relation
         pid, created = Product.new_product(name=name,
                                            description=description,
                                            uid=current_user.id,
                                            )
         
-        # If the product name already exists, the insert will fail
+        # If the product name already exists or not valid image, the insert will fail
         if not created:
-            flash("Product already exists.", "error")
+            flash("Product already exists or invalid image format.", "error")
         # If the product was successfully created, set the category
         else:
             # If user selected a cateogry
@@ -173,6 +194,10 @@ def new_product():
             for tag in tags.split(','):
                 if len(tag) > 0:
                     Product.add_tag(pid=pid, tag=tag)
+
+            # Get uploaded image file
+            filename = f"image_{pid}.jpg"
+            image.save(os.path.join(UPLOAD_FOLDER, filename))
 
         return redirect(url_for('products.product_page', product_id=pid))
 

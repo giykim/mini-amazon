@@ -70,7 +70,7 @@
                 <div class="col-md-4 mb-4">
                     <div class="product-card">
                         <div class="product-card-img-top" style="height: 150px; background-color: #f0f0f0;">
-                            <img src="{{ product.image if product.image else '/static/images/placeholder.png' }}" 
+                            <img src="{{ product.image if product.image else url_for('static', filename='images/image_' + product.id|string + '.jpg') if product.id }}"
                                 alt="{{ product.name }}" 
                                 style="height: 100%; width: 100%; object-fit: contain;">
                         </div>

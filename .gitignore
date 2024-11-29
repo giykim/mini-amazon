@@ -4,3 +4,5 @@
 poetry.lock
 
 .flaskenv
+
+static

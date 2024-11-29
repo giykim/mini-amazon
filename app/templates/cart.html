@@ -70,7 +70,7 @@
     <div class="cart-item">
           <!-- Product Image -->
     <div style="flex-shrink: 0; width: 100px; height: 100px; margin-right: 15px;">
-      <img src="{{ product.image if product.image else '/static/images/placeholder.png' }}" 
+      <img src="{{ product.image if product.image else url_for('static', filename='images/image_' + product.id|string + '.jpg') if product.id }}"
            alt="{{ product.name }}" 
            style="width: 100%; height: 100%; object-fit: contain; border: 1px solid #ddd; border-radius: 5px;">
     </div>

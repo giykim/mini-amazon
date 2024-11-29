@@ -38,7 +38,8 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-img-top" style="height: 300px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                    <img src="{{ product_info[0].image if product_info[0].image else '/static/images/placeholder.png' }}" 
+                    <img src="{{ product_info[0].image if product_info[0].image
+                        else url_for('static', filename='images/image_' + product_info[0].id|string + '.jpg') }}"
                     alt="{{ product_info[0].name }}" 
                     style="height: 100%; width: 100%; object-fit: contain;">
                 </div>
@@ -284,7 +285,7 @@
                     <div class="col-md-4 mb-4">
                         <div class="product-card">
                             <div class="product-card-img-top" style="height: 150px; background-color: #f0f0f0;">
-                                <img src="{{ product.image if product.image else '/static/images/placeholder.png' }}" 
+                                <img src="{{ product.image if product.image else url_for('static', filename='images/image_' + product.id|string + '.jpg') if product.id }}"
                                     alt="{{ product.name }}" 
                                     style="height: 100%; width: 100%; object-fit: contain;">
                             </div>

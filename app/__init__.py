@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_login import LoginManager
 from .config import Config
@@ -9,7 +11,7 @@ login.login_view = 'users.login'
 
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder=os.path.join(os.getcwd(), 'static'))
     app.config.from_object(Config)
 
     app.db = DB(app)
