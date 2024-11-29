@@ -33,272 +33,27 @@
     }
 </style>
 
-<div class="container mt-2">
-    <h2>
-        {% if mine %}
-            My Page
-        {% else %}
-            User Page
-            {% if is_seller %}
-                (Seller)
-            {% else %}
-                (Customer)
-            {% endif %}
-        {% endif %}
-    </h2>
-    <h5>{{ user_info.firstname }} {{ user_info.lastname }} ({{ user_info.email }})</h5>
-    <h5>ID: {{user_info.id}}</h5>
-</div>
-
-<div class="container mt-2">
-    <h2>Created Products</h2>
-    {% if created_products %}
-        <div class="row">
-            {% for product in created_products %}
-                <div class="col-md-4 mb-4">
-                    <div class="product-card">
-                        <div class="product-card-img-top" style="height: 150px; background-color: #f0f0f0;">
-                            <img src="{{ product.image if product.image else url_for('static', filename='images/image_' + product.id|string + '.jpg') if product.id }}"
-                                alt="{{ product.name }}" 
-                                style="height: 100%; width: 100%; object-fit: contain;">
-                        </div>
-                        <div class="product-card-body">
-                            <a href="{{ url_for('products.product_page', product_id=product[0]) }}">
-                                <h5 class="product-card-title">{{ product.name }}</h5>
-                            </a>
-                            <p class="product-card-text">
-                                <div class="star-rating-display">
-                                    <div class="ml-2">
-                                        <p>{{ product.num_ratings }} ratings</p>
-                                    </div>
-                                    {% for i in range(5, 0, -1) %} <!-- Iterate from 5 down to 1 -->
-                                        <label class="{% if i - 0.5 <= product.rating %}filled{% endif %}">
-                                            &#9733;
-                                        </label>
-                                    {% endfor %}
-                                </div>
-                                <strong>
-                                    {% if product.price %}
-                                        ${{ "%.2f"|format(product.price) }}
-                                    {% else %}
-                                        No sellers
-                                    {% endif %}
-                                </strong>
-                                {{ product.description[:100] }}...
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-        <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4">
-            <ul class="pagination">
-                {% if created_products_page > 1 %}
-                    <li class="page-item">
-                        <a class="page-link"
-                            href="{{ url_for('inventories.get_user',
-                            uid=uid,
-                            created_products_page=created_products_page,
-                            reviews_page=reviews_page,
-                            selling_page=selling_page-1,
-                            incoming_page=incoming_page,
-                            stock_page=stock_page,
-                            ) }}"
-                            aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                {% endif %}
-
-                {% set start_page = created_products_page - 2 if created_products_page > 3 else 1 %}
-                {% set end_page = created_products_page + 2 if created_products_page < created_products_total_pages - 2 else created_products_total_pages %}
-                {% for page_num in range(start_page, end_page + 1) %}
-                    <li class="page-item {% if page_num == created_products_page %}active{% endif %}">
-                        <a class="page-link" href="{{ url_for('inventories.get_user',
-                            uid=uid,
-                            created_products_page=created_products_page,
-                            reviews_page=reviews_page,
-                            selling_page=page_num,
-                            incoming_page=incoming_page,
-                            stock_page=stock_page,
-                        ) }}">{{ page_num }}</a>
-                    </li>
-                {% endfor %}
-
-                {% if created_products_page < created_products_total_pages %}
-                    <li class="page-item">
-                        <a class="page-link"
-                            href="{{ url_for('inventories.get_user',
-                            uid=uid,
-                            created_products_page=created_products_page,
-                            reviews_page=reviews_page,
-                            selling_page=selling_page+1,
-                            incoming_page=incoming_page,
-                            stock_page=stock_page,
-                            ) }}"
-                            aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                {% endif %}
-            </ul>
-        </nav>
-    {% else %}
-        <div class="alert alert-warning mt-2" role="alert">
-          This user has not created any products.
-        </div>
-    {% endif %}
-</div>
-
-<!-- Display Seller Reviews -->
-<div class="container mt-2">
-    {% if is_seller %}
-        <h3>Reviews for {{ user_info.firstname}} {{user_info.lastname}}</h3>
-
-        {% if has_bought %}
-            <form action="{{ url_for('social.seller_review') }}">
-                <input type="hidden" name="seller_id" value="{{ uid }}">
-                <button type="submit" class="btn btn-warning">Write Review</button>
-            </form>
-        {% else %}
-            You must purchase from this seller before writing a review!
-        {% endif %}
-    
-        <div class="mt-2">
-            <p><strong>Overall Rating:</strong></p>
-
-            {% set num_ratings = ratings|length %}
-            {% set mean_rating = (ratings|map(attribute='rating')|sum / num_ratings)|round(1) if num_ratings > 0 else 0 %}
-            <!-- Everything in star-rating is reversed -->
-            <div class="star-rating-display">
-                <div class="ml-2">
-                    <p>{{ num_ratings }} ratings</p>
-                </div>
-                {% for i in range(5, 0, -1) %} <!-- Iterate from 5 down to 1 -->
-                    <label class="{% if i - 0.5 <= mean_rating %}filled{% endif %}">
-                        &#9733;
-                    </label>
-                {% endfor %}
-                <div class="mr-2">
-                    <p>{{ mean_rating }}</p>
-                </div>
-                <p></p>
-            </div>
-        </div>
-
-        {% if seller_reviews %}
-            {% for review in seller_reviews %}
-                <div class="card mt-2" id="review-{{ review.id }}">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h5 class="card-title">{{ review.firstname }} {{ review.lastname }}</h5>
-                                <p class="card-text">{{ review.description }}</p>
-                                <p class="card-text"><small class="text-muted">Reviewed on {{ review.time_created.strftime('%B
-                                        %d, %Y') }}</small></p>
-                            </div>
-                            <div class="star-rating-display">
-                                {% for i in range(5, 0, -1) %} <!-- Iterate from 5 down to 1 -->
-                                    <label class="{% if i - 0.5 <= review.rating %}filled{% endif %}">
-                                        &#9733;
-                                    </label>
-                                {% endfor %}
-                            </div>
-                        </div>
-
-                        <!-- Helpfulness Section with Voting Buttons -->
-                        <div class="d-flex justify-content-end align-items-center" style="margin-top: -30px;">
-                            <!-- Adjusted alignment -->
-                            <!-- Helpfulness Count -->
-                            <small class="text-muted me-2 mr-2">Helpfulness: <span class="helpfulness-count"
-                                    data-review-id="{{ review.id }}">{{ review.helpfulness }}</span></small>
-
-                            <!-- Voting Buttons with Gray Box Styling -->
-                            <button class="vote-button upvote-button me-1" data-review-id="{{ review.id }}" data-vote="1"
-                                aria-label="Upvote"
-                                style="border: 1px solid #ccc; background-color: #f8f9fa; padding: 5px; border-radius: 5px;">
-                                <i class="fas fa-thumbs-up text-success" style="font-size: 1.2em;"></i>
-                            </button>
-
-                            <button class="vote-button downvote-button" data-review-id="{{ review.id }}" data-vote="-1"
-                                aria-label="Downvote"
-                                style="border: 1px solid #ccc; background-color: #f8f9fa; padding: 5px; border-radius: 5px;">
-                                <i class="fas fa-thumbs-down text-danger" style="font-size: 1.2em;"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <div class="alert alert-warning mt-2" role="alert">
-                This seller does not have any reviews.
-            </div>
-        {% endif %}
-
-        {% if seller_reviews %}
-            <!-- Pagination Controls -->
-            <nav aria-label="Review pagination" class="mt-2">
-                <ul class="pagination justify-content-center">
-                    {% if reviews_page > 1 %}
-                        <li class="page-item">
-                            <a class="page-link"
-                                href="{{ url_for('inventories.get_user',
-                                uid=uid,
-                                created_products_page=created_products_page,
-                                reviews_page=reviews_page-1,
-                                selling_page=selling_page,
-                                incoming_page=incoming_page,
-                                stock_page=stock_page,
-                                ) }}"aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
-                    {% endif %}
-
-                    {% set start_page = reviews_page - 2 if reviews_page > 3 else 1 %}
-                    {% set end_page = reviews_page + 2 if reviews_page < reviews_total_pages - 2 else reviews_total_pages %}
-                    {% for page_num in range(start_page, end_page + 1) %}
-                        <li class="page-item {% if page_num == reviews_page %}active{% endif %}">
-                            <a class="page-link"
-                                href="{{ url_for('inventories.get_user',
-                                uid=uid,
-                                created_products_page=created_products_page,
-                                reviews_page=page_num,
-                                selling_page=selling_page,
-                                incoming_page=incoming_page,
-                                stock_page=stock_page,
-                            ) }}">{{ page_num }}</a>
-                        </li>
-                    {% endfor %}
-
-                    {% if reviews_page < reviews_total_pages %}
-                        <li class="page-item">
-                            <a class="page-link"
-                                href="{{ url_for('inventories.get_user',
-                                uid=uid,
-                                created_products_page=created_products_page,
-                                reviews_page=reviews_page+1,
-                                selling_page=selling_page,
-                                incoming_page=incoming_page,
-                                stock_page=stock_page,
-                                ) }}"aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        {% endif %}
-    </div>
-
-    <!-- Product List -->
+{% if user_info %}
     <div class="container mt-2">
-        <h3>Products On Sale</h3>
+        <h2>
+            {% if mine %}
+                My Page
+            {% else %}
+                {% if is_seller %}
+                    Seller
+                {% else %}
+                    Customer
+                {% endif %}
+                Page
+            {% endif %}
+        </h2>
+        <h5>{{ user_info.firstname }} {{ user_info.lastname }} ({{ user_info.email }})</h5>
+        <h5>ID: {{user_info.id}}</h5>
 
-        <!-- If seller has any products, display them -->
-        {% if selling %}
+        <h2>Created Products</h2>
+        {% if created_products %}
             <div class="row">
-                {% for product in selling %}
+                {% for product in created_products %}
                     <div class="col-md-4 mb-4">
                         <div class="product-card">
                             <div class="product-card-img-top" style="height: 150px; background-color: #f0f0f0;">
@@ -320,9 +75,6 @@
                                                 &#9733;
                                             </label>
                                         {% endfor %}
-                                        <div class="mr-2">
-                                            <p>{{ product.rating|round(1) }}</p>
-                                        </div>
                                     </div>
                                     <strong>
                                         {% if product.price %}
@@ -338,275 +90,527 @@
                     </div>
                 {% endfor %}
             </div>
-            <nav aria-label="Product pagination" class="d-flex justify-content-center mt-2">
-                <!-- Flex container for centering -->
+            <nav aria-label="Product pagination" class="d-flex justify-content-center mt-4">
                 <ul class="pagination">
-                    {% if selling_page > 1 %}
-                    <li class="page-item">
-                        <a class="page-link"
-                            href="{{ url_for('inventories.get_user',
-                            uid=uid,
-                            created_products_page=created_products_page,
-                            reviews_page=reviews_page,
-                            selling_page=selling_page-1,
-                            incoming_page=incoming_page,
-                            stock_page=stock_page,
-                            ) }}"
-                            aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    {% endif %}
-
-                    {% set start_page = selling_page - 2 if selling_page > 3 else 1 %}
-                    {% set end_page = selling_page + 2 if selling_page < selling_total_pages - 2 else
-                        selling_total_pages %} {% for page_num in range(start_page, end_page + 1) %}
-                        <li
-                            class="page-item {% if page_num == selling_page %}active{% endif %}">
+                    {% if created_products_page > 1 %}
+                        <li class="page-item">
                             <a class="page-link"
                                 href="{{ url_for('inventories.get_user',
-                                    uid=uid,
-                                    created_products_page=created_products_page,
-                                    reviews_page=reviews_page,
-                                    selling_page=page_num,
-                                    incoming_page=incoming_page,
-                                    stock_page=stock_page,
-                                ) }}">{{page_num }}</a>
+                                uid=uid,
+                                created_products_page=created_products_page,
+                                reviews_page=reviews_page,
+                                selling_page=selling_page-1,
+                                incoming_page=incoming_page,
+                                stock_page=stock_page,
+                                ) }}"
+                                aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
                         </li>
-                        {% endfor %}
+                    {% endif %}
 
-                        {% if selling_page < selling_total_pages %}
-                        <li class="page-item">
-                        <a class="page-link"
-                            href="{{ url_for('inventories.get_user',
-                            uid=uid,
-                            created_products_page=created_products_page,
-                            reviews_page=reviews_page,
-                            selling_page=selling_page+1,
-                            incoming_page=incoming_page,
-                            stock_page=stock_page,
-                            ) }}"
-                            aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
+                    {% set start_page = created_products_page - 2 if created_products_page > 3 else 1 %}
+                    {% set end_page = created_products_page + 2 if created_products_page < created_products_total_pages - 2 else created_products_total_pages %}
+                    {% for page_num in range(start_page, end_page + 1) %}
+                        <li class="page-item {% if page_num == created_products_page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('inventories.get_user',
+                                uid=uid,
+                                created_products_page=created_products_page,
+                                reviews_page=reviews_page,
+                                selling_page=page_num,
+                                incoming_page=incoming_page,
+                                stock_page=stock_page,
+                            ) }}">{{ page_num }}</a>
                         </li>
-                        {% endif %}
+                    {% endfor %}
+
+                    {% if created_products_page < created_products_total_pages %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="{{ url_for('inventories.get_user',
+                                uid=uid,
+                                created_products_page=created_products_page,
+                                reviews_page=reviews_page,
+                                selling_page=selling_page+1,
+                                incoming_page=incoming_page,
+                                stock_page=stock_page,
+                                ) }}"
+                                aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
             </nav>
         {% else %}
             <div class="alert alert-warning mt-2" role="alert">
-                The seller currently has no products listed.
+            This user has not created any products.
             </div>
         {% endif %}
-    {% endif %}
-</div>
+    </div>
 
-{% if is_seller and mine %}
+    <!-- Display Seller Reviews -->
     <div class="container mt-2">
-        <h3>Incoming Orders</h3>
-        {% if incoming_purchases %}
-            <div class="row">
-                {% for purchase in incoming_purchases %}
-                    <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">Order placed on {{ purchase.time_purchased }}</h5>
+        {% if is_seller %}
+            <h3>Reviews for {{ user_info.firstname}} {{user_info.lastname}}</h3>
+
+            {% if has_bought %}
+                <form action="{{ url_for('social.seller_review') }}">
+                    <input type="hidden" name="seller_id" value="{{ uid }}">
+                    <button type="submit" class="btn btn-warning">Write Review</button>
+                </form>
+            {% else %}
+                You must purchase from this seller before writing a review!
+            {% endif %}
+        
+            <div class="mt-2">
+                <p><strong>Overall Rating:</strong></p>
+
+                {% set num_ratings = ratings|length %}
+                {% set mean_rating = (ratings|map(attribute='rating')|sum / num_ratings)|round(1) if num_ratings > 0 else 0 %}
+                <!-- Everything in star-rating is reversed -->
+                <div class="star-rating-display">
+                    <div class="ml-2">
+                        <p>{{ num_ratings }} ratings</p>
+                    </div>
+                    {% for i in range(5, 0, -1) %} <!-- Iterate from 5 down to 1 -->
+                        <label class="{% if i - 0.5 <= mean_rating %}filled{% endif %}">
+                            &#9733;
+                        </label>
+                    {% endfor %}
+                    <div class="mr-2">
+                        <p>{{ mean_rating }}</p>
+                    </div>
+                    <p></p>
+                </div>
+            </div>
+
+            {% if seller_reviews %}
+                {% for review in seller_reviews %}
+                    <div class="card mt-2" id="review-{{ review.id }}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="card-title">{{ review.firstname }} {{ review.lastname }}</h5>
+                                    <p class="card-text">{{ review.description }}</p>
+                                    <p class="card-text"><small class="text-muted">Reviewed on {{ review.time_created.strftime('%B
+                                            %d, %Y') }}</small></p>
+                                </div>
+                                <div class="star-rating-display">
+                                    {% for i in range(5, 0, -1) %} <!-- Iterate from 5 down to 1 -->
+                                        <label class="{% if i - 0.5 <= review.rating %}filled{% endif %}">
+                                            &#9733;
+                                        </label>
+                                    {% endfor %}
+                                </div>
                             </div>
-                        
-                            <div class="card-body">
-                                <div class="border-bottom pb-3 mb-3">
-                                    <div class="row">
-                                        <div class="col-12 col-md-8">
-                                            <h5 class="card-title"><strong>{{ purchase.product_name }}</strong></h6>
-                                            <p class="card-text"><strong>User:</strong> {{ purchase.seller_first }} {{ purchase.seller_last }}</p>
-                                            <p class="card-text"><strong>Unit Price:</strong> ${{ purchase.price }}</p>
-                                            <p class="card-text"><strong>Quantity:</strong> {{ purchase.quantity }}</p>
-                                            <p class="card-text"><strong>Fulfilled:</strong> {{ purchase.fulfilled }}</p>
+
+                            <!-- Helpfulness Section with Voting Buttons -->
+                            <div class="d-flex justify-content-end align-items-center" style="margin-top: -30px;">
+                                <!-- Adjusted alignment -->
+                                <!-- Helpfulness Count -->
+                                <small class="text-muted me-2 mr-2">Helpfulness: <span class="helpfulness-count"
+                                        data-review-id="{{ review.id }}">{{ review.helpfulness }}</span></small>
+
+                                <!-- Voting Buttons with Gray Box Styling -->
+                                <button class="vote-button upvote-button me-1" data-review-id="{{ review.id }}" data-vote="1"
+                                    aria-label="Upvote"
+                                    style="border: 1px solid #ccc; background-color: #f8f9fa; padding: 5px; border-radius: 5px;">
+                                    <i class="fas fa-thumbs-up text-success" style="font-size: 1.2em;"></i>
+                                </button>
+
+                                <button class="vote-button downvote-button" data-review-id="{{ review.id }}" data-vote="-1"
+                                    aria-label="Downvote"
+                                    style="border: 1px solid #ccc; background-color: #f8f9fa; padding: 5px; border-radius: 5px;">
+                                    <i class="fas fa-thumbs-down text-danger" style="font-size: 1.2em;"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-warning mt-2" role="alert">
+                    This seller does not have any reviews.
+                </div>
+            {% endif %}
+
+            {% if seller_reviews %}
+                <!-- Pagination Controls -->
+                <nav aria-label="Review pagination" class="mt-2">
+                    <ul class="pagination justify-content-center">
+                        {% if reviews_page > 1 %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                    href="{{ url_for('inventories.get_user',
+                                    uid=uid,
+                                    created_products_page=created_products_page,
+                                    reviews_page=reviews_page-1,
+                                    selling_page=selling_page,
+                                    incoming_page=incoming_page,
+                                    stock_page=stock_page,
+                                    ) }}"aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% set start_page = reviews_page - 2 if reviews_page > 3 else 1 %}
+                        {% set end_page = reviews_page + 2 if reviews_page < reviews_total_pages - 2 else reviews_total_pages %}
+                        {% for page_num in range(start_page, end_page + 1) %}
+                            <li class="page-item {% if page_num == reviews_page %}active{% endif %}">
+                                <a class="page-link"
+                                    href="{{ url_for('inventories.get_user',
+                                    uid=uid,
+                                    created_products_page=created_products_page,
+                                    reviews_page=page_num,
+                                    selling_page=selling_page,
+                                    incoming_page=incoming_page,
+                                    stock_page=stock_page,
+                                ) }}">{{ page_num }}</a>
+                            </li>
+                        {% endfor %}
+
+                        {% if reviews_page < reviews_total_pages %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                    href="{{ url_for('inventories.get_user',
+                                    uid=uid,
+                                    created_products_page=created_products_page,
+                                    reviews_page=reviews_page+1,
+                                    selling_page=selling_page,
+                                    incoming_page=incoming_page,
+                                    stock_page=stock_page,
+                                    ) }}"aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+
+        <!-- Product List -->
+        <div class="container mt-2">
+            <h3>Products On Sale</h3>
+
+            <!-- If seller has any products, display them -->
+            {% if selling %}
+                <div class="row">
+                    {% for product in selling %}
+                        <div class="col-md-4 mb-4">
+                            <div class="product-card">
+                                <div class="product-card-img-top" style="height: 150px; background-color: #f0f0f0;">
+                                    <img src="{{ product.image if product.image else url_for('static', filename='images/image_' + product.id|string + '.jpg') if product.id }}"
+                                        alt="{{ product.name }}" 
+                                        style="height: 100%; width: 100%; object-fit: contain;">
+                                </div>
+                                <div class="product-card-body">
+                                    <a href="{{ url_for('products.product_page', product_id=product[0]) }}">
+                                        <h5 class="product-card-title">{{ product.name }}</h5>
+                                    </a>
+                                    <p class="product-card-text">
+                                        <div class="star-rating-display">
+                                            <div class="ml-2">
+                                                <p>{{ product.num_ratings }} ratings</p>
+                                            </div>
+                                            {% for i in range(5, 0, -1) %} <!-- Iterate from 5 down to 1 -->
+                                                <label class="{% if i - 0.5 <= product.rating %}filled{% endif %}">
+                                                    &#9733;
+                                                </label>
+                                            {% endfor %}
+                                            <div class="mr-2">
+                                                <p>{{ product.rating|round(1) }}</p>
+                                            </div>
                                         </div>
-                                        <div class="col-12 col-md-4 text-right">
-                                            <p class="font-weight-bold text-dark">${{ purchase.price * purchase.quantity }}</p>
+                                        <strong>
+                                            {% if product.price %}
+                                                ${{ "%.2f"|format(product.price) }}
+                                            {% else %}
+                                                No sellers
+                                            {% endif %}
+                                        </strong>
+                                        {{ product.description[:100] }}...
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <nav aria-label="Product pagination" class="d-flex justify-content-center mt-2">
+                    <!-- Flex container for centering -->
+                    <ul class="pagination">
+                        {% if selling_page > 1 %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="{{ url_for('inventories.get_user',
+                                uid=uid,
+                                created_products_page=created_products_page,
+                                reviews_page=reviews_page,
+                                selling_page=selling_page-1,
+                                incoming_page=incoming_page,
+                                stock_page=stock_page,
+                                ) }}"
+                                aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% set start_page = selling_page - 2 if selling_page > 3 else 1 %}
+                        {% set end_page = selling_page + 2 if selling_page < selling_total_pages - 2 else
+                            selling_total_pages %} {% for page_num in range(start_page, end_page + 1) %}
+                            <li
+                                class="page-item {% if page_num == selling_page %}active{% endif %}">
+                                <a class="page-link"
+                                    href="{{ url_for('inventories.get_user',
+                                        uid=uid,
+                                        created_products_page=created_products_page,
+                                        reviews_page=reviews_page,
+                                        selling_page=page_num,
+                                        incoming_page=incoming_page,
+                                        stock_page=stock_page,
+                                    ) }}">{{page_num }}</a>
+                            </li>
+                            {% endfor %}
+
+                            {% if selling_page < selling_total_pages %}
+                            <li class="page-item">
+                            <a class="page-link"
+                                href="{{ url_for('inventories.get_user',
+                                uid=uid,
+                                created_products_page=created_products_page,
+                                reviews_page=reviews_page,
+                                selling_page=selling_page+1,
+                                incoming_page=incoming_page,
+                                stock_page=stock_page,
+                                ) }}"
+                                aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                            </li>
+                            {% endif %}
+                    </ul>
+                </nav>
+            {% else %}
+                <div class="alert alert-warning mt-2" role="alert">
+                    The seller currently has no products listed.
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    {% if is_seller and mine %}
+        <div class="container mt-2">
+            <h3>Incoming Orders</h3>
+            {% if incoming_purchases %}
+                <div class="row">
+                    {% for purchase in incoming_purchases %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Order placed on {{ purchase.time_purchased }}</h5>
+                                </div>
+                            
+                                <div class="card-body">
+                                    <div class="border-bottom pb-3 mb-3">
+                                        <div class="row">
+                                            <div class="col-12 col-md-8">
+                                                <h5 class="card-title"><strong>{{ purchase.product_name }}</strong></h6>
+                                                <p class="card-text"><strong>User:</strong> {{ purchase.seller_first }} {{ purchase.seller_last }}</p>
+                                                <p class="card-text"><strong>Unit Price:</strong> ${{ purchase.price }}</p>
+                                                <p class="card-text"><strong>Quantity:</strong> {{ purchase.quantity }}</p>
+                                                <p class="card-text"><strong>Fulfilled:</strong> {{ purchase.fulfilled }}</p>
+                                            </div>
+                                            <div class="col-12 col-md-4 text-right">
+                                                <p class="font-weight-bold text-dark">${{ purchase.price * purchase.quantity }}</p>
+                                            </div>
                                         </div>
                                     </div>
+                                    <div>
+                                        <form action="{{ url_for('inventories.fulfill_order') }}" method="POST">
+                                            <input type="hidden" name="product_id" value="{{ purchase.pid }}">
+                                            <input type="hidden" name="seller_id" value="{{ purchase.sid }}">
+                                            <input type="hidden" name="user_id" value="{{ purchase.uid }}">
+                                            <input type="hidden" name="time_purchased" value="{{ purchase.time_purchased }}">
+                                            <input type="hidden" name="price" value="{{ purchase.price * purchase.quantity }}">
+                                            <button type="submit" class="btn btn-warning">Fulfill</button>
+                                        </form>
+                                    </div>
                                 </div>
-                                <div>
-                                    <form action="{{ url_for('inventories.fulfill_order') }}" method="POST">
-                                        <input type="hidden" name="product_id" value="{{ purchase.pid }}">
-                                        <input type="hidden" name="seller_id" value="{{ purchase.sid }}">
-                                        <input type="hidden" name="user_id" value="{{ purchase.uid }}">
-                                        <input type="hidden" name="time_purchased" value="{{ purchase.time_purchased }}">
-                                        <input type="hidden" name="price" value="{{ purchase.price * purchase.quantity }}">
-                                        <button type="submit" class="btn btn-warning">Fulfill</button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <nav aria-label="Product pagination" class="d-flex justify-content-center mt-2">
+                    <!-- Flex container for centering -->
+                    <ul class="pagination">
+                        {% if incoming_page > 1 %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="{{ url_for('inventories.get_user',
+                                uid=uid,
+                                created_products_page=created_products_page,
+                                reviews_page=reviews_page,
+                                selling_page=selling_page,
+                                incoming_page=incoming_page-1,
+                                stock_page=stock_page,
+                                ) }}"
+                                aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% set start_page = incoming_page - 2 if incoming_page > 3 else 1 %}
+                        {% set end_page = incoming_page + 2 if incoming_page < incoming_total_pages - 2 else
+                            incoming_total_pages %} {% for page_num in range(start_page, end_page + 1) %}
+                            <li
+                                class="page-item {% if page_num == incoming_page %}active{% endif %}">
+                                <a class="page-link"
+                                    href="{{ url_for('inventories.get_user',
+                                        uid=uid,
+                                        created_products_page=created_products_page,
+                                        reviews_page=reviews_page,
+                                        selling_page=selling_page,
+                                        incoming_page=page_num,
+                                        stock_page=stock_page,
+                                    ) }}">{{page_num }}</a>
+                            </li>
+                            {% endfor %}
+
+                            {% if incoming_page < incoming_total_pages %}
+                            <li class="page-item">
+                            <a class="page-link"
+                                href="{{ url_for('inventories.get_user',
+                                uid=uid,
+                                created_products_page=created_products_page,
+                                reviews_page=reviews_page,
+                                selling_page=selling_page,
+                                incoming_page=incoming_page+1,
+                                stock_page=stock_page,
+                                ) }}"
+                                aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                            </li>
+                            {% endif %}
+                    </ul>
+                </nav>
+            {% else %}
+                <div class="alert alert-warning mt-2" role="alert">
+                    You do not have any orders to fulfill.
+                </div>
+            {% endif %}
+            
+            <h3>Inventory Management</h3>
+            {% if stock %}
+                <div class="row">
+                    {% for product in stock %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <a href="{{ url_for('products.product_page', product_id=product.id) }}">
+                                        <h3>{{ product.name }}</h3>
+                                    </a>
+
+                                    <!-- Stock information -->
+                                    <p>Stock Quantity: {{ product.stock_quantity}}</p>
+                                    <!-- Add Stock Form -->
+                                    <form action="{{ url_for('inventories.update_stock') }}" method="POST">
+                                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                                        <div class="form-group">
+                                            <label">Add Stock: </label>
+                                            <input type="number" name="quantity" min=0 value=0 required>
+                                        </div>
+                                        <button type="submit" class="btn btn-warning">Add Stock</button>
+                                    </form>
+
+                                    <!-- Sale information -->
+                                    <p>Sale Quantity: {{ product.sell_quantity}}</p>
+                                    <!-- Add Sale Form -->
+                                    <form action="{{ url_for('inventories.update_sold_by') }}" method="POST">
+                                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                                        <div class="form-group">
+                                            <label">Amount to Sell:</label>
+                                            <input type="number" placeholder="Add Sale" name="quantity" min=0 max={{ product.stock_quantity }} value="{{ 0 if not product.sell_quantity else product.sell_quantity }}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label">Price: </label> 
+                                            <input type="number" id="price" name="price" placeholder="Price" min="0.01" value="{{ '0.01' if not product.price else product.price }}" oninput="validity.valid||(value='');" step="0.01" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-warning">Update Sale</button>
                                     </form>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
-            </div>
-            <nav aria-label="Product pagination" class="d-flex justify-content-center mt-2">
-                <!-- Flex container for centering -->
-                <ul class="pagination">
-                    {% if incoming_page > 1 %}
-                    <li class="page-item">
-                        <a class="page-link"
-                            href="{{ url_for('inventories.get_user',
-                            uid=uid,
-                            created_products_page=created_products_page,
-                            reviews_page=reviews_page,
-                            selling_page=selling_page,
-                            incoming_page=incoming_page-1,
-                            stock_page=stock_page,
-                            ) }}"
-                            aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    {% endif %}
-
-                    {% set start_page = incoming_page - 2 if incoming_page > 3 else 1 %}
-                    {% set end_page = incoming_page + 2 if incoming_page < incoming_total_pages - 2 else
-                        incoming_total_pages %} {% for page_num in range(start_page, end_page + 1) %}
-                        <li
-                            class="page-item {% if page_num == incoming_page %}active{% endif %}">
+                    {% endfor %}
+                </div>
+                <nav aria-label="Product pagination" class="d-flex justify-content-center mt-2">
+                    <!-- Flex container for centering -->
+                    <ul class="pagination">
+                        {% if stock_page > 1 %}
+                        <li class="page-item">
                             <a class="page-link"
                                 href="{{ url_for('inventories.get_user',
-                                    uid=uid,
-                                    created_products_page=created_products_page,
-                                    reviews_page=reviews_page,
-                                    selling_page=selling_page,
-                                    incoming_page=page_num,
-                                    stock_page=stock_page,
-                                ) }}">{{page_num }}</a>
-                        </li>
-                        {% endfor %}
-
-                        {% if incoming_page < incoming_total_pages %}
-                        <li class="page-item">
-                        <a class="page-link"
-                            href="{{ url_for('inventories.get_user',
-                            uid=uid,
-                            created_products_page=created_products_page,
-                            reviews_page=reviews_page,
-                            selling_page=selling_page,
-                            incoming_page=incoming_page+1,
-                            stock_page=stock_page,
-                            ) }}"
-                            aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
+                                uid=uid,
+                                created_products_page=created_products_page,
+                                reviews_page=reviews_page,
+                                selling_page=selling_page,
+                                incoming_page=incoming_page,
+                                stock_page=stock_page-1,
+                                ) }}"
+                                aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
                         </li>
                         {% endif %}
-                </ul>
-            </nav>
-        {% else %}
-            <div class="alert alert-warning mt-2" role="alert">
-                You do not have any orders to fulfill.
-            </div>
-        {% endif %}
-        
-        <h3>Inventory Management</h3>
-        {% if stock %}
-            <div class="row">
-                {% for product in stock %}
-                    <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="{{ url_for('products.product_page', product_id=product.id) }}">
-                                    <h3>{{ product.name }}</h3>
-                                </a>
 
-                                <!-- Stock information -->
-                                <p>Stock Quantity: {{ product.stock_quantity}}</p>
-                                <!-- Add Stock Form -->
-                                <form action="{{ url_for('inventories.update_stock') }}" method="POST">
-                                    <input type="hidden" name="product_id" value="{{ product.id }}">
-                                    <div class="form-group">
-                                        <label">Add Stock: </label>
-                                        <input type="number" name="quantity" min=0 value=0 required>
-                                    </div>
-                                    <button type="submit" class="btn btn-warning">Add Stock</button>
-                                </form>
+                        {% set start_page = stock_page - 2 if stock_page > 3 else 1 %}
+                        {% set end_page = stock_page + 2 if stock_page < stock_total_pages - 2 else
+                            stock_total_pages %} {% for page_num in range(start_page, end_page + 1) %}
+                            <li
+                                class="page-item {% if page_num == stock_page %}active{% endif %}">
+                                <a class="page-link"
+                                    href="{{ url_for('inventories.get_user',
+                                        uid=uid,
+                                        created_products_page=created_products_page,
+                                        reviews_page=reviews_page,
+                                        selling_page=selling_page,
+                                        incoming_page=incoming_page,
+                                        stock_page=page_num,
+                                    ) }}">{{page_num }}</a>
+                            </li>
+                            {% endfor %}
 
-                                <!-- Sale information -->
-                                <p>Sale Quantity: {{ product.sell_quantity}}</p>
-                                <!-- Add Sale Form -->
-                                <form action="{{ url_for('inventories.update_sold_by') }}" method="POST">
-                                    <input type="hidden" name="product_id" value="{{ product.id }}">
-                                    <div class="form-group">
-                                        <label">Amount to Sell:</label>
-                                        <input type="number" placeholder="Add Sale" name="quantity" min=0 max={{ product.stock_quantity }} value="{{ 0 if not product.sell_quantity else product.sell_quantity }}" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label">Price: </label> 
-                                        <input type="number" id="price" name="price" placeholder="Price" min="0.01" value="{{ '0.01' if not product.price else product.price }}" oninput="validity.valid||(value='');" step="0.01" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-warning">Update Sale</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-            <nav aria-label="Product pagination" class="d-flex justify-content-center mt-2">
-                <!-- Flex container for centering -->
-                <ul class="pagination">
-                    {% if stock_page > 1 %}
-                    <li class="page-item">
-                        <a class="page-link"
-                            href="{{ url_for('inventories.get_user',
-                            uid=uid,
-                            created_products_page=created_products_page,
-                            reviews_page=reviews_page,
-                            selling_page=selling_page,
-                            incoming_page=incoming_page,
-                            stock_page=stock_page-1,
-                            ) }}"
-                            aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    {% endif %}
-
-                    {% set start_page = stock_page - 2 if stock_page > 3 else 1 %}
-                    {% set end_page = stock_page + 2 if stock_page < stock_total_pages - 2 else
-                        stock_total_pages %} {% for page_num in range(start_page, end_page + 1) %}
-                        <li
-                            class="page-item {% if page_num == stock_page %}active{% endif %}">
+                            {% if stock_page < stock_total_pages %}
+                            <li class="page-item">
                             <a class="page-link"
                                 href="{{ url_for('inventories.get_user',
-                                    uid=uid,
-                                    created_products_page=created_products_page,
-                                    reviews_page=reviews_page,
-                                    selling_page=selling_page,
-                                    incoming_page=incoming_page,
-                                    stock_page=page_num,
-                                ) }}">{{page_num }}</a>
-                        </li>
-                        {% endfor %}
-
-                        {% if stock_page < stock_total_pages %}
-                        <li class="page-item">
-                        <a class="page-link"
-                            href="{{ url_for('inventories.get_user',
-                            uid=uid,
-                            created_products_page=created_products_page,
-                            reviews_page=reviews_page,
-                            selling_page=selling_page,
-                            incoming_page=incoming_page,
-                            stock_page=stock_page+1,
-                            ) }}"
-                            aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                        </li>
-                        {% endif %}
-                </ul>
-            </nav>
-        {% else %}
-            <div class="alert alert-warning mt-2" role="alert">
-                You do not have any products in inventory.
-            </div>
-        {% endif %}
+                                uid=uid,
+                                created_products_page=created_products_page,
+                                reviews_page=reviews_page,
+                                selling_page=selling_page,
+                                incoming_page=incoming_page,
+                                stock_page=stock_page+1,
+                                ) }}"
+                                aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                            </li>
+                            {% endif %}
+                    </ul>
+                </nav>
+            {% else %}
+                <div class="alert alert-warning mt-2" role="alert">
+                    You do not have any products in inventory.
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+{% else %}
+    <div class="alert alert-warning mt-2" role="alert">
+        This user id does not exist.
     </div>
 {% endif %}
 

@@ -270,7 +270,7 @@
           margin-left: 15px;
         }
 
-        .search-container input[type=text] {
+        .search-container input {
           width: 80%;
           padding: 10px;
           font-size: 17px;
@@ -435,7 +435,7 @@
 
         <form action="{{ url_for('inventories.get_user') }}">
           <div class="search-container">
-              <input type="text" placeholder="Search Profile By ID" name="uid" required>
+              <input type="number" placeholder="Search Profile By ID" name="uid" required>
               <button type="submit" class="btn btn-light">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </button>
