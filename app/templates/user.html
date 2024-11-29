@@ -293,7 +293,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title">{{ s.name }}</h5>
                                     <p class="card-text">
-                                        <strong>Description:</strong> {{ s.description }}<br>
+                                        <strong>Description:</strong> {{ s.description[:100] }}...<br>
                                         {% if s.quantity is not none %}
                                         <strong>Quantity:</strong> {{ s.quantity }}<br>
                                         {% endif %}
