@@ -446,10 +446,20 @@ class Product:
                 tag=tag
             )
 
+        # Check if row exists in IsTagged relation
+        row = app.db.execute("""
+            SELECT 1
+            FROM Tags
+            WHERE name = :tag
+            """,
+            tag=tag
+        )
+
         # Assign new tag to product
         app.db.execute("""
             INSERT INTO IsTagged (pid, name)
             VALUES (:pid, :tag)
+            ON CONFLICT (pid, name) DO NOTHING;
             """,
             pid=pid,
             tag=tag

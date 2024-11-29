@@ -30,7 +30,7 @@
                             <option value="5" {% if min_rating == 5 %}selected{% endif %}>5 Stars</option>
                         </select>
 
-                        <label for="filter-category">Rating:</label>
+                        <label for="filter-category">Category:</label>
                         <select id="filter-category" name="category" onchange="applyFilter()">
                             <option value="" {% if min_rating == 0 %}selected{% endif %}>Select Category</option>
                             {% for c in categories %}

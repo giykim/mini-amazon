@@ -50,7 +50,11 @@ def search():
         if sort_by == "name":
             products = sorted(products, key=lambda product: product.name, reverse=(not reverse))
         elif sort_by == "price":
-            products = sorted(products, key=lambda product: product.price, reverse=reverse)
+            products = sorted(
+                products, 
+                key=lambda product: product.price if product.price is not None else float('-inf'), 
+                reverse=reverse
+            )
         elif sort_by == "rating":
             products = sorted(products, key=lambda product: product.rating, reverse=reverse)
 
