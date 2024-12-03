@@ -107,7 +107,8 @@ def user_info():
             else:
                 password = generate_password_hash(oldpassword)
 
-            user = User.get_by_auth(email, oldpassword)
+            oldemail = current_user.email
+            user = User.get_by_auth(oldemail, oldpassword)
 
             if user is None:
                 flash('Invalid password!', 'warning')
