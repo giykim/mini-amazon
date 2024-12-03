@@ -29,7 +29,7 @@ def cart():
 
         if quantity is not None:
             Purchase.add_to_cart(current_user.id, product_id, seller_id, quantity)
-        elif new_quantity is not None:
+        elif new_quantity is not None and new_quantity is not "":
             new_quantity = int(new_quantity)
             new_quantity -= int(old_quantity)
             Purchase.add_to_cart(current_user.id, product_id, seller_id, new_quantity)
