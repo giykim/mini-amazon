@@ -129,6 +129,18 @@ class Product:
         return rows
     
     @staticmethod
+    def get_seller_quant(pid, sid):
+        rows = app.db.execute("""
+            SELECT quantity
+            FROM Soldby
+            WHERE sid = :sid AND pid = :pid
+            """,
+            pid = pid,
+            sid = sid
+        )
+        return rows
+    
+    @staticmethod
     def get_creator_info(pid):
         rows = app.db.execute("""
             SELECT c.uid, u.firstname, u.lastname

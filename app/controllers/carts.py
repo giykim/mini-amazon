@@ -6,6 +6,7 @@ from app.models.product import Product
 from app.models.purchase import Purchase
 from app.models.reviews import Review
 from app.models.user import User
+from app.models.inventory import Inventory
 
 from flask import Blueprint
 bp = Blueprint('cart', __name__)
@@ -38,11 +39,13 @@ def cart():
         cart = Purchase.get_cart(current_user.id)
     else:
         cart = []
-    
+    max_q = []
+    for p in cart:
+        max_q.append(Product.get_seller_quant(p[0],p[1])[0][0])
     total = sum(item.price * item.quantity for item in cart)
     total = float(total)
 
-    return render_template('cart.html', cart=cart, total=total)
+    return render_template('cart.html', cart=cart, total=total, max_q = max_q)
 
 
 @bp.route('/checkout', methods=['GET'])

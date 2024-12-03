@@ -66,30 +66,30 @@
     <h1>Your Shopping Cart</h1>
   </div>
 
-  {% for product in cart %}
+  {% for i in range(cart | length) %}
     <div class="cart-item">
           <!-- Product Image -->
     <div style="flex-shrink: 0; width: 100px; height: 100px; margin-right: 15px;">
-      <img src="{{ product.image if product.image else url_for('static', filename='images/image_' + product.id|string + '.jpg') if product.id }}"
-           alt="{{ product.name }}" 
+      <img src="{{ cart[i].image if cart[i].image else url_for('static', filename='images/image_' + cart[i].id|string + '.jpg') if cart[i].id }}"
+           alt="{{ cart[i].name }}" 
            style="width: 100%; height: 100%; object-fit: contain; border: 1px solid #ddd; border-radius: 5px;">
     </div>
       <div class="item-details">
-        <h3>{{ product.name }}</h3>
-        <p>{{ product.description[:100] }}...</p>
-        <p>Sold by: {{ product.seller_first }} {{ product.seller_last }}</p>
+        <h3>{{ cart[i].name }}</h3>
+        <p>{{ cart[i].description[:100] }}...</p>
+        <p>Sold by: {{ cart[i].seller_first }} {{ cart[i].seller_last }}</p>
       </div>
-      <div class="item-price">${{ product.price }}</div>
+      <div class="item-price">${{ cart[i].price }}</div>
       <form action="{{ url_for('cart.cart') }}" method="post" onsubmit="return validateQuantity(this)">
-        <input type="hidden" name="product_id" value="{{ product.id }}">
-        <input type="hidden" name="seller_id" value="{{ product.sid }}">
-        <input type="hidden" name="old_quantity" value="{{ product.quantity }}">
-        <input type="number" name="new_quantity" value="{{ product.quantity }}" min="1" oninput="validity.valid||(value='');" onchange="this.form.submit()">
+        <input type="hidden" name="product_id" value="{{ cart[i].id }}">
+        <input type="hidden" name="seller_id" value="{{ cart[i].sid }}">
+        <input type="hidden" name="old_quantity" value="{{ cart[i].quantity }}">
+        <input type="number" name="new_quantity" value="{{ cart[i].quantity }}" min="1" max = "{{ max_q[i]}}" oninput="validity.valid||(value='');" onchange="this.form.submit()">
       </form>
       <div class="remove-item">
         <form action="{{ url_for('cart.cart') }}" method="post">
-          <input type="hidden" name="remove_product_id" value="{{ product.id }}">
-          <input type="hidden" name="seller_id" value="{{ product.sid }}">
+          <input type="hidden" name="remove_product_id" value="{{ cart[i].id }}">
+          <input type="hidden" name="seller_id" value="{{ cart[i].sid }}">
           <button type="submit" class="btn btn-danger">
             Delete
           </button>
