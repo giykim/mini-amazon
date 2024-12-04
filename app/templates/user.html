@@ -163,7 +163,9 @@
                     <button type="submit" class="btn btn-warning">Write Review</button>
                 </form>
             {% else %}
-                You must purchase from this seller before writing a review!
+                <div class="alert alert-warning mt-2" role="alert">
+                    You must purchase from this seller before writing a review!
+                </div>
             {% endif %}
         
             <div class="mt-2">
