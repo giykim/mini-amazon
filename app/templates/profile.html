@@ -6,7 +6,9 @@
 
 <div class="container mt-2">
   <h2>My Profile</h2>
+  <!-- Hub for links to user specific pages -->
   <div class="row">
+    <!-- Profile Info -->
     <div class="col-md-6 mb-3">
       <a href="{{ url_for('users.user_info') }}" class="card-link">
         <div class="card mb-3 text-center">
@@ -17,6 +19,7 @@
       </a>
     </div>
     <div class="col-md-6 mb-3">
+      <!-- Created products-->
       <a href="{{ url_for('users.created_products') }}" class="card-link">
         <div class="card mb-3 text-center">
           <div class="card-body">
@@ -26,6 +29,7 @@
       </a>
     </div>
     <div class="col-md-6 mb-3">
+      <!-- Order History -->
       <a href="{{ url_for('users.order_history') }}" class="card-link">
         <div class="card mb-3 text-center">
           <div class="card-body">
@@ -35,6 +39,7 @@
       </a>
     </div>
     <div class="col-md-6 mb-3">
+      <!-- User product and seller reviews -->
       <a href="{{ url_for('users.review_history') }}" class="card-link">
         <div class="card mb-3 text-center">
           <div class="card-body">
@@ -44,6 +49,7 @@
       </a>
     </div>
     <div class="col-md-6 mb-3">
+      <!-- Inventory -->
       <a href="{{ url_for('inventories.get_user', page=1) }}" class="card-link">
         <div class="card mb-3 text-center">
           <div class="card-body">
@@ -57,6 +63,7 @@
 
 {% else %}
 
+<!-- No links if user not logged in -->
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see user profile!</p>
 
 {% endif %}

@@ -10,6 +10,7 @@ class Review:
 
     @staticmethod
     def get(id):
+        # 
         rows = app.db.execute('''
             SELECT id, rating, description, time_created
             FROM Reviews
@@ -20,6 +21,7 @@ class Review:
     
     @staticmethod
     def get_user_reviews(reviewerid):
+        # 
         rows = app.db.execute("""
             WITH HelpfulnessValue AS (
                 SELECT rid, COALESCE(SUM(value), 0) AS helpfulness

@@ -33,6 +33,7 @@ class User(UserMixin):
 
     @staticmethod
     def email_exists(email):
+        # Check if user with specified email exists
         rows = app.db.execute("""
             SELECT email
             FROM Users
@@ -91,6 +92,7 @@ class User(UserMixin):
     
     @staticmethod
     def update_info(id, password, firstname, lastname, email, address, balance):
+        # check if email exists under different user
         email_unavailable = app.db.execute("""
             SELECT 1 
             FROM Users
@@ -100,10 +102,11 @@ class User(UserMixin):
             id=id,
             email=email
         )
-
+        # email already used, prevent email change
         if email_unavailable:
             return False
 
+        # update user info based on user input
         rows = app.db.execute("""
             UPDATE Users 
             SET password = :password,
@@ -127,6 +130,7 @@ class User(UserMixin):
 
     @staticmethod
     def update_balance(id, balance):
+        # set a user's balance
         rows = app.db.execute("""
             UPDATE Users 
             SET balance = :balance

@@ -7,6 +7,7 @@
         <h2>New Product</h2>
 
         {% if current_user.is_authenticated %}
+            <!-- New product details form -->
             <form action="{{ url_for('products.new_product') }}" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <label">Name *</label>
@@ -40,6 +41,8 @@
                 </div>
                 <button type="submit" class="btn btn-warning">Create Product</button>
             </form>
+
+        <!-- Only let registered users create products -->
         {% else %}
             <p><a href="{{ url_for('users.login') }}">Log in</a> to create products!</p>
         {% endif %}

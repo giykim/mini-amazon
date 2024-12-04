@@ -6,6 +6,7 @@
     <div class="container mt-2">
         <h2>Edit Product Info</h2>
         {% if current_user.is_authenticated %}
+        <!-- Product update form -->
             <form action="{{ url_for('products.update_product') }}" method="post">
                 <div class="form-group">
                     <div class="form-group">
