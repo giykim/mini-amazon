@@ -33,5 +33,3 @@ class Seller:
             sid=sid
         )
         return rows
-    
-    
