@@ -29,7 +29,7 @@ def cart():
 
         if quantity is not None:
             Purchase.add_to_cart(current_user.id, product_id, seller_id, quantity)
-        elif new_quantity is not None:
+        elif new_quantity is not None and new_quantity is not "":
             new_quantity = int(new_quantity)
             new_quantity -= int(old_quantity)
             Purchase.add_to_cart(current_user.id, product_id, seller_id, new_quantity)
@@ -39,22 +39,26 @@ def cart():
         cart = Purchase.get_cart(current_user.id)
     else:
         cart = []
-    
+    max_q = []
+    for p in cart:
+        max_q.append(Product.get_seller_quant(p[0],p[1])[0][0])
     total = sum(item.price * item.quantity for item in cart)
     total = float(total)
 
-    return render_template('cart.html', cart=cart, total=total)
+    return render_template('cart.html', cart=cart, total=total, max_q = max_q)
 
 
 @bp.route('/checkout', methods=['GET'])
 def checkout():
     if current_user.is_authenticated:
+        # Pull current user's cart
         user = User.get(current_user.id)
         cart = Purchase.get_cart(current_user.id)
     else:
         user = None
         cart = []
     
+    # return cart summary for user review before purchase
     total = sum(item.price * item.quantity for item in cart)
     total = float(total)
 
@@ -65,10 +69,12 @@ def place_order():
     total = 0
 
     if current_user.is_authenticated:
+        # Pull user cart
         cart = Purchase.get_cart(current_user.id)
         total = sum(item.price * item.quantity for item in cart)
         total = float(total)
 
+        # Submit purchases to sellers to be fulfilled
         for item in cart:
             Purchase.order_product(current_user.id, item.id, item.sid)
             # Fetch the current quantity from SoldBy using Inventory.get_quantity

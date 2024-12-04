@@ -20,6 +20,7 @@ class Product:
 
     @staticmethod
     def get_all(available=True):
+        # Retrieves all currently available items at lowest price sold
         rows = app.db.execute('''
             SELECT p.id, p.name, p.description, p.available, MIN(s.price) as price
             FROM Products p
@@ -32,6 +33,7 @@ class Product:
     
     @staticmethod
     def get_k_expensive(k):
+        # Retrieves the top k most expensive items currently being sold
         rows = app.db.execute("""
             SELECT p.id, p.name, p.description, p.available, MIN(s.price) AS price
             FROM Products p
@@ -46,6 +48,7 @@ class Product:
 
     @staticmethod
     def search_products(query):
+        # Retrieve products whose name is similar to user query
         rows = app.db.execute("""
             WITH Rating AS (
                 SELECT p.pid, AVG(r.rating) AS rating, COUNT(r.rating) AS num_ratings
@@ -76,6 +79,7 @@ class Product:
     
     @staticmethod
     def get_product_info(pid):
+        # retrieve rating and characterestic info on specified product
         rows = app.db.execute("""
             WITH Rating AS (
                 SELECT p.pid, AVG(r.rating) AS rating, COUNT(r.rating) AS num_ratings
@@ -95,6 +99,7 @@ class Product:
     
     @staticmethod
     def get_user_products(uid):
+        # Retrieve products created by a specified user along with related reviews and info
         rows = app.db.execute("""
             WITH Rating AS (
                 SELECT p.pid, AVG(r.rating) AS rating, COUNT(r.rating) AS num_ratings
@@ -116,6 +121,7 @@ class Product:
     
     @staticmethod
     def get_seller_info(pid):
+        # Retrieve sellers and associated stocking info for sellers that sell a specified product
         rows = app.db.execute("""
             SELECT u.id as id, u.firstname AS sellerfirst, u.lastname AS sellerlast, b.quantity, b.price
             FROM Products AS p
@@ -129,7 +135,21 @@ class Product:
         return rows
     
     @staticmethod
+    def get_seller_quant(pid, sid):
+        # Retrieve quantity of specified item sold by specified seller
+        rows = app.db.execute("""
+            SELECT quantity
+            FROM Soldby
+            WHERE sid = :sid AND pid = :pid
+            """,
+            pid = pid,
+            sid = sid
+        )
+        return rows
+    
+    @staticmethod
     def get_creator_info(pid):
+        # Retrieve info of the creator of a specified user created product
         rows = app.db.execute("""
             SELECT c.uid, u.firstname, u.lastname
             FROM CreatedProduct c
@@ -142,6 +162,7 @@ class Product:
     
     @staticmethod
     def get_review_by_id(review_id):
+        # Retrieve review info by id
         rows = app.db.execute('''
             SELECT * FROM Reviews
             WHERE id = :review_id
@@ -151,6 +172,7 @@ class Product:
     
     @staticmethod
     def get_review_info(pid):
+        # Retrieve aggregate review information for a specified product
         rows = app.db.execute("""
             SELECT r1.id AS id, u1.firstname AS reviewfirst, u1.lastname AS reviewlast, r1.rating, 
                               r1.description AS ratingdescrip, r1.time_created, COALESCE(SUM(h.value), 0) AS helpfulness
@@ -168,6 +190,7 @@ class Product:
     
     @staticmethod
     def get_helpfulness(review_id):
+        # Retrieve helpfulness of an individual review
         rows = app.db.execute("""
             SELECT COALESCE(SUM(value), 0) AS votes
             FROM Helpfulness
@@ -191,6 +214,7 @@ class Product:
 
     @staticmethod
     def update_vote(review_id, user_id, value):
+        # Update the helpfulness score of a review
         app.db.execute("""
             UPDATE Helpfulness
             SET value = :value
@@ -214,6 +238,7 @@ class Product:
 
     @staticmethod
     def new_product(name, description, uid):
+        # create a new user created product to product table and add to product tables
         pid = app.db.execute("""
             SELECT id
             FROM Products
@@ -248,6 +273,7 @@ class Product:
     
     @staticmethod
     def update_product(pid, name, description):
+        # Update product info
         """
         Update product info with new info
         """
@@ -342,6 +368,7 @@ class Product:
     
     @staticmethod
     def get_available_products_paginated(page, per_page=12, available=True):
+        # Retrieve all currently available products and associated info in a format that facilitates pagination 
         offset = (page - 1) * per_page
         print(f"Fetching products for page {page} with OFFSET {offset} and LIMIT {per_page}")
         rows = app.db.execute('''
@@ -367,6 +394,7 @@ class Product:
     
     @staticmethod
     def count_available():
+        # Get a tally of currently available products
         result = app.db.execute('''
             SELECT COUNT(DISTINCT p.id)
             FROM Products p
@@ -377,6 +405,7 @@ class Product:
     
     @staticmethod
     def get_reviews_paginated(pid, page, per_page=5):
+        # Retrieve all reviews for a product in a format that facilitates pagination
         offset = (page - 1) * per_page
         rows = app.db.execute('''
             SELECT r1.id AS id, u1.firstname AS reviewfirst, u1.lastname AS reviewlast, r1.rating, 
@@ -397,6 +426,7 @@ class Product:
 
     @staticmethod
     def count_reviews(pid):
+        # Provide a tally for reviews of a given product
         result = app.db.execute('''
             SELECT COUNT(r1.id)
             FROM ProductReviews AS r
