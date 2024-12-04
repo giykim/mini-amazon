@@ -340,6 +340,14 @@
                                         </strong>
                                         {{ product.description[:100] }}...
                                     </p>
+                                    <div>
+                                        <form action="{{ url_for('inventories.update_sold_by') }}" method="POST">
+                                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                                            <input type="hidden" name="quantity" value="{{ 0 }}">
+                                            <input type="hidden" name="price" value="{{ 0 }}">
+                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -607,7 +615,7 @@
                 </nav>
             {% else %}
                 <div class="alert alert-warning mt-2" role="alert">
-                    You do not have any orders to fulfill.
+                    You have not fulfilled any orders.
                 </div>
             {% endif %}
             
@@ -635,17 +643,17 @@
                                     </form>
 
                                     <!-- Sale information -->
-                                    <p>Sale Quantity: {{ product.sell_quantity}}</p>
+                                    <p>Sale Quantity: {{ product.sell_quantity if product.sell_quantity else 0 }}</p>
                                     <!-- Add Sale Form -->
                                     <form action="{{ url_for('inventories.update_sold_by') }}" method="POST">
                                         <input type="hidden" name="product_id" value="{{ product.id }}">
                                         <div class="form-group">
                                             <label">Amount to Sell:</label>
-                                            <input type="number" placeholder="Add Sale" name="quantity" min=0 max={{ product.stock_quantity }} value="{{ 0 if not product.sell_quantity else product.sell_quantity }}" required>
+                                            <input type="number" placeholder="Add Sale" name="quantity" min=1 max={{ product.stock_quantity }} value="{{ 0 if not product.sell_quantity else product.sell_quantity }}" required>
                                         </div>
                                         <div class="form-group">
                                             <label">Price: </label> 
-                                            <input type="number" id="price" name="price" placeholder="Price" min="0.01" value="{{ '0.01' if not product.price else product.price }}" oninput="validity.valid||(value='');" step="0.01" required>
+                                            <input type="number" id="price" name="price" placeholder="Price" min="0.01" value="{{ '0' if not product.price else product.price }}" oninput="validity.valid||(value='');" step="0.01" required>
                                         </div>
                                         <button type="submit" class="btn btn-warning">Update Sale</button>
                                     </form>

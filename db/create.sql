@@ -42,7 +42,7 @@ CREATE TABLE SoldBy (
     sid INT NOT NULL REFERENCES Sellers(id),
     pid INT NOT NULL REFERENCES Products(id),
     quantity INT NOT NULL,
-    price DECIMAL(12,2) NOT NULL CHECK (price >= 0.01),
+    price DECIMAL(12,2) NOT NULL CHECK (price >= 0),
     UNIQUE (sid, pid)
 );
 
