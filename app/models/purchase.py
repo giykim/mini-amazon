@@ -203,18 +203,35 @@ class Purchase:
     def get_incoming_purchases(sid):
         rows = app.db.execute('''
             SELECT pu.uid, pu.pid, pu.sid, pu.time_purchased, pu.quantity, pu.price, pu.fulfilled,
-                pr.name AS product_name, u.firstname AS seller_first, u.lastname AS seller_last
+                pr.name AS product_name, u.firstname AS buyerfirst, u.lastname AS buyerlast
             FROM Purchases pu
             JOIN Products pr ON pu.pid = pr.id
-            JOIN Users u ON pu.sid = u.id
+            JOIN Users u ON pu.uid = u.id
             WHERE pu.sid = :sid
                 AND pu.fulfilled = FALSE
+                AND pu.time_purchased IS NOT NULL
             ORDER BY time_purchased DESC
             ''',
             sid=sid
         )
         return rows
 
+    @staticmethod
+    def get_fulfilled_purchases(sid):
+        rows = app.db.execute('''
+            SELECT pu.uid, pu.pid, pu.sid, pu.time_purchased, pu.quantity, pu.price, pu.fulfilled,
+                pr.name AS product_name, u.firstname AS buyerfirst, u.lastname AS buyerlast
+            FROM Purchases pu
+            JOIN Products pr ON pu.pid = pr.id
+            JOIN Users u ON pu.uid = u.id
+            WHERE pu.sid = :sid
+                AND pu.fulfilled = TRUE
+                AND pu.time_purchased IS NOT NULL
+            ORDER BY time_purchased DESC
+            ''',
+            sid=sid
+        )
+        return rows
 
     @staticmethod
     def has_bought_from(uid, sid):

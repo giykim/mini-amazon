@@ -69,6 +69,9 @@ def get_user():
         # Get incoming orders
         incoming_purchases = Purchase.get_incoming_purchases(uid)
 
+        # Get incoming orders history
+        fulfilled_purchases = Purchase.get_fulfilled_purchases(uid)
+
         # Get products that are in inventory (even if they may not be on sale)
         stock = Inventory.get_inventory_details(uid)
     else:
@@ -76,6 +79,7 @@ def get_user():
         ratings = None
         selling = None
         incoming_purchases = None
+        fulfilled_purchases = None
         stock = None
 
     # Get products created by user
@@ -111,6 +115,17 @@ def get_user():
 
     # Calculate total pages based on the count of incoming orders
     incoming_total_pages = (incoming_count + incoming_per_page - 1) // incoming_per_page  # Calculate the number of pages
+
+    # Get fulfilled pagination parameters
+    fulfilled_page = request.args.get('fulfilled_page', 1, type=int)
+    fulfilled_per_page = 3
+    fulfilled_offset = (fulfilled_page - 1) * fulfilled_per_page
+    
+    fulfilled_count = len(fulfilled_purchases) if fulfilled_purchases else 0
+    fulfilled_purchases = fulfilled_purchases[fulfilled_offset:fulfilled_offset+fulfilled_per_page] if fulfilled_purchases else 0
+
+    # Calculate total pages based on the count of fulfilled orders
+    fulfilled_total_pages = (fulfilled_count + fulfilled_per_page - 1) // fulfilled_per_page  # Calculate the number of pages
 
     # Get stock pagination parameters
     stock_page = request.args.get('stock_page', 1, type=int)
@@ -152,6 +167,10 @@ def get_user():
                            incoming_purchases=incoming_purchases,
                            incoming_page=incoming_page,
                            incoming_total_pages=incoming_total_pages,
+
+                           fulfilled_purchases=fulfilled_purchases,
+                           fulfilled_page=fulfilled_page,
+                           fulfilled_total_pages=fulfilled_total_pages,
 
                            stock=stock,
                            stock_page=stock_page,

@@ -101,6 +101,7 @@
                                 reviews_page=reviews_page,
                                 selling_page=selling_page-1,
                                 incoming_page=incoming_page,
+                                fulfilled_page=fulfilled_page,
                                 stock_page=stock_page,
                                 ) }}"
                                 aria-label="Previous">
@@ -119,6 +120,7 @@
                                 reviews_page=reviews_page,
                                 selling_page=page_num,
                                 incoming_page=incoming_page,
+                                fulfilled_page=fulfilled_page,
                                 stock_page=stock_page,
                             ) }}">{{ page_num }}</a>
                         </li>
@@ -133,6 +135,7 @@
                                 reviews_page=reviews_page,
                                 selling_page=selling_page+1,
                                 incoming_page=incoming_page,
+                                fulfilled_page=fulfilled_page,
                                 stock_page=stock_page,
                                 ) }}"
                                 aria-label="Next">
@@ -247,6 +250,7 @@
                                     reviews_page=reviews_page-1,
                                     selling_page=selling_page,
                                     incoming_page=incoming_page,
+                                    fulfilled_page=fulfilled_page,
                                     stock_page=stock_page,
                                     ) }}"aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
@@ -265,6 +269,7 @@
                                     reviews_page=page_num,
                                     selling_page=selling_page,
                                     incoming_page=incoming_page,
+                                    fulfilled_page=fulfilled_page,
                                     stock_page=stock_page,
                                 ) }}">{{ page_num }}</a>
                             </li>
@@ -279,6 +284,7 @@
                                     reviews_page=reviews_page+1,
                                     selling_page=selling_page,
                                     incoming_page=incoming_page,
+                                    fulfilled_page=fulfilled_page,
                                     stock_page=stock_page,
                                     ) }}"aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
@@ -349,6 +355,7 @@
                                 reviews_page=reviews_page,
                                 selling_page=selling_page-1,
                                 incoming_page=incoming_page,
+                                fulfilled_page=fulfilled_page,
                                 stock_page=stock_page,
                                 ) }}"
                                 aria-label="Previous">
@@ -369,6 +376,7 @@
                                         reviews_page=reviews_page,
                                         selling_page=page_num,
                                         incoming_page=incoming_page,
+                                        fulfilled_page=fulfilled_page,
                                         stock_page=stock_page,
                                     ) }}">{{page_num }}</a>
                             </li>
@@ -383,6 +391,7 @@
                                 reviews_page=reviews_page,
                                 selling_page=selling_page+1,
                                 incoming_page=incoming_page,
+                                fulfilled_page=fulfilled_page,
                                 stock_page=stock_page,
                                 ) }}"
                                 aria-label="Next">
@@ -417,7 +426,7 @@
                                         <div class="row">
                                             <div class="col-12 col-md-8">
                                                 <h5 class="card-title"><strong>{{ purchase.product_name }}</strong></h6>
-                                                <p class="card-text"><strong>User:</strong> {{ purchase.seller_first }} {{ purchase.seller_last }}</p>
+                                                <p class="card-text"><strong>User:</strong> {{ purchase.buyerfirst }} {{ purchase.buyerlast }}</p>
                                                 <p class="card-text"><strong>Unit Price:</strong> ${{ purchase.price }}</p>
                                                 <p class="card-text"><strong>Quantity:</strong> {{ purchase.quantity }}</p>
                                                 <p class="card-text"><strong>Fulfilled:</strong> {{ purchase.fulfilled }}</p>
@@ -454,6 +463,7 @@
                                 reviews_page=reviews_page,
                                 selling_page=selling_page,
                                 incoming_page=incoming_page-1,
+                                fulfilled_page=fulfilled_page,
                                 stock_page=stock_page,
                                 ) }}"
                                 aria-label="Previous">
@@ -474,6 +484,7 @@
                                         reviews_page=reviews_page,
                                         selling_page=selling_page,
                                         incoming_page=page_num,
+                                        fulfilled_page=fulfilled_page,
                                         stock_page=stock_page,
                                     ) }}">{{page_num }}</a>
                             </li>
@@ -488,6 +499,101 @@
                                 reviews_page=reviews_page,
                                 selling_page=selling_page,
                                 incoming_page=incoming_page+1,
+                                fulfilled_page=fulfilled_page,
+                                stock_page=stock_page,
+                                ) }}"
+                                aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                            </li>
+                            {% endif %}
+                    </ul>
+                </nav>
+            {% else %}
+                <div class="alert alert-warning mt-2" role="alert">
+                    You do not have any orders to fulfill.
+                </div>
+            {% endif %}
+
+            <h3>Fulfilled Orders</h3>
+            {% if fulfilled_purchases %}
+                <div class="row">
+                    {% for purchase in fulfilled_purchases %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Order placed on {{ purchase.time_purchased }}</h5>
+                                </div>
+                            
+                                <div class="card-body">
+                                    <div class="pb-3">
+                                        <div class="row">
+                                            <div class="col-12 col-md-8">
+                                                <h5 class="card-title"><strong>{{ purchase.product_name }}</strong></h6>
+                                                <p class="card-text"><strong>User:</strong> {{ purchase.buyerfirst }} {{ purchase.buyerlast }}</p>
+                                                <p class="card-text"><strong>Unit Price:</strong> ${{ purchase.price }}</p>
+                                                <p class="card-text"><strong>Quantity:</strong> {{ purchase.quantity }}</p>
+                                                <p class="card-text"><strong>Fulfilled:</strong> {{ purchase.fulfilled }}</p>
+                                            </div>
+                                            <div class="col-12 col-md-4 text-right">
+                                                <p class="font-weight-bold text-dark">${{ purchase.price * purchase.quantity }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <nav aria-label="Product pagination" class="d-flex justify-content-center mt-2">
+                    <!-- Flex container for centering -->
+                    <ul class="pagination">
+                        {% if fulfilled_page > 1 %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="{{ url_for('inventories.get_user',
+                                uid=uid,
+                                created_products_page=created_products_page,
+                                reviews_page=reviews_page,
+                                selling_page=selling_page,
+                                incoming_page=incoming_page,
+                                fulfilled_page=fulfilled_page-1,
+                                stock_page=stock_page,
+                                ) }}"
+                                aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% set start_page = fulfilled_page - 2 if fulfilled_page > 3 else 1 %}
+                        {% set end_page = fulfilled_page + 2 if fulfilled_page < fulfilled_total_pages - 2 else
+                            fulfilled_total_pages %} {% for page_num in range(start_page, end_page + 1) %}
+                            <li
+                                class="page-item {% if page_num == fulfilled_page %}active{% endif %}">
+                                <a class="page-link"
+                                    href="{{ url_for('inventories.get_user',
+                                        uid=uid,
+                                        created_products_page=created_products_page,
+                                        reviews_page=reviews_page,
+                                        selling_page=selling_page,
+                                        incoming_page=incoming_page,
+                                        fulfilled_page=page_num,
+                                        stock_page=stock_page,
+                                    ) }}">{{page_num }}</a>
+                            </li>
+                            {% endfor %}
+
+                            {% if fulfilled_page < fulfilled_total_pages %}
+                            <li class="page-item">
+                            <a class="page-link"
+                                href="{{ url_for('inventories.get_user',
+                                uid=uid,
+                                created_products_page=created_products_page,
+                                reviews_page=reviews_page,
+                                selling_page=selling_page,
+                                incoming_page=incoming_page,
+                                fulfilled_page=fulfilled_page+1,
                                 stock_page=stock_page,
                                 ) }}"
                                 aria-label="Next">
@@ -558,6 +664,7 @@
                                 reviews_page=reviews_page,
                                 selling_page=selling_page,
                                 incoming_page=incoming_page,
+                                fulfilled_page=fulfilled_page,
                                 stock_page=stock_page-1,
                                 ) }}"
                                 aria-label="Previous">
@@ -578,6 +685,7 @@
                                         reviews_page=reviews_page,
                                         selling_page=selling_page,
                                         incoming_page=incoming_page,
+                                        fulfilled_page=fulfilled_page,
                                         stock_page=page_num,
                                     ) }}">{{page_num }}</a>
                             </li>
@@ -592,6 +700,7 @@
                                 reviews_page=reviews_page,
                                 selling_page=selling_page,
                                 incoming_page=incoming_page,
+                                fulfilled_page=fulfilled_page,
                                 stock_page=stock_page+1,
                                 ) }}"
                                 aria-label="Next">
