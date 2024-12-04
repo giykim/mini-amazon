@@ -66,7 +66,7 @@
     <h1>Your Shopping Cart</h1>
   </div>
 
-  {% for i in range(cart | length) %}
+  {% for i in range(cart | length) %} 
     <div class="cart-item">
           <!-- Product Image -->
     <div style="flex-shrink: 0; width: 100px; height: 100px; margin-right: 15px;">
@@ -80,6 +80,7 @@
         <p>Sold by: {{ cart[i].seller_first }} {{ cart[i].seller_last }}</p>
       </div>
       <div class="item-price">${{ cart[i].price }}</div>
+      <!-- Quantity Update Form -->
       <form action="{{ url_for('cart.cart') }}" method="post" onsubmit="return validateQuantity(this)">
         <input type="hidden" name="product_id" value="{{ cart[i].id }}">
         <input type="hidden" name="seller_id" value="{{ cart[i].sid }}">
@@ -87,6 +88,7 @@
         <input type="number" name="new_quantity" value="{{ cart[i].quantity }}" min="1" max = "{{ max_q[i]}}" oninput="validity.valid||(value='');" onchange="this.form.submit()">
       </form>
       <div class="remove-item">
+        <!-- Remove from cart button -->
         <form action="{{ url_for('cart.cart') }}" method="post">
           <input type="hidden" name="remove_product_id" value="{{ cart[i].id }}">
           <input type="hidden" name="seller_id" value="{{ cart[i].sid }}">

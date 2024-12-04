@@ -13,6 +13,7 @@ class Purchase:
 
     @staticmethod
     def get(uid, pid, sid):
+        # retrieve time and quantity information of a purchase based on user, product, and seller
         rows = app.db.execute('''
             SELECT uid, pid, sid, time_purchased, quantity
             FROM Purchases
@@ -29,6 +30,7 @@ class Purchase:
     
     @staticmethod
     def get_all_by_uid(uid):
+        # Retrieve all purchases of a specified user
         rows = app.db.execute('''
             SELECT pu.uid, pu.pid, pu.sid, pu.time_purchased, pu.quantity,
                 pr.name AS product_name, u.firstname AS seller_first, u.lastname AS seller_last
@@ -45,6 +47,7 @@ class Purchase:
 
     @staticmethod
     def get_all_purchased_by_uid(uid):
+        # Retrieve all purchases of a specified user but with price and fulfillment status
         rows = app.db.execute('''
             SELECT pu.uid, pu.pid, pu.sid, pu.time_purchased, pu.quantity, pu.price, pu.fulfilled,
                 pr.name AS product_name, u.firstname AS seller_first, u.lastname AS seller_last
@@ -62,6 +65,7 @@ class Purchase:
 
     @staticmethod
     def get_all_by_uid_since(uid, since):
+        # Retrieve all purchases by a user after a specified date
         rows = app.db.execute('''
             SELECT pu.uid, pu.pid, pu.sid, pu.time_purchased, pu.quantity,
                 pr.name AS product_name, u.firstname AS seller_first, u.lastname AS seller_last
@@ -79,6 +83,7 @@ class Purchase:
     
     @staticmethod
     def get_cart(uid):
+        # Retrieve all products added to cart but not yet purchased
         rows = app.db.execute('''
             SELECT pu.pid, pu.sid, pu.quantity, pr.name, pr.id, pr.description, pr.image,
                 u.firstname AS seller_first, u.lastname AS seller_last, s.price
@@ -97,6 +102,7 @@ class Purchase:
     
     @staticmethod
     def add_to_cart(uid, pid, sid, quantity):
+        # add a product to a specified user's cart from a given listing, or add to the quantity of an item in the cart if already in the cart
         existing_purchase = app.db.execute('''
             SELECT quantity
             FROM Purchases 
@@ -139,6 +145,7 @@ class Purchase:
     
     @staticmethod
     def remove_product(uid, pid, sid):
+        # remove a product listing from the cart of specified user
         app.db.execute('''
             DELETE FROM Purchases
             WHERE uid=:uid

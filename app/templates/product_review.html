@@ -9,6 +9,7 @@
         {% if current_user.is_authenticated %}
             <form action="{{ url_for('social.new_product_review') }}" method="post">
                 <input type="hidden" name="product_id" value="{{ product.id }}">
+                <!-- Rating Form -->
                 <div class="form-group">
                     <label for="rating">Rating *</label>
                     <div class="star-rating">
@@ -28,6 +29,7 @@
                         <label for="star1" title="1 star">&#9733;</label>
                     </div>
                 </div>
+                <!-- main review body -->
                 <div class="form-group">
                     <label>Description *</label>
                     <input type="text" class="form-control" placeholder="Product Description" name="description" required>
