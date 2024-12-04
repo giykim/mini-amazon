@@ -71,15 +71,26 @@ def place_order():
     if current_user.is_authenticated:
         # Pull user cart
         cart = Purchase.get_cart(current_user.id)
-
         total = sum(item.price * item.quantity for item in cart)
         total = float(total)
 
         # Submit purchases to sellers to be fulfilled
         for item in cart:
             Purchase.order_product(current_user.id, item.id, item.sid)
-        
-        # Reserve user funds to purchase items
+            # Fetch the current quantity from SoldBy using Inventory.get_quantity
+            quants = Inventory.get_quantity(item.sid, item.id)
+            if quants:
+                current_quantity = int(quants[0].quantity)
+                new_quantity = current_quantity - item.quantity
+
+                # Call update_sold_by with the new quantity
+                Inventory.update_sold_by(
+                    sid=item.sid,
+                    pid=item.pid,
+                    quantity=new_quantity,
+                    price=item.price
+                )
+
         user = User.get(current_user.id)
         User.update_balance(user.id, user.balance - round(total * 1.075, 2))
     else:
