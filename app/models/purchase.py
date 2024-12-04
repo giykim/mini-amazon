@@ -153,6 +153,7 @@ class Purchase:
 
     @staticmethod
     def order_product(uid, pid, sid):
+        # Submit an order to purchases to be reviewed by involved sellers
         time_purchased = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
         app.db.execute('''

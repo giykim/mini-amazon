@@ -9,6 +9,7 @@ class Inventory:
 
     @staticmethod
     def get_inventory(sid):
+        # Retrieves all items in the inventory of a specified seller
         rows = app.db.execute('''
             SELECT pid, quantity
             FROM Inventory
@@ -21,6 +22,7 @@ class Inventory:
 
     @staticmethod
     def get_sellers(pid):
+        # Retrieves all sellers that sell have a specified product in their inventory
         rows = app.db.execute('''
             SELECT sid
             FROM Inventory
@@ -31,6 +33,7 @@ class Inventory:
     
     @staticmethod 
     def get_product_detail(pid, sid):
+        # Retrieves full info (description, quantity, name, etc) for a given product of a seller
         rows = app.db.execute('''
             WITH uinfo AS (
             SELECT id, firstname, lastname, email

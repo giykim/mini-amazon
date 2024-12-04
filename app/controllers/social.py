@@ -14,6 +14,7 @@ bp = Blueprint('social', __name__)
 
 @bp.route('/product-review', methods=['GET'])
 def product_review():
+    # Retrieve product info for review
     product_id = request.args.get('product_id')
 
     product = Product.get(product_id)
@@ -23,11 +24,13 @@ def product_review():
 
 @bp.route('/new-product-review', methods=['POST'])
 def new_product_review():
+    # Recieve info from user to create a review for user specified product
     pid = request.form.get('product_id')
     rating = request.form.get('rating')
     description = request.form.get('description')
 
     if current_user.is_authenticated:
+        # Only allow a given user to have one review per product
         already_exists = Review.new_product_review(current_user.id, pid, rating, description)
 
         if already_exists:
@@ -38,6 +41,7 @@ def new_product_review():
 
 @bp.route('/seller-review', methods=['GET'])
 def seller_review():
+    # Retrieve the info needed to display a seller review
     sid = request.args.get('seller_id')
 
     seller = User.get(sid)
@@ -47,11 +51,13 @@ def seller_review():
 
 @bp.route('/new-seller-review', methods=['POST'])
 def new_seller_review():
+    #Recieve info from user to create a review for user specified product
     sid = request.form.get('seller_id')
     rating = request.form.get('rating')
     description = request.form.get('description')
 
     if current_user.is_authenticated:
+        # Only allow a given user to have one review per seller
         already_exists = Review.new_seller_review(current_user.id, sid, rating, description)
 
         if already_exists:

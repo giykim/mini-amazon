@@ -51,12 +51,14 @@ def cart():
 @bp.route('/checkout', methods=['GET'])
 def checkout():
     if current_user.is_authenticated:
+        # Pull current user's cart
         user = User.get(current_user.id)
         cart = Purchase.get_cart(current_user.id)
     else:
         user = None
         cart = []
     
+    # return cart summary for user review before purchase
     total = sum(item.price * item.quantity for item in cart)
     total = float(total)
 
@@ -67,14 +69,17 @@ def place_order():
     total = 0
 
     if current_user.is_authenticated:
+        # Pull user cart
         cart = Purchase.get_cart(current_user.id)
 
         total = sum(item.price * item.quantity for item in cart)
         total = float(total)
 
+        # Submit purchases to sellers to be fulfilled
         for item in cart:
             Purchase.order_product(current_user.id, item.id, item.sid)
-
+        
+        # Reserve user funds to purchase items
         user = User.get(current_user.id)
         User.update_balance(user.id, user.balance - round(total * 1.075, 2))
     else:
