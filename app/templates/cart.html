@@ -85,7 +85,10 @@
         <input type="hidden" name="product_id" value="{{ cart[i].id }}">
         <input type="hidden" name="seller_id" value="{{ cart[i].sid }}">
         <input type="hidden" name="old_quantity" value="{{ cart[i].quantity }}">
-        <input type="number" name="new_quantity" value="{{ cart[i].quantity }}" min="1" max = "{{ max_q[i]}}" oninput="validity.valid||(value='');" onchange="this.form.submit()">
+        <input type="number" name="new_quantity" value="{{ cart[i].quantity }}" min="1" max = "{{ max_q[i]}}" oninput="validity.valid||(value='');">
+        <button type="submit" class="btn btn-warning">
+          Update
+        </button>
       </form>
       <div class="remove-item">
         <!-- Remove from cart button -->

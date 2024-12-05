@@ -129,6 +129,7 @@ class Product:
             JOIN SoldBy AS b ON p.id = b.pid
             JOIN Users AS u ON u.id = b.sid
             WHERE p.id = :pid
+                AND b.quantity > 0
             ORDER BY b.price ASC
             """,
             pid = pid
