@@ -107,10 +107,11 @@ class Product:
                 JOIN Reviews r ON r.id = p.id
                 GROUP BY p.pid
             )
-            SELECT p.id, p.name, p.description, p.image,
+            SELECT p.id, p.name, p.description, p.image, s.price,
                 COALESCE(r.rating, 0) AS rating, COALESCE(r.num_ratings, 0) as num_ratings
             FROM Products p
             JOIN CreatedProduct c ON p.id = c.pid
+            LEFT JOIN SoldBy s ON p.id = s.pid
             LEFT JOIN Rating r ON p.id = r.pid
             WHERE c.uid = :uid
             ORDER BY p.name
@@ -146,6 +147,7 @@ class Product:
             sid = sid
         )
         return rows
+
     
     @staticmethod
     def get_creator_info(pid):

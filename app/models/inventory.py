@@ -295,8 +295,30 @@ class Inventory:
         )
         return rows
 
-
+    @staticmethod
+    def get_quantity(sid, pid):
+        rows = app.db.execute("""
+            SELECT quantity 
+            FROM SoldBy 
+            WHERE sid = :sid AND pid = :pid
+            """, 
+            sid=sid,
+            pid=pid
+        )
+        return rows
     
+    @staticmethod
+    def update_quantity(sid, pid, quantity):
+        rows = app.db.execute("""
+            UPDATE SoldBy
+            SET quantity = :quantity
+            WHERE sid = :sid AND pid = :pid
+            """, 
+            sid=sid,
+            pid=pid,
+            quantity=quantity
+        )
+        return rows
 
         
     
