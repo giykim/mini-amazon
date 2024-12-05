@@ -83,12 +83,11 @@ def place_order():
                 current_quantity = int(quants[0].quantity)
                 new_quantity = current_quantity - item.quantity
 
-                # Call update_sold_by with the new quantity
-                Inventory.update_sold_by(
+                # Call update_quantity with the new quantity
+                Inventory.update_quantity(
                     sid=item.sid,
                     pid=item.pid,
-                    quantity=new_quantity,
-                    price=item.price
+                    quantity=new_quantity
                 )
 
         user = User.get(current_user.id)
