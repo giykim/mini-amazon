@@ -14,6 +14,9 @@
     - Skeleton Code Provided by COMPSCI 316 Professor and TAs
     - Assistance for frontend aspects of website from ChatGPT
 
+Final Report:
+Link to Video: https://drive.google.com/file/d/1ibfEr_h4pyAtKy706WzzTdrJ9dB6HCZg/view?usp=sharing 
+
 MS4:
 Link to Video: https://drive.google.com/file/d/1XDRh5EynVOx-bTJcS281CZ9uI3Y53SPc/view?usp=sharing
 Location of code to populate database: db/generated/gen.py
